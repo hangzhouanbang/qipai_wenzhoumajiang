@@ -7,11 +7,30 @@ import java.util.Map;
 import java.util.Set;
 
 import com.dml.majiang.ju.Ju;
+import com.dml.majiang.ju.finish.FixedPanNumbersJuFinishiDeterminer;
 import com.dml.majiang.ju.firstpan.ClassicStartFirstPanProcess;
 import com.dml.majiang.ju.nextpan.AllPlayersReadyCreateNextPanDeterminer;
 import com.dml.majiang.ju.nextpan.ClassicStartNextPanProcess;
 import com.dml.majiang.ju.result.JuResult;
+import com.dml.majiang.pan.avaliablepai.NoHuapaiRandomAvaliablePaiFiller;
 import com.dml.majiang.pan.frame.PanActionFrame;
+import com.dml.majiang.pan.guipai.RandomGuipaiDeterminer;
+import com.dml.majiang.pan.publicwaitingplayer.WaitDaPlayerPanPublicWaitingPlayerDeterminer;
+import com.dml.majiang.player.action.chi.PengganghuFirstChiActionProcessor;
+import com.dml.majiang.player.action.da.DachushoupaiDaActionProcessor;
+import com.dml.majiang.player.action.gang.HuFirstGangActionProcessor;
+import com.dml.majiang.player.action.guo.DoNothingGuoActionProcessor;
+import com.dml.majiang.player.action.hu.PlayerSetHuHuActionProcessor;
+import com.dml.majiang.player.action.initial.ZhuangMoPaiInitialActionUpdater;
+import com.dml.majiang.player.action.listener.comprehensive.DianpaoDihuOpportunityDetector;
+import com.dml.majiang.player.action.listener.comprehensive.JuezhangStatisticsListener;
+import com.dml.majiang.player.action.listener.gang.GangCounter;
+import com.dml.majiang.player.action.listener.mo.MoGuipaiCounter;
+import com.dml.majiang.player.action.peng.HuFirstPengActionProcessor;
+import com.dml.majiang.player.menfeng.RandomMustHasDongPlayersMenFengDeterminer;
+import com.dml.majiang.player.menfeng.ZhuangXiajiaIsDongIfZhuangNotHuPlayersMenFengDeterminer;
+import com.dml.majiang.player.shoupai.gouxing.NoDanpaiOneDuiziGouXingPanHu;
+import com.dml.majiang.player.zhuang.MenFengDongZhuangDeterminer;
 import com.dml.mpgame.game.GamePlayerOnlineState;
 import com.dml.mpgame.game.GamePlayerState;
 import com.dml.mpgame.game.GamePlayerValueObject;
@@ -20,11 +39,8 @@ import com.dml.mpgame.game.GameValueObject;
 
 public class MajiangGame {
 	private String gameId;
-	private int difen;
-	private int taishu;
 	private int panshu;
 	private int renshu;
-	private boolean dapao;
 	private Ju ju;
 	private MajiangGameState state;
 	private Map<String, MajiangGamePlayerState> playerStateMap = new HashMap<>();
@@ -35,6 +51,43 @@ public class MajiangGame {
 		ju = new Ju();
 		ju.setStartFirstPanProcess(new ClassicStartFirstPanProcess());
 		ju.setStartNextPanProcess(new ClassicStartNextPanProcess());
+		ju.setPlayersMenFengDeterminerForFirstPan(new RandomMustHasDongPlayersMenFengDeterminer(currentTime));
+		ju.setPlayersMenFengDeterminerForNextPan(new ZhuangXiajiaIsDongIfZhuangNotHuPlayersMenFengDeterminer());
+		ju.setZhuangDeterminerForFirstPan(new MenFengDongZhuangDeterminer());
+		ju.setZhuangDeterminerForNextPan(new MenFengDongZhuangDeterminer());
+		ju.setAvaliablePaiFiller(new NoHuapaiRandomAvaliablePaiFiller(currentTime + 1));
+		ju.setGuipaiDeterminer(new RandomGuipaiDeterminer(currentTime + 2));
+		ju.setFaPaiStrategy(new WenzhouMajiangFaPaiStrategy(16));
+		ju.setCurrentPanFinishiDeterminer(new WenzhouMajiangPanFinishDeterminer());
+		ju.setGouXingPanHu(new NoDanpaiOneDuiziGouXingPanHu());
+		ju.setCurrentPanPublicWaitingPlayerDeterminer(new WaitDaPlayerPanPublicWaitingPlayerDeterminer());
+		WenzhouMajiangPanResultBuilder wenzhouMajiangPanResultBuilder = new WenzhouMajiangPanResultBuilder();
+		ju.setCurrentPanResultBuilder(wenzhouMajiangPanResultBuilder);
+		AllPlayersReadyCreateNextPanDeterminer createNextPanDeterminer = new AllPlayersReadyCreateNextPanDeterminer();
+		game.allPlayerIds().forEach((pid) -> createNextPanDeterminer.addPlayer(pid));
+		ju.setCreateNextPanDeterminer(createNextPanDeterminer);
+		ju.setJuFinishiDeterminer(new FixedPanNumbersJuFinishiDeterminer(panshu));
+		ju.setJuResultBuilder(new WenzhouMajiangJuResultBuilder());
+		ju.setInitialActionUpdater(new ZhuangMoPaiInitialActionUpdater());
+		ju.setMoActionProcessor(new WenzhouMajiangMoActionProcessor());
+		ju.setMoActionUpdater(new WenzhouMajiangMoActionUpdater());
+		ju.setDaActionProcessor(new DachushoupaiDaActionProcessor());
+		ju.setDaActionUpdater(new WenzhouMajiangDaActionUpdater());
+		ju.setChiActionProcessor(new PengganghuFirstChiActionProcessor());
+		ju.setChiActionUpdater(new WenzhouMajiangChiActionUpdater());
+		ju.setPengActionProcessor(new HuFirstPengActionProcessor());
+		ju.setPengActionUpdater(new WenzhouMajiangPengActionUpdater());
+		ju.setGangActionProcessor(new HuFirstGangActionProcessor());
+		ju.setGangActionUpdater(new WenzhouMajiangGangActionUpdater());
+		ju.setGuoActionProcessor(new DoNothingGuoActionProcessor());
+		ju.setGuoActionUpdater(new WenzhouMajiangGuoActionUpdater());
+		ju.setHuActionProcessor(new PlayerSetHuHuActionProcessor());
+
+		ju.addActionStatisticsListener(new JuezhangStatisticsListener());
+		ju.addActionStatisticsListener(new MoGuipaiCounter());
+		ju.addActionStatisticsListener(new GangCounter());
+		ju.addActionStatisticsListener(new DianpaoDihuOpportunityDetector());
+
 		// 开始第一盘
 		ju.startFirstPan(game.allPlayerIds());
 
@@ -139,22 +192,6 @@ public class MajiangGame {
 		this.gameId = gameId;
 	}
 
-	public int getDifen() {
-		return difen;
-	}
-
-	public void setDifen(int difen) {
-		this.difen = difen;
-	}
-
-	public int getTaishu() {
-		return taishu;
-	}
-
-	public void setTaishu(int taishu) {
-		this.taishu = taishu;
-	}
-
 	public int getPanshu() {
 		return panshu;
 	}
@@ -169,14 +206,6 @@ public class MajiangGame {
 
 	public void setRenshu(int renshu) {
 		this.renshu = renshu;
-	}
-
-	public boolean isDapao() {
-		return dapao;
-	}
-
-	public void setDapao(boolean dapao) {
-		this.dapao = dapao;
 	}
 
 	public Ju getJu() {

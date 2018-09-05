@@ -12,11 +12,8 @@ import com.dml.mpgame.game.GamePlayerOnlineState;
 
 public class MajiangGameDbo {
 	private String id;// 就是gameid
-	private int difen;
-	private int taishu;
 	private int panshu;
 	private int renshu;
-	private boolean dapao;
 	private MajiangGameState state;
 	private List<MajiangGamePlayerDbo> players;
 
@@ -25,11 +22,8 @@ public class MajiangGameDbo {
 
 	public MajiangGameDbo(MajiangGameValueObject majiangGame, Map<String, PlayerInfo> playerInfoMap) {
 		id = majiangGame.getGameId();
-		difen = majiangGame.getDifen();
-		taishu = majiangGame.getTaishu();
 		panshu = majiangGame.getPanshu();
 		renshu = majiangGame.getRenshu();
-		dapao = majiangGame.isDapao();
 		state = majiangGame.getState();
 
 		players = new ArrayList<>();
@@ -69,22 +63,6 @@ public class MajiangGameDbo {
 		this.id = id;
 	}
 
-	public int getDifen() {
-		return difen;
-	}
-
-	public void setDifen(int difen) {
-		this.difen = difen;
-	}
-
-	public int getTaishu() {
-		return taishu;
-	}
-
-	public void setTaishu(int taishu) {
-		this.taishu = taishu;
-	}
-
 	public int getPanshu() {
 		return panshu;
 	}
@@ -99,14 +77,6 @@ public class MajiangGameDbo {
 
 	public void setRenshu(int renshu) {
 		this.renshu = renshu;
-	}
-
-	public boolean isDapao() {
-		return dapao;
-	}
-
-	public void setDapao(boolean dapao) {
-		this.dapao = dapao;
 	}
 
 	public MajiangGameState getState() {

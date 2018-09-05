@@ -33,8 +33,8 @@ public class GameCmdServiceImpl extends CmdServiceBase implements GameCmdService
 				new HostGameLeaveStrategy(playerId),
 				new VoteAfterStartedGameFinishStrategy(playerId, new MostPlayersWinVoteCalculator()), playerId);
 		MajiangGameManager majiangGameManager = singletonEntityRepository.getEntity(MajiangGameManager.class);
-		MajiangGameValueObject majiangGameValueObject = majiangGameManager.newMajiangGame(gameValueObject, difen,
-				taishu, panshu, renshu, dapao);
+		MajiangGameValueObject majiangGameValueObject = majiangGameManager.newMajiangGame(gameValueObject, panshu,
+				renshu);
 		return majiangGameValueObject;
 	}
 

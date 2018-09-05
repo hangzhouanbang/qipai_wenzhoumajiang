@@ -10,11 +10,8 @@ import com.dml.mpgame.game.GamePlayerOnlineState;
 public class MajiangGameValueObject {
 
 	private String gameId;
-	private int difen;
-	private int taishu;
 	private int panshu;
 	private int renshu;
-	private boolean dapao;
 	private MajiangGameState state;
 	private Map<String, MajiangGamePlayerState> playerStateMap = new HashMap<>();
 	private Map<String, GamePlayerOnlineState> playerOnlineStateMap = new HashMap<>();
@@ -25,11 +22,8 @@ public class MajiangGameValueObject {
 
 	public MajiangGameValueObject(MajiangGame majiangGame) {
 		gameId = majiangGame.getGameId();
-		difen = majiangGame.getDifen();
-		taishu = majiangGame.getTaishu();
 		panshu = majiangGame.getPanshu();
 		renshu = majiangGame.getRenshu();
-		dapao = majiangGame.isDapao();
 		state = majiangGame.getState();
 		playerStateMap.putAll(majiangGame.getPlayerStateMap());
 		playerOnlineStateMap.putAll(majiangGame.getPlayerOnlineStateMap());
@@ -48,22 +42,6 @@ public class MajiangGameValueObject {
 		this.gameId = gameId;
 	}
 
-	public int getDifen() {
-		return difen;
-	}
-
-	public void setDifen(int difen) {
-		this.difen = difen;
-	}
-
-	public int getTaishu() {
-		return taishu;
-	}
-
-	public void setTaishu(int taishu) {
-		this.taishu = taishu;
-	}
-
 	public int getPanshu() {
 		return panshu;
 	}
@@ -78,14 +56,6 @@ public class MajiangGameValueObject {
 
 	public void setRenshu(int renshu) {
 		this.renshu = renshu;
-	}
-
-	public boolean isDapao() {
-		return dapao;
-	}
-
-	public void setDapao(boolean dapao) {
-		this.dapao = dapao;
 	}
 
 	public MajiangGameState getState() {
