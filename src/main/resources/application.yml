@@ -1,0 +1,66 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/qipai_wenzhoumajiang
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: localhost:9092
+          zk-nodes: localhost:2181
+          minPartitionCount: 1
+          autoCreateTopics: true
+          autoAddPartitions: false
+        bindings:
+          wenzhouMajiangGame:
+            producer:
+              configuration:
+                request:
+                  timeout:
+                    ms: 30000
+                linger:
+                  ms: 5
+                batch:
+                  size: 16384
+          wenzhouMajiangResult:
+            producer:
+              configuration:
+                request:
+                  timeout:
+                    ms: 30000
+                linger:
+                  ms: 5
+                batch:
+                  size: 16384
+      bindings:
+        wenzhouMajiangGame:
+          destination: wenzhouMajiangGame
+          contentType: application/json
+          producer:
+            partitionCount: 1
+        wenzhouMajiangResult:
+          destination: wenzhouMajiangResult
+          contentType: application/json
+          producer:
+            partitionCount: 1
+        members:
+          destination: members
+          group: qipai-wenzhoumajiang
+          consumer:
+            concurrency: 1
+            partitioned: false
+          contentType: application/json
+        wenzhouGameRoom:
+          destination: wenzhouGameRoom
+          group: qipai-wenzhoumajiang
+          consumer:
+            concurrency: 1
+            partitioned: false
+          contentType: application/json
+      
+server:
+  port: 2003
+
+#filepath:
+  #snapshotFileBasePath: /usr/local/app/qipai_wenzhoumajiang/server1/snapshot
+  #jFileBasePath: /usr/local/app/qipai_wenzhoumajiang/server1/journal
