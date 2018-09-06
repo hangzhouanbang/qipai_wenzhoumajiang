@@ -12,7 +12,13 @@ public class MajiangGameValueObject {
 	private String gameId;
 	private int panshu;
 	private int renshu;
+	private boolean jinjie;
+	private boolean teshushuangfan;
+	private boolean caishenqian;
+	private boolean shaozhongfa;
+	private boolean lazila;
 	private MajiangGameState state;
+	private Map<String, MajiangGamePlayerMaidiState> playerMaidiStateMap = new HashMap<>();
 	private Map<String, MajiangGamePlayerState> playerStateMap = new HashMap<>();
 	private Map<String, GamePlayerOnlineState> playerOnlineStateMap = new HashMap<>();
 	private Map<String, Integer> playeTotalScoreMap = new HashMap<>();
@@ -24,7 +30,13 @@ public class MajiangGameValueObject {
 		gameId = majiangGame.getGameId();
 		panshu = majiangGame.getPanshu();
 		renshu = majiangGame.getRenshu();
+		jinjie = majiangGame.isJinjie();
+		teshushuangfan = majiangGame.isTeshushuangfan();
+		caishenqian = majiangGame.isCaishenqian();
+		shaozhongfa = majiangGame.isShaozhongfa();
+		lazila = majiangGame.isLazila();
 		state = majiangGame.getState();
+		playerMaidiStateMap.putAll(majiangGame.getPlayerMaidiStateMap());
 		playerStateMap.putAll(majiangGame.getPlayerStateMap());
 		playerOnlineStateMap.putAll(majiangGame.getPlayerOnlineStateMap());
 		playeTotalScoreMap.putAll(majiangGame.getPlayeTotalScoreMap());
@@ -88,6 +100,54 @@ public class MajiangGameValueObject {
 
 	public void setPlayeTotalScoreMap(Map<String, Integer> playeTotalScoreMap) {
 		this.playeTotalScoreMap = playeTotalScoreMap;
+	}
+
+	public boolean isJinjie() {
+		return jinjie;
+	}
+
+	public void setJinjie(boolean jinjie) {
+		this.jinjie = jinjie;
+	}
+
+	public boolean isTeshushuangfan() {
+		return teshushuangfan;
+	}
+
+	public void setTeshushuangfan(boolean teshushuangfan) {
+		this.teshushuangfan = teshushuangfan;
+	}
+
+	public boolean isCaishenqian() {
+		return caishenqian;
+	}
+
+	public void setCaishenqian(boolean caishenqian) {
+		this.caishenqian = caishenqian;
+	}
+
+	public boolean isShaozhongfa() {
+		return shaozhongfa;
+	}
+
+	public void setShaozhongfa(boolean shaozhongfa) {
+		this.shaozhongfa = shaozhongfa;
+	}
+
+	public boolean isLazila() {
+		return lazila;
+	}
+
+	public void setLazila(boolean lazila) {
+		this.lazila = lazila;
+	}
+
+	public Map<String, MajiangGamePlayerMaidiState> getPlayerMaidiStateMap() {
+		return playerMaidiStateMap;
+	}
+
+	public void setPlayerMaidiStateMap(Map<String, MajiangGamePlayerMaidiState> playerMaidiStateMap) {
+		this.playerMaidiStateMap = playerMaidiStateMap;
 	}
 
 }

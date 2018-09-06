@@ -66,11 +66,12 @@ public class GameController {
 	 */
 	@RequestMapping(value = "/newgame")
 	@ResponseBody
-	public CommonVO newgame(String playerId, int difen, int taishu, int panshu, int renshu, boolean dapao) {
+	public CommonVO newgame(String playerId, int panshu, int renshu, boolean jinjie, boolean teshushuangfan,
+			boolean caishenqian, boolean shaozhongfa, boolean lazila) {
 		CommonVO vo = new CommonVO();
 		String newGameId = UUID.randomUUID().toString();
-		MajiangGameValueObject majiangGameValueObject = gameCmdService.newMajiangGame(newGameId, playerId, difen,
-				taishu, panshu, renshu, dapao);
+		MajiangGameValueObject majiangGameValueObject = gameCmdService.newMajiangGame(newGameId, playerId, panshu,
+				renshu, jinjie, teshushuangfan, caishenqian, shaozhongfa, lazila);
 		majiangGameQueryService.newMajiangGame(majiangGameValueObject);
 		String token = playerAuthService.newSessionForPlayer(playerId);
 		Map data = new HashMap();
@@ -230,7 +231,7 @@ public class GameController {
 		}
 
 		try {
-			majiangPlayQueryService.readyForGame(readyForGameResult);// TODO 一起点准备的时候可能有同步问题.要靠框架解决
+			majiangGameQueryService.readyForGame(readyForGameResult);// TODO 一起点准备的时候可能有同步问题.要靠框架解决
 		} catch (Throwable e) {
 			vo.setSuccess(false);
 			vo.setMsg(e.getMessage());
@@ -241,7 +242,7 @@ public class GameController {
 			if (!otherPlayerId.equals(playerId)) {
 				wsNotifier.notifyToQuery(otherPlayerId, QueryScope.gameInfo.name());
 				if (readyForGameResult.getMajiangGame().getState().equals(MajiangGameState.playing)) {
-					wsNotifier.notifyToQuery(otherPlayerId, QueryScope.panForMe.name());
+					wsNotifier.notifyToQuery(otherPlayerId, QueryScope.maidi.name());
 				}
 			}
 		}
@@ -249,7 +250,7 @@ public class GameController {
 		List<QueryScope> queryScopes = new ArrayList<>();
 		queryScopes.add(QueryScope.gameInfo);
 		if (readyForGameResult.getMajiangGame().getState().equals(MajiangGameState.playing)) {
-			queryScopes.add(QueryScope.panForMe);
+			queryScopes.add(QueryScope.maidi);
 		}
 		data.put("queryScopes", queryScopes);
 		return vo;

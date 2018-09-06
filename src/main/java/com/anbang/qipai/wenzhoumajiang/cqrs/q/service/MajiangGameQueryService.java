@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.FinishResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGameValueObject;
+import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.ReadyForGameResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.WenzhouMajiangJuResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.dao.GameFinishVoteDboDao;
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.dao.JuResultDboDao;
@@ -112,6 +113,14 @@ public class MajiangGameQueryService {
 
 	public void removeGameFinishVoteDbo(String gameId) {
 		gameFinishVoteDboDao.removeGameFinishVoteDboByGameId(gameId);
+	}
+
+	public void readyForGame(ReadyForGameResult readyForGameResult) throws Throwable {
+		MajiangGameValueObject majiangGame = readyForGameResult.getMajiangGame();
+		Map<String, PlayerInfo> playerInfoMap = new HashMap<>();
+		majiangGame.allPlayerIds().forEach((playerId) -> playerInfoMap.put(playerId, playerInfoDao.findById(playerId)));
+		MajiangGameDbo majiangGameDbo = new MajiangGameDbo(majiangGame, playerInfoMap);
+		majiangGameDboDao.save(majiangGameDbo);
 	}
 
 }

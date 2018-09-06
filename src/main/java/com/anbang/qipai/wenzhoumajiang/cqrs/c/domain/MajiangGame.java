@@ -1,5 +1,6 @@
 package com.anbang.qipai.wenzhoumajiang.cqrs.c.domain;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -29,7 +30,6 @@ import com.dml.majiang.player.action.listener.mo.MoGuipaiCounter;
 import com.dml.majiang.player.action.peng.HuFirstPengActionProcessor;
 import com.dml.majiang.player.menfeng.RandomMustHasDongPlayersMenFengDeterminer;
 import com.dml.majiang.player.menfeng.ZhuangXiajiaIsDongIfZhuangNotHuPlayersMenFengDeterminer;
-import com.dml.majiang.player.shoupai.gouxing.NoDanpaiOneDuiziGouXingPanHu;
 import com.dml.majiang.player.zhuang.MenFengDongZhuangDeterminer;
 import com.dml.mpgame.game.GamePlayerOnlineState;
 import com.dml.mpgame.game.GamePlayerState;
@@ -41,13 +41,34 @@ public class MajiangGame {
 	private String gameId;
 	private int panshu;
 	private int renshu;
+	private boolean jinjie;
+	private boolean teshushuangfan;
+	private boolean caishenqian;
+	private boolean shaozhongfa;
+	private boolean lazila;
 	private Ju ju;
 	private MajiangGameState state;
+	private Map<String, MajiangGamePlayerMaidiState> playerMaidiStateMap = new HashMap<>();
 	private Map<String, MajiangGamePlayerState> playerStateMap = new HashMap<>();
 	private Map<String, GamePlayerOnlineState> playerOnlineStateMap = new HashMap<>();
 	private Map<String, Integer> playeTotalScoreMap = new HashMap<>();
 
-	public PanActionFrame createJuAndStartFirstPan(GameValueObject game, long currentTime) throws Exception {
+	public MaidiResult maidi(String playerId, MajiangGamePlayerMaidiState state) throws Exception {
+		MaidiResult maidiResult = new MaidiResult();
+		playerMaidiStateMap.put(playerId, state);
+		if (playerMaidiStateMap.size() == renshu) {
+			List<String> playerIdList = new ArrayList<>();
+			for (String pid : playerMaidiStateMap.keySet()) {
+				playerIdList.add(pid);
+			}
+			PanActionFrame firstActionFrame = createJuAndStartFirstPan(playerIdList, System.currentTimeMillis());
+			maidiResult.setFirstActionFrame(firstActionFrame);
+		}
+		maidiResult.setMajiangGame(new MajiangGameValueObject(this));
+		return maidiResult;
+	}
+
+	public PanActionFrame createJuAndStartFirstPan(List<String> playerIdList, long currentTime) throws Exception {
 		ju = new Ju();
 		ju.setStartFirstPanProcess(new ClassicStartFirstPanProcess());
 		ju.setStartNextPanProcess(new ClassicStartNextPanProcess());
@@ -59,15 +80,26 @@ public class MajiangGame {
 		ju.setGuipaiDeterminer(new RandomGuipaiDeterminer(currentTime + 2));
 		ju.setFaPaiStrategy(new WenzhouMajiangFaPaiStrategy(16));
 		ju.setCurrentPanFinishiDeterminer(new WenzhouMajiangPanFinishDeterminer());
-		ju.setGouXingPanHu(new NoDanpaiOneDuiziGouXingPanHu());
+		ju.setGouXingPanHu(new WenzhouMajiangGouXingPanHu());
 		ju.setCurrentPanPublicWaitingPlayerDeterminer(new WaitDaPlayerPanPublicWaitingPlayerDeterminer());
+
 		WenzhouMajiangPanResultBuilder wenzhouMajiangPanResultBuilder = new WenzhouMajiangPanResultBuilder();
+		wenzhouMajiangPanResultBuilder.setPlayerMaidiStateMap(playerMaidiStateMap);
+		wenzhouMajiangPanResultBuilder.setJinjie(jinjie);
+		wenzhouMajiangPanResultBuilder.setTeshushuangfan(teshushuangfan);
+		wenzhouMajiangPanResultBuilder.setCaishenqian(caishenqian);
+		wenzhouMajiangPanResultBuilder.setShaozhongfa(shaozhongfa);
+		wenzhouMajiangPanResultBuilder.setLazila(lazila);
 		ju.setCurrentPanResultBuilder(wenzhouMajiangPanResultBuilder);
+		// TODO每盘需要买底?
 		AllPlayersReadyCreateNextPanDeterminer createNextPanDeterminer = new AllPlayersReadyCreateNextPanDeterminer();
-		game.allPlayerIds().forEach((pid) -> createNextPanDeterminer.addPlayer(pid));
+		playerIdList.forEach((pid) -> createNextPanDeterminer.addPlayer(pid));
 		ju.setCreateNextPanDeterminer(createNextPanDeterminer);
+
 		ju.setJuFinishiDeterminer(new FixedPanNumbersJuFinishiDeterminer(panshu));
+
 		ju.setJuResultBuilder(new WenzhouMajiangJuResultBuilder());
+
 		ju.setInitialActionUpdater(new ZhuangMoPaiInitialActionUpdater());
 		ju.setMoActionProcessor(new WenzhouMajiangMoActionProcessor());
 		ju.setMoActionUpdater(new WenzhouMajiangMoActionUpdater());
@@ -89,7 +121,7 @@ public class MajiangGame {
 		ju.addActionStatisticsListener(new DianpaoDihuOpportunityDetector());
 
 		// 开始第一盘
-		ju.startFirstPan(game.allPlayerIds());
+		ju.startFirstPan(playerIdList);
 
 		// 必然庄家已经先摸了一张牌了
 		return ju.getCurrentPan().findLatestActionFrame();
@@ -142,9 +174,11 @@ public class MajiangGame {
 				playerStateMap.put(playerId, MajiangGamePlayerState.joined);
 			} else if (gamePlayerState.equals(GamePlayerState.playing)) {
 				if (!state.equals(MajiangGameState.waitingNextPan)) {
+					playerMaidiStateMap.put(playerId, MajiangGamePlayerMaidiState.weimai);
 					playerStateMap.put(playerId, MajiangGamePlayerState.playing);
 				}
 			} else if (gamePlayerState.equals(GamePlayerState.readyToStart)) {
+				playerMaidiStateMap.put(playerId, MajiangGamePlayerMaidiState.weimai);
 				playerStateMap.put(playerId, MajiangGamePlayerState.readyToStart);
 			} else {
 			}
@@ -153,6 +187,7 @@ public class MajiangGame {
 		Set<String> currentPlayerIdsSet = new HashSet<>(playerStateMap.keySet());
 		currentPlayerIdsSet.forEach((playerId) -> {
 			if (!playerIdsSet.contains(playerId)) {
+				playerMaidiStateMap.remove(playerId);
 				playerStateMap.remove(playerId);
 				playerOnlineStateMap.remove(playerId);
 				playeTotalScoreMap.remove(playerId);
@@ -246,6 +281,54 @@ public class MajiangGame {
 
 	public void setPlayeTotalScoreMap(Map<String, Integer> playeTotalScoreMap) {
 		this.playeTotalScoreMap = playeTotalScoreMap;
+	}
+
+	public boolean isJinjie() {
+		return jinjie;
+	}
+
+	public void setJinjie(boolean jinjie) {
+		this.jinjie = jinjie;
+	}
+
+	public boolean isTeshushuangfan() {
+		return teshushuangfan;
+	}
+
+	public void setTeshushuangfan(boolean teshushuangfan) {
+		this.teshushuangfan = teshushuangfan;
+	}
+
+	public boolean isCaishenqian() {
+		return caishenqian;
+	}
+
+	public void setCaishenqian(boolean caishenqian) {
+		this.caishenqian = caishenqian;
+	}
+
+	public boolean isShaozhongfa() {
+		return shaozhongfa;
+	}
+
+	public void setShaozhongfa(boolean shaozhongfa) {
+		this.shaozhongfa = shaozhongfa;
+	}
+
+	public boolean isLazila() {
+		return lazila;
+	}
+
+	public void setLazila(boolean lazila) {
+		this.lazila = lazila;
+	}
+
+	public Map<String, MajiangGamePlayerMaidiState> getPlayerMaidiStateMap() {
+		return playerMaidiStateMap;
+	}
+
+	public void setPlayerMaidiStateMap(Map<String, MajiangGamePlayerMaidiState> playerMaidiStateMap) {
+		this.playerMaidiStateMap = playerMaidiStateMap;
 	}
 
 }

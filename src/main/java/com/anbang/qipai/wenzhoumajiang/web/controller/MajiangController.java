@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MaidiResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangActionResult;
+import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGamePlayerMaidiState;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.ReadyToNextPanResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.service.MajiangPlayCmdService;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.service.PlayerAuthService;
@@ -111,6 +113,61 @@ public class MajiangController {
 		MajiangGameDbo majiangGameDbo = majiangGameQueryService.findMajiangGameDboById(gameId);
 		JuResultDbo juResultDbo = majiangPlayQueryService.findJuResultDbo(gameId);
 		data.put("juResult", new JuResultVO(juResultDbo, majiangGameDbo));
+		return vo;
+	}
+
+	/**
+	 * 玩家买底
+	 */
+	@RequestMapping(value = "/maidi")
+	@ResponseBody
+	public CommonVO maidi(String token, boolean yes) {
+		CommonVO vo = new CommonVO();
+		Map data = new HashMap();
+		vo.setData(data);
+		String playerId = playerAuthService.getPlayerIdByToken(token);
+		if (playerId == null) {
+			vo.setSuccess(false);
+			vo.setMsg("invalid token");
+			return vo;
+		}
+		MajiangGamePlayerMaidiState state;
+		if (yes) {
+			state = MajiangGamePlayerMaidiState.maidi;
+		} else {
+			state = MajiangGamePlayerMaidiState.bumai;
+		}
+		MaidiResult maidiResult;
+		try {
+			maidiResult = majiangPlayCmdService.maidi(playerId, state);
+		} catch (Exception e) {
+			vo.setSuccess(false);
+			vo.setMsg(e.getClass().getName());
+			return vo;
+		}
+		try {
+			majiangPlayQueryService.maidi(maidiResult);
+		} catch (Throwable e) {
+			vo.setSuccess(false);
+			vo.setMsg(e.getMessage());
+			return vo;
+		}
+		// 通知其他人
+		for (String otherPlayerId : maidiResult.getMajiangGame().allPlayerIds()) {
+			if (!otherPlayerId.equals(playerId)) {
+				wsNotifier.notifyToQuery(otherPlayerId, QueryScope.gameInfo.name());
+				if (maidiResult.getFirstActionFrame() != null) {
+					wsNotifier.notifyToQuery(otherPlayerId, QueryScope.panForMe.name());
+				}
+			}
+		}
+
+		List<QueryScope> queryScopes = new ArrayList<>();
+		queryScopes.add(QueryScope.gameInfo);
+		if (maidiResult.getFirstActionFrame() != null) {
+			queryScopes.add(QueryScope.panForMe);
+		}
+		data.put("queryScopes", queryScopes);
 		return vo;
 	}
 

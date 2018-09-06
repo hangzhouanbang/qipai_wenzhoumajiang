@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGamePlayerMaidiState;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGamePlayerState;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGameState;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGameValueObject;
@@ -14,6 +15,11 @@ public class MajiangGameDbo {
 	private String id;// 就是gameid
 	private int panshu;
 	private int renshu;
+	private boolean jinjie;
+	private boolean teshushuangfan;
+	private boolean caishenqian;
+	private boolean shaozhongfa;
+	private boolean lazila;
 	private MajiangGameState state;
 	private List<MajiangGamePlayerDbo> players;
 
@@ -24,9 +30,15 @@ public class MajiangGameDbo {
 		id = majiangGame.getGameId();
 		panshu = majiangGame.getPanshu();
 		renshu = majiangGame.getRenshu();
+		jinjie = majiangGame.isJinjie();
+		teshushuangfan = majiangGame.isTeshushuangfan();
+		caishenqian = majiangGame.isCaishenqian();
+		shaozhongfa = majiangGame.isShaozhongfa();
+		lazila = majiangGame.isLazila();
 		state = majiangGame.getState();
 
 		players = new ArrayList<>();
+		Map<String, MajiangGamePlayerMaidiState> playerMaidiStateMap = majiangGame.getPlayerMaidiStateMap();
 		Map<String, MajiangGamePlayerState> playerStateMap = majiangGame.getPlayerStateMap();
 		Map<String, GamePlayerOnlineState> playerOnlineStateMap = majiangGame.getPlayerOnlineStateMap();
 		Map<String, Integer> playeTotalScoreMap = majiangGame.getPlayeTotalScoreMap();
@@ -37,6 +49,7 @@ public class MajiangGameDbo {
 			playerDbo.setNickname(playerInfo.getNickname());
 			playerDbo.setOnlineState(playerOnlineStateMap.get(playerId));
 			playerDbo.setPlayerId(playerId);
+			playerDbo.setMaidiState(playerMaidiStateMap.get(playerId));
 			playerDbo.setState(playerStateMap.get(playerId));
 			if (playeTotalScoreMap.get(playerId) != null) {
 				playerDbo.setTotalScore(playeTotalScoreMap.get(playerId));
@@ -93,6 +106,46 @@ public class MajiangGameDbo {
 
 	public void setPlayers(List<MajiangGamePlayerDbo> players) {
 		this.players = players;
+	}
+
+	public boolean isJinjie() {
+		return jinjie;
+	}
+
+	public void setJinjie(boolean jinjie) {
+		this.jinjie = jinjie;
+	}
+
+	public boolean isTeshushuangfan() {
+		return teshushuangfan;
+	}
+
+	public void setTeshushuangfan(boolean teshushuangfan) {
+		this.teshushuangfan = teshushuangfan;
+	}
+
+	public boolean isCaishenqian() {
+		return caishenqian;
+	}
+
+	public void setCaishenqian(boolean caishenqian) {
+		this.caishenqian = caishenqian;
+	}
+
+	public boolean isShaozhongfa() {
+		return shaozhongfa;
+	}
+
+	public void setShaozhongfa(boolean shaozhongfa) {
+		this.shaozhongfa = shaozhongfa;
+	}
+
+	public boolean isLazila() {
+		return lazila;
+	}
+
+	public void setLazila(boolean lazila) {
+		this.lazila = lazila;
 	}
 
 }

@@ -8,7 +8,6 @@ import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGameValueObject;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.ReadyForGameResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.WenzhouMajiangJuResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.service.GameCmdService;
-import com.dml.majiang.pan.frame.PanActionFrame;
 import com.dml.mpgame.game.Game;
 import com.dml.mpgame.game.GameState;
 import com.dml.mpgame.game.GameValueObject;
@@ -25,8 +24,8 @@ import com.dml.mpgame.server.GameServer;
 public class GameCmdServiceImpl extends CmdServiceBase implements GameCmdService {
 
 	@Override
-	public MajiangGameValueObject newMajiangGame(String gameId, String playerId, Integer difen, Integer taishu,
-			Integer panshu, Integer renshu, Boolean dapao) {
+	public MajiangGameValueObject newMajiangGame(String gameId, String playerId, Integer panshu, Integer renshu,
+			Boolean jinjie, Boolean teshushuangfan, Boolean caishenqian, Boolean shaozhongfa, Boolean lazila) {
 		GameServer gameServer = singletonEntityRepository.getEntity(GameServer.class);
 		GameValueObject gameValueObject = gameServer.playerCreateGame(gameId,
 				new FixedNumberOfPlayersGameJoinStrategy(renshu), new FixedNumberOfPlayersGameReadyStrategy(renshu),
@@ -34,7 +33,7 @@ public class GameCmdServiceImpl extends CmdServiceBase implements GameCmdService
 				new VoteAfterStartedGameFinishStrategy(playerId, new MostPlayersWinVoteCalculator()), playerId);
 		MajiangGameManager majiangGameManager = singletonEntityRepository.getEntity(MajiangGameManager.class);
 		MajiangGameValueObject majiangGameValueObject = majiangGameManager.newMajiangGame(gameValueObject, panshu,
-				renshu);
+				renshu, jinjie, teshushuangfan, caishenqian, shaozhongfa, lazila);
 		return majiangGameValueObject;
 	}
 
@@ -62,11 +61,6 @@ public class GameCmdServiceImpl extends CmdServiceBase implements GameCmdService
 		MajiangGameManager majiangGameManager = singletonEntityRepository.getEntity(MajiangGameManager.class);
 		MajiangGameValueObject majiangGameValueObject = majiangGameManager.updateMajiangGameByGame(gameValueObject);
 		result.setMajiangGame(majiangGameValueObject);
-
-		if (gameValueObject.getState().equals(GameState.playing)) {
-			PanActionFrame firstActionFrame = majiangGameManager.createJuAndStartFirstPan(gameValueObject, currentTime);
-			result.setFirstActionFrame(firstActionFrame);
-		}
 		return result;
 	}
 

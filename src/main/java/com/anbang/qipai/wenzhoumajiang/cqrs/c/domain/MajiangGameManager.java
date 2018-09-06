@@ -10,11 +10,17 @@ public class MajiangGameManager {
 
 	private Map<String, MajiangGame> gameIdMajiangGameMap = new HashMap<>();
 
-	public MajiangGameValueObject newMajiangGame(GameValueObject gameValueObject, int panshu, int renshu) {
+	public MajiangGameValueObject newMajiangGame(GameValueObject gameValueObject, int panshu, int renshu,
+			boolean jinjie, boolean teshushuangfan, boolean caishenqian, boolean shaozhongfa, boolean lazila) {
 		String gameId = gameValueObject.getId();
 		MajiangGame majiangGame = new MajiangGame();
 		majiangGame.setPanshu(panshu);
 		majiangGame.setRenshu(renshu);
+		majiangGame.setJinjie(jinjie);
+		majiangGame.setTeshushuangfan(teshushuangfan);
+		majiangGame.setCaishenqian(caishenqian);
+		majiangGame.setShaozhongfa(shaozhongfa);
+		majiangGame.setLazila(lazila);
 		majiangGame.setGameId(gameId);
 		majiangGame.updateByGame(gameValueObject);
 		gameIdMajiangGameMap.put(gameId, majiangGame);
@@ -35,9 +41,9 @@ public class MajiangGameManager {
 		}
 	}
 
-	public PanActionFrame createJuAndStartFirstPan(GameValueObject game, long currentTime) throws Exception {
-		MajiangGame majiangGame = gameIdMajiangGameMap.get(game.getId());
-		return majiangGame.createJuAndStartFirstPan(game, currentTime);
+	public MaidiResult maidi(String playerId, MajiangGamePlayerMaidiState state, String gameId) throws Exception {
+		MajiangGame majiangGame = gameIdMajiangGameMap.get(gameId);
+		return majiangGame.maidi(playerId, state);
 	}
 
 	public MajiangActionResult majiangAction(String playerId, String gameId, int actionId, long actionTime)

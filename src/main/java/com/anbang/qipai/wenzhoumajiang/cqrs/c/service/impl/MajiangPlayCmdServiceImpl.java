@@ -1,7 +1,9 @@
 package com.anbang.qipai.wenzhoumajiang.cqrs.c.service.impl;
 
+import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MaidiResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangActionResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGameManager;
+import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGamePlayerMaidiState;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.ReadyToNextPanResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.service.MajiangPlayCmdService;
 import com.dml.mpgame.game.PlayerNotInGameException;
@@ -38,6 +40,17 @@ public class MajiangPlayCmdServiceImpl extends CmdServiceBase implements Majiang
 		}
 		ReadyToNextPanResult readyToNextPanResult = majiangGameManager.readyToNextPan(playerId, gameId);
 		return readyToNextPanResult;
+	}
+
+	@Override
+	public MaidiResult maidi(String playerId, MajiangGamePlayerMaidiState state) throws Exception {
+		MajiangGameManager majiangGameManager = singletonEntityRepository.getEntity(MajiangGameManager.class);
+		GameServer gameServer = singletonEntityRepository.getEntity(GameServer.class);
+		String gameId = gameServer.findBindGameId(playerId);
+		if (gameId == null) {
+			throw new PlayerNotInGameException();
+		}
+		return majiangGameManager.maidi(playerId, state, gameId);
 	}
 
 }
