@@ -61,6 +61,9 @@ public class GameCmdServiceImpl extends CmdServiceBase implements GameCmdService
 		MajiangGameManager majiangGameManager = singletonEntityRepository.getEntity(MajiangGameManager.class);
 		MajiangGameValueObject majiangGameValueObject = majiangGameManager.updateMajiangGameByGame(gameValueObject);
 		result.setMajiangGame(majiangGameValueObject);
+		if (gameValueObject.getState().equals(GameState.playing)) {
+			majiangGameManager.createJuAndReadyFirstPan(gameValueObject, currentTime);
+		}
 		return result;
 	}
 

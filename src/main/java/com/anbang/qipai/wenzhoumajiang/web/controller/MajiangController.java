@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MaidiResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangActionResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGamePlayerMaidiState;
+import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGameState;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.ReadyToNextPanResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.service.MajiangPlayCmdService;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.service.PlayerAuthService;
@@ -281,11 +282,14 @@ public class MajiangController {
 		}
 
 		// 通知其他人
-		PanActionFrame firstActionFrame = readyToNextPanResult.getFirstActionFrame();
 		List<QueryScope> queryScopes = new ArrayList<>();
 		queryScopes.add(QueryScope.gameInfo);
-		if (firstActionFrame != null) {
-			queryScopes.add(QueryScope.panForMe);
+		if (readyToNextPanResult.getMajiangGame().getState().equals(MajiangGameState.playing)) {
+			if (readyToNextPanResult.getFirstActionFrame() != null) {
+				queryScopes.add(QueryScope.panForMe);
+			} else {
+				queryScopes.add(QueryScope.maidi);
+			}
 		}
 		for (String otherPlayerId : readyToNextPanResult.getMajiangGame().allPlayerIds()) {
 			if (!otherPlayerId.equals(playerId)) {

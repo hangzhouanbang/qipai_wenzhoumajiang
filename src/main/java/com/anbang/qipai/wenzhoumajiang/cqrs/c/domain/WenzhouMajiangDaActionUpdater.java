@@ -17,6 +17,12 @@ import com.dml.majiang.player.action.mo.MajiangMoAction;
 import com.dml.majiang.player.shoupai.ShoupaiCalculator;
 import com.dml.majiang.player.shoupai.gouxing.GouXingPanHu;
 
+/**
+ * 胡牌：一盘只能有一位胡牌者。如有多人同时表示胡牌时，从打牌者按逆时针方向顺序，靠前者被定为胡牌者。双翻牌型优先胡牌，如同时有个双翻牌型胡牌，则按打牌者逆时针方向顺序，靠前者定为双翻胡牌者。
+ * 
+ * @author lsc
+ *
+ */
 public class WenzhouMajiangDaActionUpdater implements MajiangPlayerDaActionUpdater {
 
 	@Override
@@ -60,29 +66,38 @@ public class WenzhouMajiangDaActionUpdater implements MajiangPlayerDaActionUpdat
 					new MajiangChiAction(xiajiaPlayer.getId(), daAction.getActionPlayerId(), daPai, shunzi3));
 		}
 
-		boolean anyPlayerHu = false;
+		MajiangPlayer bestHuplayer = null;
+		WenzhouMajiangHu playerBestHu = null;
 		while (true) {
 			if (!xiajiaPlayer.getId().equals(daAction.getActionPlayerId())) {
 				// 其他的可以碰杠胡
 				xiajiaPlayer.tryPengAndGenerateCandidateAction(daAction.getActionPlayerId(), daAction.getPai());
 				xiajiaPlayer.tryGangdachuAndGenerateCandidateAction(daAction.getActionPlayerId(), daAction.getPai());
 
-				if (!anyPlayerHu) {
-					// 点炮胡
-					WenzhouMajiangPanResultBuilder wenzhouMajiangJuResultBuilder = (WenzhouMajiangPanResultBuilder) ju
-							.getCurrentPanResultBuilder();
-					GouXingPanHu gouXingPanHu = ju.getGouXingPanHu();
-					// 先把这张牌放入计算器
-					xiajiaPlayer.getShoupaiCalculator().addPai(daAction.getPai());
-					WenzhouMajiangHu bestHu = WenzhouMajiangJiesuanCalculator.calculateBestDianpaoHu(couldDihu,
-							gouXingPanHu, xiajiaPlayer, false, daAction.getPai());// 少中发
-					// 再把这张牌拿出计算器
-					xiajiaPlayer.getShoupaiCalculator().removePai(daAction.getPai());
-					if (bestHu != null) {
-						bestHu.setZimo(false);
-						bestHu.setDianpaoPlayerId(daPlayer.getId());
-						xiajiaPlayer.addActionCandidate(new MajiangHuAction(xiajiaPlayer.getId(), bestHu));
-						anyPlayerHu = true;
+				// 点炮胡
+				WenzhouMajiangPanResultBuilder wenzhouMajiangJuResultBuilder = (WenzhouMajiangPanResultBuilder) ju
+						.getCurrentPanResultBuilder();
+				boolean teshushuangfan = wenzhouMajiangJuResultBuilder.isTeshushuangfan();
+				boolean shaozhongfa = wenzhouMajiangJuResultBuilder.isShaozhongfa();
+				boolean lazila = wenzhouMajiangJuResultBuilder.isLazila();
+				GouXingPanHu gouXingPanHu = ju.getGouXingPanHu();
+				// 先把这张牌放入计算器
+				xiajiaPlayer.getShoupaiCalculator().addPai(daAction.getPai());
+				WenzhouMajiangHu bestHu = WenzhouMajiangJiesuanCalculator.calculateBestDianpaoHu(couldDihu,
+						gouXingPanHu, xiajiaPlayer, daAction.getPai(), shaozhongfa, teshushuangfan, lazila);
+				// 再把这张牌拿出计算器
+				xiajiaPlayer.getShoupaiCalculator().removePai(daAction.getPai());
+				if (bestHu != null) {
+					bestHu.setZimo(false);
+					bestHu.setDianpaoPlayerId(daPlayer.getId());
+					if (playerBestHu != null) {
+						if (playerBestHu.getHufan().getValue() < bestHu.getHufan().getValue()) {
+							bestHuplayer = xiajiaPlayer;
+							playerBestHu = bestHu;
+						}
+					} else {
+						bestHuplayer = xiajiaPlayer;
+						playerBestHu = bestHu;
 					}
 				}
 
@@ -93,7 +108,7 @@ public class WenzhouMajiangDaActionUpdater implements MajiangPlayerDaActionUpdat
 			xiajiaPlayer = currentPan.findXiajia(xiajiaPlayer);
 			xiajiaPlayer.clearActionCandidates();
 		}
-
+		bestHuplayer.addActionCandidate(new MajiangHuAction(bestHuplayer.getId(), playerBestHu));
 		// 如果所有玩家啥也做不了,那就下家摸牌
 		if (currentPan.allPlayerHasNoActionCandidates()) {
 			xiajiaPlayer = currentPan.findXiajia(daPlayer);

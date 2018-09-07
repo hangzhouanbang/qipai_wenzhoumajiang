@@ -38,8 +38,11 @@ public class WenzhouMajiangMoActionUpdater implements MajiangPlayerMoActionUpdat
 			player.tryKezigangshoupaiAndGenerateCandidateAction();
 
 			// 胡
-			WenzhouMajiangPanResultBuilder wenzhouMajiangPanResultBuilder = (WenzhouMajiangPanResultBuilder) ju
+			WenzhouMajiangPanResultBuilder wenzhouMajiangJuResultBuilder = (WenzhouMajiangPanResultBuilder) ju
 					.getCurrentPanResultBuilder();
+			boolean teshushuangfan = wenzhouMajiangJuResultBuilder.isTeshushuangfan();
+			boolean shaozhongfa = wenzhouMajiangJuResultBuilder.isShaozhongfa();
+			boolean lazila = wenzhouMajiangJuResultBuilder.isLazila();
 			GouXingPanHu gouXingPanHu = ju.getGouXingPanHu();
 
 			boolean couldTianhu = false;
@@ -50,7 +53,7 @@ public class WenzhouMajiangMoActionUpdater implements MajiangPlayerMoActionUpdat
 			}
 
 			WenzhouMajiangHu bestHu = WenzhouMajiangJiesuanCalculator.calculateBestZimoHu(couldTianhu, gouXingPanHu,
-					player, moAction, true);// 少中发
+					player, moAction, shaozhongfa, teshushuangfan, lazila);// 少中发
 			if (bestHu != null) {
 				bestHu.setZimo(true);
 				player.addActionCandidate(new MajiangHuAction(player.getId(), bestHu));
@@ -59,7 +62,10 @@ public class WenzhouMajiangMoActionUpdater implements MajiangPlayerMoActionUpdat
 				MoGuipaiCounter moGuipaiCounter = ju.getActionStatisticsListenerManager()
 						.findListener(MoGuipaiCounter.class);
 				if (moGuipaiCounter.getCount() == 3) {
-					WenzhouMajiangHu sancaishenHu = new WenzhouMajiangHu();
+					WenzhouMajiangPanPlayerHufan hufan = new WenzhouMajiangPanPlayerHufan();
+					hufan.setRuan(false);
+					hufan.calculate(teshushuangfan, lazila);
+					WenzhouMajiangHu sancaishenHu = new WenzhouMajiangHu(hufan);
 					player.addActionCandidate(new MajiangHuAction(player.getId(), sancaishenHu));
 				}
 			}

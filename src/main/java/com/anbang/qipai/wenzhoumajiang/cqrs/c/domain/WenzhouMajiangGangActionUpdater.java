@@ -22,8 +22,11 @@ public class WenzhouMajiangGangActionUpdater implements MajiangPlayerGangActionU
 		// 看看是不是有其他玩家可以抢杠胡
 		boolean qiangganghu = false;
 		if (gangAction.getGangType().equals(GangType.kezigangmo)) {
-			WenzhouMajiangPanResultBuilder wenzhouMajiangPanResultBuilder = (WenzhouMajiangPanResultBuilder) ju
+			WenzhouMajiangPanResultBuilder wenzhouMajiangJuResultBuilder = (WenzhouMajiangPanResultBuilder) ju
 					.getCurrentPanResultBuilder();
+			boolean teshushuangfan = wenzhouMajiangJuResultBuilder.isTeshushuangfan();
+			boolean shaozhongfa = wenzhouMajiangJuResultBuilder.isShaozhongfa();
+			boolean lazila = wenzhouMajiangJuResultBuilder.isLazila();
 			GouXingPanHu gouXingPanHu = ju.getGouXingPanHu();
 			MajiangPlayer currentPlayer = player;
 			while (true) {
@@ -32,7 +35,7 @@ public class WenzhouMajiangGangActionUpdater implements MajiangPlayerGangActionU
 					break;
 				}
 				WenzhouMajiangHu bestHu = WenzhouMajiangJiesuanCalculator.calculateBestQianggangHu(gangAction.getPai(),
-						gouXingPanHu, player, false);// 少中发
+						gouXingPanHu, player, shaozhongfa, teshushuangfan, lazila);
 				if (bestHu != null) {
 					bestHu.setQianggang(true);
 					xiajia.addActionCandidate(new MajiangHuAction(xiajia.getId(), bestHu));

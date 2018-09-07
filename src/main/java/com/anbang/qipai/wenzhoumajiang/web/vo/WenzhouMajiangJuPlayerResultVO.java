@@ -10,8 +10,8 @@ public class WenzhouMajiangJuPlayerResultVO {
 	private String headimgurl;
 	private int huCount;
 	private int caishenCount;
-	private int dapaoCount;
-	private int maxHushu;
+	private int shuangfanCount;
+	private int maxScore;
 	private int totalScore;
 
 	public WenzhouMajiangJuPlayerResultVO(WenzhouMajiangJuPlayerResult juPlayerResult,
@@ -21,8 +21,8 @@ public class WenzhouMajiangJuPlayerResultVO {
 		headimgurl = majiangGamePlayerDbo.getHeadimgurl();
 		huCount = juPlayerResult.getHuCount();
 		caishenCount = juPlayerResult.getCaishenCount();
-		dapaoCount = juPlayerResult.getDapaoCount();
-		maxHushu = juPlayerResult.getMaxHushu();
+		shuangfanCount = juPlayerResult.getShuangfanCount();
+		maxScore = juPlayerResult.getMaxScore();
 		totalScore = juPlayerResult.getTotalScore();
 	}
 
@@ -32,8 +32,8 @@ public class WenzhouMajiangJuPlayerResultVO {
 		headimgurl = majiangGamePlayerDbo.getHeadimgurl();
 		huCount = 0;
 		caishenCount = 0;
-		dapaoCount = 0;
-		maxHushu = 0;
+		shuangfanCount = 0;
+		maxScore = 0;
 		totalScore = 0;
 	}
 
@@ -41,32 +41,63 @@ public class WenzhouMajiangJuPlayerResultVO {
 		return playerId;
 	}
 
+	public void setPlayerId(String playerId) {
+		this.playerId = playerId;
+	}
+
 	public String getNickname() {
 		return nickname;
+	}
+
+	public void setNickname(String nickname) {
+		this.nickname = nickname;
 	}
 
 	public String getHeadimgurl() {
 		return headimgurl;
 	}
 
+	public void setHeadimgurl(String headimgurl) {
+		this.headimgurl = headimgurl;
+	}
+
 	public int getHuCount() {
 		return huCount;
+	}
+
+	public void setHuCount(int huCount) {
+		this.huCount = huCount;
 	}
 
 	public int getCaishenCount() {
 		return caishenCount;
 	}
 
-	public int getDapaoCount() {
-		return dapaoCount;
+	public void setCaishenCount(int caishenCount) {
+		this.caishenCount = caishenCount;
 	}
 
-	public int getMaxHushu() {
-		return maxHushu;
+	public int getShuangfanCount() {
+		return shuangfanCount;
+	}
+
+	public void setShuangfanCount(int shuangfanCount) {
+		this.shuangfanCount = shuangfanCount;
+	}
+
+	public int getMaxScore() {
+		return maxScore;
+	}
+
+	public void setMaxScore(int maxScore) {
+		this.maxScore = maxScore;
 	}
 
 	public int getTotalScore() {
 		return totalScore;
 	}
 
+	public void setTotalScore(int totalScore) {
+		this.totalScore = totalScore;
+	}
 }

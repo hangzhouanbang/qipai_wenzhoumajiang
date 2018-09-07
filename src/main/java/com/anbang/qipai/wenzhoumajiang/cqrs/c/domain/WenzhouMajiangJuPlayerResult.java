@@ -5,8 +5,8 @@ public class WenzhouMajiangJuPlayerResult {
 	private String playerId;
 	private int huCount;
 	private int caishenCount;
-	private int dapaoCount;
-	private int maxHushu;
+	private int shuangfanCount;
+	private int maxScore;
 	private int totalScore;
 
 	public void increaseHuCount() {
@@ -17,14 +17,14 @@ public class WenzhouMajiangJuPlayerResult {
 		caishenCount += amount;
 	}
 
-	public void tryAndUpdateMaxHushu(int hushu) {
-		if (hushu > maxHushu) {
-			maxHushu = hushu;
+	public void tryAndUpdateMaxScore(int score) {
+		if (score > maxScore) {
+			maxScore = score;
 		}
 	}
 
-	public void increaseDapaoCount(int amount) {
-		dapaoCount += amount;
+	public void increaseShuangfanCount() {
+		shuangfanCount++;
 	}
 
 	public void increaseTotalScore(int amount) {
@@ -55,20 +55,20 @@ public class WenzhouMajiangJuPlayerResult {
 		this.caishenCount = caishenCount;
 	}
 
-	public int getDapaoCount() {
-		return dapaoCount;
+	public int getShuangfanCount() {
+		return shuangfanCount;
 	}
 
-	public void setDapaoCount(int dapaoCount) {
-		this.dapaoCount = dapaoCount;
+	public void setShuangfanCount(int shuangfanCount) {
+		this.shuangfanCount = shuangfanCount;
 	}
 
-	public int getMaxHushu() {
-		return maxHushu;
+	public int getMaxScore() {
+		return maxScore;
 	}
 
-	public void setMaxHushu(int maxHushu) {
-		this.maxHushu = maxHushu;
+	public void setMaxScore(int maxScore) {
+		this.maxScore = maxScore;
 	}
 
 	public int getTotalScore() {

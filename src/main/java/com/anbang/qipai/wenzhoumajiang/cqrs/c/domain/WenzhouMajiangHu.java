@@ -9,6 +9,8 @@ public class WenzhouMajiangHu implements Hu {
 
 	private ShoupaiPaiXing shoupaiPaiXing;
 
+	private WenzhouMajiangPanPlayerHufan hufan;
+
 	private boolean zimo;
 
 	private boolean dianpao;
@@ -22,9 +24,15 @@ public class WenzhouMajiangHu implements Hu {
 	public WenzhouMajiangHu() {
 	}
 
-	public WenzhouMajiangHu(ShoupaiPaiXing shoupaiPaiXing) {
+	public WenzhouMajiangHu(ShoupaiPaiXing shoupaiPaiXing, WenzhouMajiangPanPlayerHufan hufan) {
 		this.shoupaiPaiXing = shoupaiPaiXing;
+		this.hufan = hufan;
 		this.huxingHu = true;
+	}
+
+	public WenzhouMajiangHu(WenzhouMajiangPanPlayerHufan hufan) {
+		this.hufan = hufan;
+		this.huxingHu = false;
 	}
 
 	public ShoupaiPaiXing getShoupaiPaiXing() {
@@ -33,6 +41,14 @@ public class WenzhouMajiangHu implements Hu {
 
 	public void setShoupaiPaiXing(ShoupaiPaiXing shoupaiPaiXing) {
 		this.shoupaiPaiXing = shoupaiPaiXing;
+	}
+
+	public WenzhouMajiangPanPlayerHufan getHufan() {
+		return hufan;
+	}
+
+	public void setHufan(WenzhouMajiangPanPlayerHufan hufan) {
+		this.hufan = hufan;
 	}
 
 	public boolean isZimo() {

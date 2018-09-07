@@ -9,14 +9,13 @@ import java.util.Set;
 
 import com.dml.majiang.ju.Ju;
 import com.dml.majiang.ju.finish.FixedPanNumbersJuFinishiDeterminer;
-import com.dml.majiang.ju.firstpan.ClassicStartFirstPanProcess;
 import com.dml.majiang.ju.nextpan.AllPlayersReadyCreateNextPanDeterminer;
-import com.dml.majiang.ju.nextpan.ClassicStartNextPanProcess;
 import com.dml.majiang.ju.result.JuResult;
-import com.dml.majiang.pan.avaliablepai.NoHuapaiRandomAvaliablePaiFiller;
+import com.dml.majiang.pan.Pan;
 import com.dml.majiang.pan.frame.PanActionFrame;
 import com.dml.majiang.pan.guipai.RandomGuipaiDeterminer;
 import com.dml.majiang.pan.publicwaitingplayer.WaitDaPlayerPanPublicWaitingPlayerDeterminer;
+import com.dml.majiang.pan.result.PanResult;
 import com.dml.majiang.player.action.chi.PengganghuFirstChiActionProcessor;
 import com.dml.majiang.player.action.da.DachushoupaiDaActionProcessor;
 import com.dml.majiang.player.action.gang.HuFirstGangActionProcessor;
@@ -25,7 +24,6 @@ import com.dml.majiang.player.action.hu.PlayerSetHuHuActionProcessor;
 import com.dml.majiang.player.action.initial.ZhuangMoPaiInitialActionUpdater;
 import com.dml.majiang.player.action.listener.comprehensive.DianpaoDihuOpportunityDetector;
 import com.dml.majiang.player.action.listener.comprehensive.JuezhangStatisticsListener;
-import com.dml.majiang.player.action.listener.gang.GangCounter;
 import com.dml.majiang.player.action.listener.mo.MoGuipaiCounter;
 import com.dml.majiang.player.action.peng.HuFirstPengActionProcessor;
 import com.dml.majiang.player.menfeng.RandomMustHasDongPlayersMenFengDeterminer;
@@ -61,22 +59,26 @@ public class MajiangGame {
 			for (String pid : playerMaidiStateMap.keySet()) {
 				playerIdList.add(pid);
 			}
-			PanActionFrame firstActionFrame = createJuAndStartFirstPan(playerIdList, System.currentTimeMillis());
+			WenzhouMajiangPanResultBuilder wenzhouMajiangPanResultBuilder = (WenzhouMajiangPanResultBuilder) ju
+					.getCurrentPanResultBuilder();
+			wenzhouMajiangPanResultBuilder.setPlayerMaidiStateMap(playerMaidiStateMap);
+			PanActionFrame firstActionFrame = startPan(playerIdList, System.currentTimeMillis());
 			maidiResult.setFirstActionFrame(firstActionFrame);
 		}
 		maidiResult.setMajiangGame(new MajiangGameValueObject(this));
 		return maidiResult;
 	}
 
-	public PanActionFrame createJuAndStartFirstPan(List<String> playerIdList, long currentTime) throws Exception {
+	public void createJuAndReadyFirstPan(GameValueObject game, long currentTime) throws Exception {
 		ju = new Ju();
-		ju.setStartFirstPanProcess(new ClassicStartFirstPanProcess());
-		ju.setStartNextPanProcess(new ClassicStartNextPanProcess());
+		// 因为买底动作将开始阶段分为两部分
+		// ju.setStartFirstPanProcess(new ClassicStartFirstPanProcess());
+		// ju.setStartNextPanProcess(new ClassicStartNextPanProcess());
 		ju.setPlayersMenFengDeterminerForFirstPan(new RandomMustHasDongPlayersMenFengDeterminer(currentTime));
 		ju.setPlayersMenFengDeterminerForNextPan(new ZhuangXiajiaIsDongIfZhuangNotHuPlayersMenFengDeterminer());
 		ju.setZhuangDeterminerForFirstPan(new MenFengDongZhuangDeterminer());
 		ju.setZhuangDeterminerForNextPan(new MenFengDongZhuangDeterminer());
-		ju.setAvaliablePaiFiller(new NoHuapaiRandomAvaliablePaiFiller(currentTime + 1));
+		ju.setAvaliablePaiFiller(new WenzhouMajiangRandomAvaliablePaiFiller(currentTime + 1, shaozhongfa));
 		ju.setGuipaiDeterminer(new RandomGuipaiDeterminer(currentTime + 2));
 		ju.setFaPaiStrategy(new WenzhouMajiangFaPaiStrategy(16));
 		ju.setCurrentPanFinishiDeterminer(new WenzhouMajiangPanFinishDeterminer());
@@ -91,9 +93,9 @@ public class MajiangGame {
 		wenzhouMajiangPanResultBuilder.setShaozhongfa(shaozhongfa);
 		wenzhouMajiangPanResultBuilder.setLazila(lazila);
 		ju.setCurrentPanResultBuilder(wenzhouMajiangPanResultBuilder);
-		// TODO每盘需要买底?
+
 		AllPlayersReadyCreateNextPanDeterminer createNextPanDeterminer = new AllPlayersReadyCreateNextPanDeterminer();
-		playerIdList.forEach((pid) -> createNextPanDeterminer.addPlayer(pid));
+		game.allPlayerIds().forEach((pid) -> createNextPanDeterminer.addPlayer(pid));
 		ju.setCreateNextPanDeterminer(createNextPanDeterminer);
 
 		ju.setJuFinishiDeterminer(new FixedPanNumbersJuFinishiDeterminer(panshu));
@@ -117,12 +119,35 @@ public class MajiangGame {
 
 		ju.addActionStatisticsListener(new JuezhangStatisticsListener());
 		ju.addActionStatisticsListener(new MoGuipaiCounter());
-		ju.addActionStatisticsListener(new GangCounter());
 		ju.addActionStatisticsListener(new DianpaoDihuOpportunityDetector());
 
-		// 开始第一盘
-		ju.startFirstPan(playerIdList);
+		Pan firstPan = new Pan();
+		firstPan.setNo(1);
+		game.allPlayerIds().forEach((pid) -> firstPan.addPlayer(pid));
+		ju.setCurrentPan(firstPan);
 
+		// 开始定第一盘的门风
+		ju.determinePlayersMenFengForFirstPan();
+
+		// 开始定第一盘庄家
+		ju.determineZhuangForFirstPan();
+	}
+
+	public PanActionFrame startPan(List<String> playerIdList, long currentTime) throws Exception {
+		// 开始填充可用的牌
+		ju.fillAvaliablePai();
+
+		// 开始定财神
+		ju.determineGuipai();
+
+		// 开始发牌
+		ju.faPai();
+
+		// 庄家可以摸第一张牌
+		ju.updateInitialAction();
+
+		// 庄家摸第一张牌,进入正式行牌流程
+		ju.action(ju.getCurrentPan().getZhuangPlayerId(), 1, System.currentTimeMillis());
 		// 必然庄家已经先摸了一张牌了
 		return ju.getCurrentPan().findLatestActionFrame();
 	}
@@ -204,14 +229,30 @@ public class MajiangGame {
 		createNextPanDeterminer.playerReady(playerId);
 		// 如果可以创建下一盘,那就创建下一盘
 		if (ju.determineToCreateNextPan()) {
-			ju.startNextPan();
 			state = MajiangGameState.playing;
 			playerStateMap.keySet().forEach((pid) -> playerStateMap.put(pid, MajiangGamePlayerState.playing));
-			// 必然庄家已经先摸了一张牌了
-			return ju.getCurrentPan().findLatestActionFrame();
-		} else {
-			return null;
+			ju.getActionStatisticsListenerManager().updateListenersForNextPan();
+			createNextPanDeterminer.reset();
+			Pan nextPan = new Pan();
+			nextPan.setNo(ju.countFinishedPan() + 1);
+			PanResult latestFinishedPanResult = ju.findLatestFinishedPanResult();
+			List<String> allPlayerIds = latestFinishedPanResult.allPlayerIds();
+			allPlayerIds.forEach((pid) -> nextPan.addPlayer(pid));
+			ju.setCurrentPan(nextPan);
+
+			// 开始定下一盘的门风
+			ju.determinePlayersMenFengForNextPan();
+
+			// 开始定下一盘庄家
+			ju.determineZhuangForNextPan();
+			ZhuangXiajiaIsDongIfZhuangNotHuPlayersMenFengDeterminer menFengDeterminer = (ZhuangXiajiaIsDongIfZhuangNotHuPlayersMenFengDeterminer) ju
+					.getPlayersMenFengDeterminerForNextPan();
+			if (menFengDeterminer.getLianZhunagCount() > 1) {
+				PanActionFrame firstActionFrame = startPan(allPlayerIds, System.currentTimeMillis());
+				return firstActionFrame;
+			}
 		}
+		return null;
 	}
 
 	public JuResult finishJu() {

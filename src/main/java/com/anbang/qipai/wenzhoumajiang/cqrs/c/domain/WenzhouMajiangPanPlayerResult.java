@@ -18,6 +18,12 @@ public class WenzhouMajiangPanPlayerResult {
 
 	private boolean hu;
 
+	private WenzhouMajiangPanPlayerHufan hufan;
+
+	private WenzhouMajiangPanPlayerCaishenqian caishenqian;
+
+	private int score;// 一盘的结算分
+
 	private int totalScore;
 
 	private ShoupaiPaiXing bestShoupaiPaiXing;
@@ -75,6 +81,22 @@ public class WenzhouMajiangPanPlayerResult {
 		this.hu = hu;
 	}
 
+	public WenzhouMajiangPanPlayerHufan getHufan() {
+		return hufan;
+	}
+
+	public void setHufan(WenzhouMajiangPanPlayerHufan hufan) {
+		this.hufan = hufan;
+	}
+
+	public WenzhouMajiangPanPlayerCaishenqian getCaishenqian() {
+		return caishenqian;
+	}
+
+	public void setCaishenqian(WenzhouMajiangPanPlayerCaishenqian caishenqian) {
+		this.caishenqian = caishenqian;
+	}
+
 	public int getTotalScore() {
 		return totalScore;
 	}
@@ -99,20 +121,20 @@ public class WenzhouMajiangPanPlayerResult {
 		this.shoupaiList = shoupaiList;
 	}
 
-	public Set<MajiangPai> getGuipaiTypeSet() {
-		return guipaiTypeSet;
-	}
-
-	public void setGuipaiTypeSet(Set<MajiangPai> guipaiTypeSet) {
-		this.guipaiTypeSet = guipaiTypeSet;
-	}
-
 	public List<MajiangPai> getPublicPaiList() {
 		return publicPaiList;
 	}
 
 	public void setPublicPaiList(List<MajiangPai> publicPaiList) {
 		this.publicPaiList = publicPaiList;
+	}
+
+	public Set<MajiangPai> getGuipaiTypeSet() {
+		return guipaiTypeSet;
+	}
+
+	public void setGuipaiTypeSet(Set<MajiangPai> guipaiTypeSet) {
+		this.guipaiTypeSet = guipaiTypeSet;
 	}
 
 	public List<ChichuPaiZu> getChichupaiZuList() {
@@ -139,4 +161,11 @@ public class WenzhouMajiangPanPlayerResult {
 		this.gangchupaiZuList = gangchupaiZuList;
 	}
 
+	public int getScore() {
+		return score;
+	}
+
+	public void setScore(int score) {
+		this.score = score;
+	}
 }
