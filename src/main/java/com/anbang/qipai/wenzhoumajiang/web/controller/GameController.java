@@ -286,10 +286,10 @@ public class GameController {
 			MajiangGameDbo majiangGameDbo = majiangGameQueryService.findMajiangGameDboById(gameId);
 			JuResultVO juResult = new JuResultVO(juResultDbo, majiangGameDbo);
 			wenzhouMajiangResultMsgService.recordJuResult(juResult);
-			gameMsgService.gameFinished(gameId);
 		}
 
 		if (majiangGameValueObject.getState().equals(MajiangGameState.finished)) {
+			gameMsgService.gameFinished(gameId);
 			data.put("queryScope", QueryScope.gameInfo);
 			// 通知其他人来查询
 			majiangGameValueObject.allPlayerIds().forEach((otherPlayerId) -> {
