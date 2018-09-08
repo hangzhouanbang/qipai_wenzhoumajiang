@@ -37,6 +37,7 @@ import com.dml.mpgame.game.GameValueObject;
 
 public class MajiangGame {
 	private String gameId;
+	private int lianzhuangCount = 1;
 	private int panshu;
 	private int renshu;
 	private boolean jinjie;
@@ -54,11 +55,15 @@ public class MajiangGame {
 	public MaidiResult maidi(String playerId, MajiangGamePlayerMaidiState state) throws Exception {
 		MaidiResult maidiResult = new MaidiResult();
 		playerMaidiStateMap.put(playerId, state);
-		if (playerMaidiStateMap.size() == renshu) {
-			List<String> playerIdList = new ArrayList<>();
-			for (String pid : playerMaidiStateMap.keySet()) {
-				playerIdList.add(pid);
+		boolean start = true;
+		List<String> playerIdList = new ArrayList<>();
+		for (String pid : playerMaidiStateMap.keySet()) {
+			playerIdList.add(pid);
+			if (MajiangGamePlayerMaidiState.weimai.equals(playerMaidiStateMap.get(pid))) {
+				start = false;
 			}
+		}
+		if (start) {
 			WenzhouMajiangPanResultBuilder wenzhouMajiangPanResultBuilder = (WenzhouMajiangPanResultBuilder) ju
 					.getCurrentPanResultBuilder();
 			wenzhouMajiangPanResultBuilder.setPlayerMaidiStateMap(playerMaidiStateMap);
@@ -69,11 +74,14 @@ public class MajiangGame {
 		return maidiResult;
 	}
 
-	public void createJuAndReadyFirstPan(GameValueObject game, long currentTime) throws Exception {
+	public Map<String, MajiangGamePlayerMaidiState> createJuAndReadyFirstPan(GameValueObject game, long currentTime)
+			throws Exception {
 		ju = new Ju();
 		// 因为买底动作将开始阶段分为两部分
 		// ju.setStartFirstPanProcess(new ClassicStartFirstPanProcess());
 		// ju.setStartNextPanProcess(new ClassicStartNextPanProcess());
+		// 玩家买底状态
+		game.allPlayerIds().forEach((pid) -> playerMaidiStateMap.put(pid, MajiangGamePlayerMaidiState.weimai));
 		ju.setPlayersMenFengDeterminerForFirstPan(new RandomMustHasDongPlayersMenFengDeterminer(currentTime));
 		ju.setPlayersMenFengDeterminerForNextPan(new ZhuangXiajiaIsDongIfZhuangNotHuPlayersMenFengDeterminer());
 		ju.setZhuangDeterminerForFirstPan(new MenFengDongZhuangDeterminer());
@@ -131,6 +139,7 @@ public class MajiangGame {
 
 		// 开始定第一盘庄家
 		ju.determineZhuangForFirstPan();
+		return playerMaidiStateMap;
 	}
 
 	public PanActionFrame startPan(List<String> playerIdList, long currentTime) throws Exception {
@@ -247,7 +256,9 @@ public class MajiangGame {
 			ju.determineZhuangForNextPan();
 			ZhuangXiajiaIsDongIfZhuangNotHuPlayersMenFengDeterminer menFengDeterminer = (ZhuangXiajiaIsDongIfZhuangNotHuPlayersMenFengDeterminer) ju
 					.getPlayersMenFengDeterminerForNextPan();
-			if (menFengDeterminer.getLianZhunagCount() > 1) {
+			int lianZhuangCount = menFengDeterminer.getLianZhunagCount();
+			this.lianzhuangCount = lianZhuangCount;
+			if (lianZhuangCount > 1) {
 				PanActionFrame firstActionFrame = startPan(allPlayerIds, System.currentTimeMillis());
 				return firstActionFrame;
 			}
@@ -370,6 +381,14 @@ public class MajiangGame {
 
 	public void setPlayerMaidiStateMap(Map<String, MajiangGamePlayerMaidiState> playerMaidiStateMap) {
 		this.playerMaidiStateMap = playerMaidiStateMap;
+	}
+
+	public int getLianzhuangCount() {
+		return lianzhuangCount;
+	}
+
+	public void setLianzhuangCount(int lianzhuangCount) {
+		this.lianzhuangCount = lianzhuangCount;
 	}
 
 }

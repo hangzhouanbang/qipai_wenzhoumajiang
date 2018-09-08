@@ -41,9 +41,10 @@ public class MajiangGameManager {
 		}
 	}
 
-	public void createJuAndReadyFirstPan(GameValueObject game, long currentTime) throws Exception {
+	public Map<String, MajiangGamePlayerMaidiState> createJuAndReadyFirstPan(GameValueObject game, long currentTime)
+			throws Exception {
 		MajiangGame majiangGame = gameIdMajiangGameMap.get(game.getId());
-		majiangGame.createJuAndReadyFirstPan(game, currentTime);
+		return majiangGame.createJuAndReadyFirstPan(game, currentTime);
 	}
 
 	public MaidiResult maidi(String playerId, MajiangGamePlayerMaidiState state, String gameId) throws Exception {

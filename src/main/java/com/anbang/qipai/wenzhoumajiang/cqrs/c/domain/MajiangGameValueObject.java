@@ -10,6 +10,7 @@ import com.dml.mpgame.game.GamePlayerOnlineState;
 public class MajiangGameValueObject {
 
 	private String gameId;
+	private int lianzhuangCount;
 	private int panshu;
 	private int renshu;
 	private boolean jinjie;
@@ -28,6 +29,7 @@ public class MajiangGameValueObject {
 
 	public MajiangGameValueObject(MajiangGame majiangGame) {
 		gameId = majiangGame.getGameId();
+		lianzhuangCount = majiangGame.getLianzhuangCount();
 		panshu = majiangGame.getPanshu();
 		renshu = majiangGame.getRenshu();
 		jinjie = majiangGame.isJinjie();
@@ -148,6 +150,14 @@ public class MajiangGameValueObject {
 
 	public void setPlayerMaidiStateMap(Map<String, MajiangGamePlayerMaidiState> playerMaidiStateMap) {
 		this.playerMaidiStateMap = playerMaidiStateMap;
+	}
+
+	public int getLianzhuangCount() {
+		return lianzhuangCount;
+	}
+
+	public void setLianzhuangCount(int lianzhuangCount) {
+		this.lianzhuangCount = lianzhuangCount;
 	}
 
 }

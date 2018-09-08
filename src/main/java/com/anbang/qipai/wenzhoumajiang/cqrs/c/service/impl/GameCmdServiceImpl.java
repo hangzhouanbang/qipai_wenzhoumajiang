@@ -1,9 +1,12 @@
 package com.anbang.qipai.wenzhoumajiang.cqrs.c.service.impl;
 
+import java.util.Map;
+
 import org.springframework.stereotype.Component;
 
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.FinishResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGameManager;
+import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGamePlayerMaidiState;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGameValueObject;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.ReadyForGameResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.WenzhouMajiangJuResult;
@@ -62,7 +65,9 @@ public class GameCmdServiceImpl extends CmdServiceBase implements GameCmdService
 		MajiangGameValueObject majiangGameValueObject = majiangGameManager.updateMajiangGameByGame(gameValueObject);
 		result.setMajiangGame(majiangGameValueObject);
 		if (gameValueObject.getState().equals(GameState.playing)) {
-			majiangGameManager.createJuAndReadyFirstPan(gameValueObject, currentTime);
+			Map<String, MajiangGamePlayerMaidiState> playerMaidiStateMap = majiangGameManager
+					.createJuAndReadyFirstPan(gameValueObject, currentTime);
+			majiangGameValueObject.setPlayerMaidiStateMap(playerMaidiStateMap);
 		}
 		return result;
 	}

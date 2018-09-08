@@ -13,6 +13,7 @@ import com.dml.mpgame.game.GamePlayerOnlineState;
 
 public class MajiangGameDbo {
 	private String id;// 就是gameid
+	private int lianzhuangCount = 1;
 	private int panshu;
 	private int renshu;
 	private boolean jinjie;
@@ -28,6 +29,7 @@ public class MajiangGameDbo {
 
 	public MajiangGameDbo(MajiangGameValueObject majiangGame, Map<String, PlayerInfo> playerInfoMap) {
 		id = majiangGame.getGameId();
+		lianzhuangCount = majiangGame.getLianzhuangCount();
 		panshu = majiangGame.getPanshu();
 		renshu = majiangGame.getRenshu();
 		jinjie = majiangGame.isJinjie();
@@ -146,6 +148,14 @@ public class MajiangGameDbo {
 
 	public void setLazila(boolean lazila) {
 		this.lazila = lazila;
+	}
+
+	public int getLianzhuangCount() {
+		return lianzhuangCount;
+	}
+
+	public void setLianzhuangCount(int lianzhuangCount) {
+		this.lianzhuangCount = lianzhuangCount;
 	}
 
 }

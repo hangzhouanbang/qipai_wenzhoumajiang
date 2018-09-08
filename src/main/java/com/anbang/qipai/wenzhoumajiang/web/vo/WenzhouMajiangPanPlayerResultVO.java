@@ -34,14 +34,14 @@ public class WenzhouMajiangPanPlayerResultVO {
 	private List<GangchuPaiZuVO> gangchuList = new ArrayList<>();
 
 	/**
-	 * 这个是打了几炮
+	 * 这个是胡翻
 	 */
-	private int pao;
+	private int hufan;
 
 	/**
-	 * 这个是非结算的胡数
+	 * 这个是财神钱
 	 */
-	private int hushu;
+	private int caishenqian;
 
 	/**
 	 * 这个是结算分
@@ -58,7 +58,9 @@ public class WenzhouMajiangPanPlayerResultVO {
 		}
 		hu = panPlayerResult.isHu();
 		publicPaiList = new ArrayList<>(panPlayerResult.getPublicPaiList());
-
+		this.hufan = panPlayerResult.getHufan().getValue();
+		this.caishenqian = panPlayerResult.getCaishenqian().getValue();
+		this.score = panPlayerResult.getScore();
 		List<ChichuPaiZu> chichuPaiZuList = panPlayerResult.getChichupaiZuList();
 		for (ChichuPaiZu chichuPaiZu : chichuPaiZuList) {
 			shunziList.add(chichuPaiZu.getShunzi());
@@ -186,16 +188,24 @@ public class WenzhouMajiangPanPlayerResultVO {
 		return gangchuList;
 	}
 
-	public int getPao() {
-		return pao;
-	}
-
-	public int getHushu() {
-		return hushu;
-	}
-
 	public int getScore() {
 		return score;
+	}
+
+	public int getHufan() {
+		return hufan;
+	}
+
+	public void setHufan(int hufan) {
+		this.hufan = hufan;
+	}
+
+	public int getCaishenqian() {
+		return caishenqian;
+	}
+
+	public void setCaishenqian(int caishenqian) {
+		this.caishenqian = caishenqian;
 	}
 
 }
