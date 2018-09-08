@@ -1,5 +1,7 @@
 package com.anbang.qipai.wenzhoumajiang.cqrs.c.service.impl;
 
+import org.springframework.stereotype.Component;
+
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MaidiResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangActionResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGameManager;
@@ -9,6 +11,7 @@ import com.anbang.qipai.wenzhoumajiang.cqrs.c.service.MajiangPlayCmdService;
 import com.dml.mpgame.game.PlayerNotInGameException;
 import com.dml.mpgame.server.GameServer;
 
+@Component
 public class MajiangPlayCmdServiceImpl extends CmdServiceBase implements MajiangPlayCmdService {
 
 	@Override
