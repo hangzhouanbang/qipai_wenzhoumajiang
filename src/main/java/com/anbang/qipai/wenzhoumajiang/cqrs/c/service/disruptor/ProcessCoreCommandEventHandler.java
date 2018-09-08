@@ -3,6 +3,7 @@ package com.anbang.qipai.wenzhoumajiang.cqrs.c.service.disruptor;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import com.anbang.qipai.wenzhoumajiang.conf.FilePathConfig;
 import com.highto.framework.ddd.CRPair;
 import com.highto.framework.ddd.Command;
 import com.highto.framework.disruptor.Handler;
@@ -23,27 +24,31 @@ public class ProcessCoreCommandEventHandler implements EventHandler<CommandEvent
 	private CoreSnapshotFactory coreSnapshotFactory;
 	private SnapshotJsonUtil snapshotJsonUtil;
 
-	private String fileBasePath = "snapshot/core/";
+	private String snapshotFileBasePath = "./snapshot";
+
+	private String jFileBasePath = ".";
 
 	private JournalFile jFile;
 
 	private ReuseByteBuffer reuseByteBuffer;
 
-	private String jFileNamePrefix = "core_";
 	private FileUtil fileUtil = new FileUtil();
 
-	public ProcessCoreCommandEventHandler(CoreSnapshotFactory coreSnapshotFactory, SnapshotJsonUtil snapshotJsonUtil) {
+	public ProcessCoreCommandEventHandler(CoreSnapshotFactory coreSnapshotFactory, SnapshotJsonUtil snapshotJsonUtil,
+			FilePathConfig filePathConfig) {
 		this.coreSnapshotFactory = coreSnapshotFactory;
 		this.snapshotJsonUtil = snapshotJsonUtil;
+		snapshotFileBasePath = filePathConfig.getSnapshotFileBasePath();
+		jFileBasePath = filePathConfig.getjFileBasePath();
 	}
 
 	@Override
 	public void onEvent(CommandEvent event, long sequence, boolean endOfBatch) throws Exception {
 		if (jFile == null) {
 
-			String recentFileName = fileUtil.getRecentFileName(".", jFileNamePrefix);
+			String recentFileName = fileUtil.getRecentFileName(jFileBasePath);
 			if (recentFileName == null || recentFileName.equals("")) {
-				recentFileName = jFileNamePrefix + System.currentTimeMillis();
+				recentFileName = jFileBasePath + "/" + System.currentTimeMillis();
 			}
 			jFile = new JournalFile(recentFileName);
 			reuseByteBuffer = new ReuseByteBuffer(ByteBuffer.allocateDirect(1024 * 1024));
@@ -67,7 +72,7 @@ public class ProcessCoreCommandEventHandler implements EventHandler<CommandEvent
 			try {
 				saveSnapshot();
 				jFile.close();
-				jFile = new JournalFile(jFileNamePrefix + System.currentTimeMillis());
+				jFile = new JournalFile(jFileBasePath + "/" + System.currentTimeMillis());
 			} catch (Throwable e) {
 				System.out.println("System.exit(0)  " + e.getMessage());
 				System.exit(0);// 任何失败系统停机。
@@ -92,14 +97,15 @@ public class ProcessCoreCommandEventHandler implements EventHandler<CommandEvent
 
 	private void saveSnapshot() throws IOException {
 		CoreSnapshot snapshoot = coreSnapshotFactory.createSnapshoot();
-		snapshotJsonUtil.save(fileBasePath, snapshoot.getCreateTime() + "", snapshoot);
+		snapshotJsonUtil.save(snapshotFileBasePath, snapshoot.getCreateTime() + "", snapshoot);
 	}
 
-	public String getFileBasePath() {
-		return fileBasePath;
+	public String getSnapshotFileBasePath() {
+		return snapshotFileBasePath;
 	}
 
-	public String getjFileNamePrefix() {
-		return jFileNamePrefix;
+	public String getjFileBasePath() {
+		return jFileBasePath;
 	}
+
 }

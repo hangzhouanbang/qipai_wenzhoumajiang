@@ -16,27 +16,32 @@ import com.highto.framework.nio.ByteBufferSerializer;
  * Created by tan on 2016/8/30.
  */
 public class FileUtil {
-	public String getRecentFileName(String fileBasePath, String prefix) {
+	public String getRecentFileName(String fileBasePath) {
 		File folder = new File(fileBasePath);
 		// 获得folder文件夹下面所有文件
 		String[] fileNames = folder.list(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name) {
-				return name.startsWith(prefix);
+				return true;
 			}
 		});
 		String recentFileName = null;
 		long recentCreateTime = 0;
 		if (fileNames != null) {
 			for (String fileName : fileNames) {
-				long createTime = Long.parseLong(fileName.substring(prefix.length()));
+				long createTime = Long.parseLong(fileName);
 				if (recentCreateTime < createTime) {
 					recentFileName = fileName;
 					recentCreateTime = createTime;
 				}
 			}
 		}
-		return recentFileName;
+		if (recentFileName != null) {
+			return fileBasePath + "/" + recentFileName;
+		} else {
+			return null;
+		}
+
 	}
 
 	/**
@@ -46,11 +51,11 @@ public class FileUtil {
 	 * @param prefix
 	 * @throws IOException
 	 */
-	public List<Command> read(String fileBasePath, String prefix) throws Throwable {
-		String fileName = getRecentFileName(fileBasePath, prefix);
+	public List<Command> read(String fileBasePath) throws Throwable {
+		String fileName = getRecentFileName(fileBasePath);
 		List<Command> commands = new ArrayList<>();
 		if (fileName != null) {
-			RandomAccessFile file = new RandomAccessFile(fileBasePath + fileName, "r");
+			RandomAccessFile file = new RandomAccessFile(fileName, "r");
 			FileChannel channel = file.getChannel();
 			long size = channel.size();
 			ByteBuffer buffer = ByteBuffer.allocate((int) size);

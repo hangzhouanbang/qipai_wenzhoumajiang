@@ -61,6 +61,6 @@ spring:
 server:
   port: 2003
 
-#filepath:
-  #snapshotFileBasePath: /usr/local/app/qipai_wenzhoumajiang/server1/snapshot
-  #jFileBasePath: /usr/local/app/qipai_wenzhoumajiang/server1/journal
+filepath:
+  snapshotFileBasePath: /usr/local/app/qipai_wenzhoumajiang/server1/snapshot
+  jFileBasePath: /usr/local/app/qipai_wenzhoumajiang/server1/journal
