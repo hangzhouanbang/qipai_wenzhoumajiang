@@ -49,7 +49,9 @@ public class MajiangGameManager {
 
 	public MaidiResult maidi(String playerId, MajiangGamePlayerMaidiState state, String gameId) throws Exception {
 		MajiangGame majiangGame = gameIdMajiangGameMap.get(gameId);
-		return majiangGame.maidi(playerId, state);
+		MaidiResult maidiResult = majiangGame.maidi(playerId, state);
+		maidiResult.setMajiangGame(new MajiangGameValueObject(majiangGame));
+		return maidiResult;
 	}
 
 	public MajiangActionResult majiangAction(String playerId, String gameId, int actionId, long actionTime)

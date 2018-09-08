@@ -146,7 +146,7 @@ public class WenzhouMajiangJiesuanCalculator {
 			ShoupaiPaiXing bestHuShoupaiPaiXing = null;
 			for (ShoupaiPaiXing shoupaiPaiXing : huPaiShoupaiPaiXingList) {
 				WenzhouMajiangPanPlayerHufan hufan = calculateHufanForShoupaiPaiXing(false, false,
-						shoupaixingWuguanJiesuancanshu, shoupaiPaiXing, true, false, false, true, teshushuangfan,
+						shoupaixingWuguanJiesuancanshu, shoupaiPaiXing, true, false, false, false, teshushuangfan,
 						lazila);
 				if (bestHufan == null || bestHufan.getValue() < hufan.getValue()) {
 					bestHufan = hufan;

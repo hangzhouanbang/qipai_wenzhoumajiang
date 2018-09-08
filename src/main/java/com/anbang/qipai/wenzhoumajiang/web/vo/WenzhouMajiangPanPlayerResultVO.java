@@ -33,6 +33,7 @@ public class WenzhouMajiangPanPlayerResultVO {
 	private List<MajiangPai> keziTypeList = new ArrayList<>();
 	private List<GangchuPaiZuVO> gangchuList = new ArrayList<>();
 
+	WenzhouMajiangPanPlayerHuxingVO huxing;
 	/**
 	 * 这个是胡翻
 	 */
@@ -58,6 +59,7 @@ public class WenzhouMajiangPanPlayerResultVO {
 		}
 		hu = panPlayerResult.isHu();
 		publicPaiList = new ArrayList<>(panPlayerResult.getPublicPaiList());
+		huxing = new WenzhouMajiangPanPlayerHuxingVO(panPlayerResult.getHufan().getHuxing());
 		this.hufan = panPlayerResult.getHufan().getValue();
 		this.caishenqian = panPlayerResult.getCaishenqian().getValue();
 		this.score = panPlayerResult.getScore();
@@ -140,56 +142,112 @@ public class WenzhouMajiangPanPlayerResultVO {
 		return playerId;
 	}
 
+	public void setPlayerId(String playerId) {
+		this.playerId = playerId;
+	}
+
 	public String getNickname() {
 		return nickname;
+	}
+
+	public void setNickname(String nickname) {
+		this.nickname = nickname;
 	}
 
 	public String getHeadimgurl() {
 		return headimgurl;
 	}
 
+	public void setHeadimgurl(String headimgurl) {
+		this.headimgurl = headimgurl;
+	}
+
 	public boolean isZhuang() {
 		return zhuang;
+	}
+
+	public void setZhuang(boolean zhuang) {
+		this.zhuang = zhuang;
 	}
 
 	public boolean isHu() {
 		return hu;
 	}
 
+	public void setHu(boolean hu) {
+		this.hu = hu;
+	}
+
 	public boolean isZimo() {
 		return zimo;
+	}
+
+	public void setZimo(boolean zimo) {
+		this.zimo = zimo;
 	}
 
 	public boolean isDianpao() {
 		return dianpao;
 	}
 
+	public void setDianpao(boolean dianpao) {
+		this.dianpao = dianpao;
+	}
+
 	public List<MajiangPai> getPublicPaiList() {
 		return publicPaiList;
+	}
+
+	public void setPublicPaiList(List<MajiangPai> publicPaiList) {
+		this.publicPaiList = publicPaiList;
 	}
 
 	public List<MajiangPai> getCaishenList() {
 		return caishenList;
 	}
 
+	public void setCaishenList(List<MajiangPai> caishenList) {
+		this.caishenList = caishenList;
+	}
+
 	public List<List<ResultShoupaiVO>> getResultShoupaiZuList() {
 		return resultShoupaiZuList;
+	}
+
+	public void setResultShoupaiZuList(List<List<ResultShoupaiVO>> resultShoupaiZuList) {
+		this.resultShoupaiZuList = resultShoupaiZuList;
 	}
 
 	public List<Shunzi> getShunziList() {
 		return shunziList;
 	}
 
+	public void setShunziList(List<Shunzi> shunziList) {
+		this.shunziList = shunziList;
+	}
+
 	public List<MajiangPai> getKeziTypeList() {
 		return keziTypeList;
+	}
+
+	public void setKeziTypeList(List<MajiangPai> keziTypeList) {
+		this.keziTypeList = keziTypeList;
 	}
 
 	public List<GangchuPaiZuVO> getGangchuList() {
 		return gangchuList;
 	}
 
-	public int getScore() {
-		return score;
+	public void setGangchuList(List<GangchuPaiZuVO> gangchuList) {
+		this.gangchuList = gangchuList;
+	}
+
+	public WenzhouMajiangPanPlayerHuxingVO getHuxing() {
+		return huxing;
+	}
+
+	public void setHuxing(WenzhouMajiangPanPlayerHuxingVO huxing) {
+		this.huxing = huxing;
 	}
 
 	public int getHufan() {
@@ -208,4 +266,11 @@ public class WenzhouMajiangPanPlayerResultVO {
 		this.caishenqian = caishenqian;
 	}
 
+	public int getScore() {
+		return score;
+	}
+
+	public void setScore(int score) {
+		this.score = score;
+	}
 }

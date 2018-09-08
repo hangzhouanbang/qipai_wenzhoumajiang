@@ -1,7 +1,6 @@
 package com.anbang.qipai.wenzhoumajiang.cqrs.q.dao.mongodb;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.dao.MajiangGameDboDao;
@@ -11,9 +10,6 @@ import com.dml.mpgame.game.GamePlayerOnlineState;
 
 @Component
 public class MongodbMajiangGameDboDao implements MajiangGameDboDao {
-
-	@Autowired
-	private MongoTemplate mongoTemplate;
 
 	@Autowired
 	private MajiangGameDboRepository repository;

@@ -59,7 +59,8 @@ public class MajiangGame {
 		List<String> playerIdList = new ArrayList<>();
 		for (String pid : playerMaidiStateMap.keySet()) {
 			playerIdList.add(pid);
-			if (MajiangGamePlayerMaidiState.weimai.equals(playerMaidiStateMap.get(pid))) {
+			if (MajiangGamePlayerMaidiState.weimai.equals(playerMaidiStateMap.get(pid))
+					|| MajiangGamePlayerMaidiState.dingdi.equals(playerMaidiStateMap.get(pid))) {
 				start = false;
 			}
 		}
@@ -70,7 +71,6 @@ public class MajiangGame {
 			PanActionFrame firstActionFrame = startPan(playerIdList, System.currentTimeMillis());
 			maidiResult.setFirstActionFrame(firstActionFrame);
 		}
-		maidiResult.setMajiangGame(new MajiangGameValueObject(this));
 		return maidiResult;
 	}
 
@@ -80,6 +80,7 @@ public class MajiangGame {
 		// 因为买底动作将开始阶段分为两部分
 		// ju.setStartFirstPanProcess(new ClassicStartFirstPanProcess());
 		// ju.setStartNextPanProcess(new ClassicStartNextPanProcess());
+		game.allPlayerIds().forEach((pid) -> playerMaidiStateMap.put(pid, MajiangGamePlayerMaidiState.weimai));
 		ju.setPlayersMenFengDeterminerForFirstPan(new RandomMustHasDongPlayersMenFengDeterminer(currentTime));
 		ju.setPlayersMenFengDeterminerForNextPan(new ZhuangXiajiaIsDongIfZhuangNotHuPlayersMenFengDeterminer());
 		ju.setZhuangDeterminerForFirstPan(new MenFengDongZhuangDeterminer());
@@ -137,9 +138,7 @@ public class MajiangGame {
 
 		// 开始定第一盘庄家
 		ju.determineZhuangForFirstPan();
-		ZhuangXiajiaIsDongIfZhuangNotHuPlayersMenFengDeterminer menFengDeterminer = (ZhuangXiajiaIsDongIfZhuangNotHuPlayersMenFengDeterminer) ju
-				.getPlayersMenFengDeterminerForNextPan();
-		String zhuangPlayerId = menFengDeterminer.getZhuangPlayerId();
+		String zhuangPlayerId = firstPan.getZhuangPlayerId();
 		playerMaidiStateMap.put(zhuangPlayerId, MajiangGamePlayerMaidiState.dingdi);
 		return playerMaidiStateMap;
 	}
@@ -203,7 +202,6 @@ public class MajiangGame {
 			String playerId = player.getId();
 			playerIdsSet.add(playerId);
 			playerOnlineStateMap.put(playerId, player.getOnlineState());
-			playerMaidiStateMap.put(playerId, MajiangGamePlayerMaidiState.weimai);
 			GamePlayerState gamePlayerState = player.getState();
 			if (gamePlayerState.equals(GamePlayerState.finished)) {
 				playerStateMap.put(playerId, MajiangGamePlayerState.finished);
@@ -222,7 +220,6 @@ public class MajiangGame {
 		Set<String> currentPlayerIdsSet = new HashSet<>(playerStateMap.keySet());
 		currentPlayerIdsSet.forEach((playerId) -> {
 			if (!playerIdsSet.contains(playerId)) {
-				playerMaidiStateMap.remove(playerId);
 				playerStateMap.remove(playerId);
 				playerOnlineStateMap.remove(playerId);
 				playeTotalScoreMap.remove(playerId);
@@ -258,11 +255,16 @@ public class MajiangGame {
 			ZhuangXiajiaIsDongIfZhuangNotHuPlayersMenFengDeterminer menFengDeterminer = (ZhuangXiajiaIsDongIfZhuangNotHuPlayersMenFengDeterminer) ju
 					.getPlayersMenFengDeterminerForNextPan();
 			int lianZhuangCount = menFengDeterminer.getLianZhunagCount();
-			this.lianzhuangCount = lianZhuangCount;
-			if (lianZhuangCount > 1) {
+			if (lianZhuangCount < 4) {
+				this.lianzhuangCount = lianZhuangCount;
+			} else {
+				this.lianzhuangCount = 4;
+			}
+			if (lianZhuangCount > 1) {// 连庄
 				PanActionFrame firstActionFrame = startPan(allPlayerIds, System.currentTimeMillis());
 				return firstActionFrame;
-			} else {
+			} else {// 重新买底
+				allPlayerIds.forEach((pid) -> playerMaidiStateMap.put(pid, MajiangGamePlayerMaidiState.weimai));
 				String zhuangPlayerId = menFengDeterminer.getZhuangPlayerId();
 				playerMaidiStateMap.put(zhuangPlayerId, MajiangGamePlayerMaidiState.dingdi);
 			}

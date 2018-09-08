@@ -45,7 +45,7 @@ public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 				difen = 4;
 			}
 		}
-		if (menfengDeterminer.getLianZhunagCount() == 4) {
+		if (menfengDeterminer.getLianZhunagCount() >= 4) {
 			if (jinjie) {
 				difen = 16;
 			} else {

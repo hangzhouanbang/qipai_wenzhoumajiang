@@ -51,7 +51,11 @@ public class MajiangGameDbo {
 			playerDbo.setNickname(playerInfo.getNickname());
 			playerDbo.setOnlineState(playerOnlineStateMap.get(playerId));
 			playerDbo.setPlayerId(playerId);
-			playerDbo.setMaidiState(playerMaidiStateMap.get(playerId));
+			if (!playerMaidiStateMap.isEmpty()) {
+				playerDbo.setMaidiState(playerMaidiStateMap.get(playerId));
+			} else {
+				playerDbo.setMaidiState(MajiangGamePlayerMaidiState.weimai);
+			}
 			playerDbo.setState(playerStateMap.get(playerId));
 			if (playeTotalScoreMap.get(playerId) != null) {
 				playerDbo.setTotalScore(playeTotalScoreMap.get(playerId));

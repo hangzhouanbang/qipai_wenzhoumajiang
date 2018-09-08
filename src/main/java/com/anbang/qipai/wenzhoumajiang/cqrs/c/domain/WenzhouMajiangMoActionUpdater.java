@@ -1,6 +1,7 @@
 package com.anbang.qipai.wenzhoumajiang.cqrs.c.domain;
 
 import java.util.List;
+import java.util.Set;
 
 import com.dml.majiang.ju.Ju;
 import com.dml.majiang.pai.MajiangPai;
@@ -63,6 +64,8 @@ public class WenzhouMajiangMoActionUpdater implements MajiangPlayerMoActionUpdat
 						.findListener(MoGuipaiCounter.class);
 				if (moGuipaiCounter.getCount() == 3) {
 					WenzhouMajiangPanPlayerHufan hufan = new WenzhouMajiangPanPlayerHufan();
+					WenzhouMajiangPanPlayerHuxing huxing = new WenzhouMajiangPanPlayerHuxing();
+					hufan.setHuxing(huxing);
 					hufan.setRuan(false);
 					hufan.calculate(teshushuangfan, lazila);
 					WenzhouMajiangHu sancaishenHu = new WenzhouMajiangHu(hufan);
@@ -72,36 +75,38 @@ public class WenzhouMajiangMoActionUpdater implements MajiangPlayerMoActionUpdat
 
 			// 需要有“过”
 			player.checkAndGenerateGuoCandidateAction();
-
-			// 啥也不能干，那只能打出牌
-			/*
-			 * 绝风：抓牌后，手牌有绝张风牌字牌，需优先打出，其他牌颜色变灰无法点击
-			 * 跟风：抓牌后，手牌有不成对、暗刻的风牌字牌，且该风牌字牌在已打的牌堆里也有，则该张牌需要优先打出 头风：抓牌后，手牌中单独一张的风牌字牌需要优先打出
-			 */
-			List<MajiangPai> fangruShoupaiList = player.getFangruShoupaiList();
-			JuezhangStatisticsListener juezhangStatisticsListener = ju.getActionStatisticsListenerManager()
-					.findListener(JuezhangStatisticsListener.class);
-			for (MajiangPai pai : fangruShoupaiList) {
-				if (MajiangPai.isZipai(pai) || MajiangPai.isFengpai(pai)) {
-					if (juezhangStatisticsListener.ifJuezhang(pai)) {
-						player.addActionCandidate(new MajiangDaAction(player.getId(), pai));
-					} else if (juezhangStatisticsListener.ifMingPai(pai)
-							&& player.getShoupaiCalculator().count(pai) == 1) {
-						player.addActionCandidate(new MajiangDaAction(player.getId(), pai));
-					} else if (player.getShoupaiCalculator().count(pai) == 1) {
-						player.addActionCandidate(new MajiangDaAction(player.getId(), pai));
+			if (player.getActionCandidates().isEmpty()) {
+				// 啥也不能干，那只能打出牌
+				/*
+				 * 绝风：抓牌后，手牌有绝张风牌字牌，需优先打出，其他牌颜色变灰无法点击
+				 * 跟风：抓牌后，手牌有不成对、暗刻的风牌字牌，且该风牌字牌在已打的牌堆里也有，则该张牌需要优先打出 头风：抓牌后，手牌中单独一张的风牌字牌需要优先打出
+				 */
+				List<MajiangPai> fangruShoupaiList = player.getFangruShoupaiList();
+				JuezhangStatisticsListener juezhangStatisticsListener = ju.getActionStatisticsListenerManager()
+						.findListener(JuezhangStatisticsListener.class);
+				Set<MajiangPai> guipaiTypeSet = player.getGuipaiTypeSet();
+				MajiangPai[] guipaiType = new MajiangPai[guipaiTypeSet.size()];
+				guipaiTypeSet.toArray(guipaiType);
+				MajiangPai guipai = guipaiType[0];
+				fangruShoupaiList.add(gangmoShoupai);
+				for (MajiangPai pai : fangruShoupaiList) {
+					if (!pai.equals(guipai)) {
+						if ((MajiangPai.isZipai(pai) && !pai.equals(MajiangPai.baiban))
+								|| (MajiangPai.isFengpai(pai) && !pai.equals(MajiangPai.baiban))
+								|| (pai.equals(MajiangPai.baiban)
+										&& (MajiangPai.isZipai(guipai) || MajiangPai.isFengpai(guipai)))) {
+							if (juezhangStatisticsListener.ifJuezhang(pai)) {
+								player.addActionCandidate(new MajiangDaAction(player.getId(), pai));
+							} else if (juezhangStatisticsListener.ifMingPai(pai)
+									&& player.getShoupaiCalculator().count(pai) == 1) {
+								player.addActionCandidate(new MajiangDaAction(player.getId(), pai));
+							} else if (player.getShoupaiCalculator().count(pai) == 1) {
+								player.addActionCandidate(new MajiangDaAction(player.getId(), pai));
+							}
+						}
 					}
 				}
-			}
-			if (MajiangPai.isZipai(gangmoShoupai) || MajiangPai.isFengpai(gangmoShoupai)) {
-				if (juezhangStatisticsListener.ifJuezhang(gangmoShoupai)) {
-					player.addActionCandidate(new MajiangDaAction(player.getId(), gangmoShoupai));
-				} else if (juezhangStatisticsListener.ifMingPai(gangmoShoupai)
-						&& player.getShoupaiCalculator().count(gangmoShoupai) == 1) {
-					player.addActionCandidate(new MajiangDaAction(player.getId(), gangmoShoupai));
-				} else if (player.getShoupaiCalculator().count(gangmoShoupai) == 1) {
-					player.addActionCandidate(new MajiangDaAction(player.getId(), gangmoShoupai));
-				}
+				fangruShoupaiList.remove(gangmoShoupai);
 			}
 			if (player.getActionCandidates().isEmpty()) {
 				player.generateDaActions();

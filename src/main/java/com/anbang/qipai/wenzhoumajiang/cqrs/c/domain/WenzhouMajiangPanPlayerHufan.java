@@ -10,7 +10,7 @@ public class WenzhouMajiangPanPlayerHufan {
 
 	public void calculate(boolean teshushuangfan, boolean lazila) {
 		int fan = 0;
-		if (lazila && huxing.isShuangcaiguiwei()) {
+		if (lazila && huxing.isSancaiguiwei()) {
 			sifan = true;
 		} else if (teshushuangfan) {
 			if (huxing.isTianhu()) {
