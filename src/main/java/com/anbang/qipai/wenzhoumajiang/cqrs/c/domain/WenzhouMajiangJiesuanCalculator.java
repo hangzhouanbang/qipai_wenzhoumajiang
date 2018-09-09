@@ -197,14 +197,14 @@ public class WenzhouMajiangJiesuanCalculator {
 		for (ShoupaiDuiziZu duiziZu : duiziList) {
 			ShoupaiJiesuanPai pai1 = duiziZu.getPai1();
 			ShoupaiJiesuanPai pai2 = duiziZu.getPai2();
-			if (pai1.getYuanPaiType().equals(guipaiType) && pai2.getYuanPaiType().equals(guipaiType)) {
+			if (duiziZu.getDuiziType().equals(guipaiType)) {
 				caishenDuiziZu += 1;
 			}
-			if (!pai1.getYuanPaiType().equals(pai1.getZuoyongPaiType())) {
+			if (pai1.getYuanPaiType().equals(guipaiType) && !pai1.dangBenPai()) {
 				caishenDangPai += 1;
 				ruan = true;
 			}
-			if (!pai2.getYuanPaiType().equals(pai2.getZuoyongPaiType())) {
+			if (pai2.getYuanPaiType().equals(guipaiType) && !pai2.dangBenPai()) {
 				caishenDangPai += 1;
 				ruan = true;
 			}
@@ -214,15 +214,15 @@ public class WenzhouMajiangJiesuanCalculator {
 			ShoupaiJiesuanPai pai1 = keziZu.getPai1();
 			ShoupaiJiesuanPai pai2 = keziZu.getPai2();
 			ShoupaiJiesuanPai pai3 = keziZu.getPai3();
-			if (!pai1.getYuanPaiType().equals(pai1.getZuoyongPaiType())) {
+			if (pai1.getYuanPaiType().equals(guipaiType) && !pai1.dangBenPai()) {
 				caishenDangPai += 1;
 				ruan = true;
 			}
-			if (!pai2.getYuanPaiType().equals(pai2.getZuoyongPaiType())) {
+			if (pai2.getYuanPaiType().equals(guipaiType) && !pai2.dangBenPai()) {
 				caishenDangPai += 1;
 				ruan = true;
 			}
-			if (!pai3.getYuanPaiType().equals(pai3.getZuoyongPaiType())) {
+			if (pai3.getYuanPaiType().equals(guipaiType) && !pai3.dangBenPai()) {
 				caishenDangPai += 1;
 				ruan = true;
 			}
@@ -232,15 +232,15 @@ public class WenzhouMajiangJiesuanCalculator {
 			ShoupaiJiesuanPai pai1 = shunziZu.getPai1();
 			ShoupaiJiesuanPai pai2 = shunziZu.getPai2();
 			ShoupaiJiesuanPai pai3 = shunziZu.getPai3();
-			if (!pai1.getYuanPaiType().equals(pai1.getZuoyongPaiType())) {
+			if (pai1.getYuanPaiType().equals(guipaiType) && !pai1.dangBenPai()) {
 				caishenDangPai += 1;
 				ruan = true;
 			}
-			if (!pai2.getYuanPaiType().equals(pai2.getZuoyongPaiType())) {
+			if (pai2.getYuanPaiType().equals(guipaiType) && !pai2.dangBenPai()) {
 				caishenDangPai += 1;
 				ruan = true;
 			}
-			if (!pai3.getYuanPaiType().equals(pai3.getZuoyongPaiType())) {
+			if (pai3.getYuanPaiType().equals(guipaiType) && !pai3.dangBenPai()) {
 				caishenDangPai += 1;
 				ruan = true;
 			}
@@ -253,7 +253,7 @@ public class WenzhouMajiangJiesuanCalculator {
 		if (shoupaixingWuguanJiesuancanshu.getCaishenShu() == 3 && caishenDangPai == 0) {
 			huxing.setSancaiguiwei(true);// 三财神归位（辣子辣）
 		}
-		if (caishenDuiziZu >= 1) {
+		if (caishenDuiziZu == 1) {
 			huxing.setCaishenniudui(true);// 财神牛对
 		}
 		hufan.setHuxing(huxing);
