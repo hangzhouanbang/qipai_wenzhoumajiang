@@ -32,12 +32,12 @@ public class WenzhouMajiangJiesuanCalculator {
 		ShoupaiCalculator shoupaiCalculator = player.getShoupaiCalculator();
 		List<MajiangPai> guipaiList = player.findGuipaiList();// TODO 也可以用统计器做
 
-		if (!player.gangmoGuipai() && !player.getGangmoShoupai().equals(MajiangPai.baiban)) {
+		if (!player.gangmoGuipai()) {
 			shoupaiCalculator.addPai(player.getGangmoShoupai());
 		}
 		List<ShoupaiPaiXing> huPaiShoupaiPaiXingList = calculateZimoHuPaiShoupaiPaiXingList(guipaiList, shaozhongfa,
 				shoupaiCalculator, player, gouXingPanHu, player.getGangmoShoupai());
-		if (!player.gangmoGuipai() && !player.getGangmoShoupai().equals(MajiangPai.baiban)) {
+		if (!player.gangmoGuipai()) {
 			shoupaiCalculator.removePai(player.getGangmoShoupai());
 		}
 
@@ -260,28 +260,36 @@ public class WenzhouMajiangJiesuanCalculator {
 			MajiangPai huPai) {
 		Set<MajiangPai> guipaiTypeSet = player.getGuipaiTypeSet();
 		MajiangPai[] paiTypesForBaibanAct = calculatePaiTypesForBaibanAct(guipaiTypeSet);// 白板可以扮演的牌类
-		// 如果最后摸来的是白板替换成鬼牌原型
-		if (huPai.equals(MajiangPai.baiban)) {
-			huPai = paiTypesForBaibanAct[0];
-		}
 		int baibanCount = shoupaiCalculator.count(MajiangPai.baiban);
-		// 移除白板,把白板当的牌加入计算器
-		for (int i = 0; i < baibanCount; i++) {
-			shoupaiCalculator.removePai(MajiangPai.baiban);
-		}
-		if (huPai.equals(MajiangPai.baiban)) {
-			baibanCount += 1;
-		}
 		BaibanDangPai[] baibanDangPaiArray = new BaibanDangPai[baibanCount];
-		for (int i = 0; i < baibanCount; i++) {
-			baibanDangPaiArray[i] = new BaibanDangPai(paiTypesForBaibanAct[0]);
+		if (baibanCount > 0) {
+			// 移除白板
+			for (int i = 0; i < baibanCount; i++) {
+				shoupaiCalculator.removePai(MajiangPai.baiban);
+				baibanDangPaiArray[i] = new BaibanDangPai(paiTypesForBaibanAct[0]);
+			}
 		}
+
 		if (!guipaiList.isEmpty()) {// 有财神
-			return calculateHuPaiShoupaiPaiXingListWithCaishen(baibanDangPaiArray, guipaiList, shaozhongfa,
-					shoupaiCalculator, player, gouXingPanHu, huPai);
+			List<ShoupaiPaiXing> shoupaiPaiXingList = calculateHuPaiShoupaiPaiXingListWithCaishen(baibanDangPaiArray,
+					guipaiList, shaozhongfa, shoupaiCalculator, player, gouXingPanHu, huPai);
+			if (baibanCount > 0) {
+				// 加入白板
+				for (int i = 0; i < baibanCount; i++) {
+					shoupaiCalculator.addPai(MajiangPai.baiban);
+				}
+			}
+			return shoupaiPaiXingList;
 		} else {// 没财神
-			return calculateHuPaiShoupaiPaiXingListWithoutCaishen(baibanDangPaiArray, shoupaiCalculator, player,
-					gouXingPanHu, huPai);
+			List<ShoupaiPaiXing> shoupaiPaiXingList = calculateHuPaiShoupaiPaiXingListWithoutCaishen(baibanDangPaiArray,
+					shoupaiCalculator, player, gouXingPanHu, huPai);
+			if (baibanCount > 0) {
+				// 加入白板
+				for (int i = 0; i < baibanCount; i++) {
+					shoupaiCalculator.addPai(MajiangPai.baiban);
+				}
+			}
+			return shoupaiPaiXingList;
 		}
 	}
 
@@ -289,15 +297,19 @@ public class WenzhouMajiangJiesuanCalculator {
 			BaibanDangPai[] baibanDangPaiArray, ShoupaiCalculator shoupaiCalculator, MajiangPlayer player,
 			GouXingPanHu gouXingPanHu, MajiangPai huPai) {
 		List<ShoupaiPaiXing> huPaiShoupaiPaiXingList = new ArrayList<>();
-		// 先把所有当的白板加入计算器
-		for (int i = 0; i < baibanDangPaiArray.length; i++) {
-			shoupaiCalculator.addPai(baibanDangPaiArray[i].getDangpai());
+		if (baibanDangPaiArray.length > 0) {
+			// 先把所有当的白板加入计算器
+			for (int i = 0; i < baibanDangPaiArray.length; i++) {
+				shoupaiCalculator.addPai(baibanDangPaiArray[i].getDangpai());
+			}
 		}
 		// 计算构型
 		List<GouXing> gouXingList = shoupaiCalculator.calculateAllGouXing();
-		// 再把所有当的白板移出计算器
-		for (int i = 0; i < baibanDangPaiArray.length; i++) {
-			shoupaiCalculator.removePai(baibanDangPaiArray[i].getDangpai());
+		if (baibanDangPaiArray.length > 0) {
+			// 再把所有当的白板移出计算器
+			for (int i = 0; i < baibanDangPaiArray.length; i++) {
+				shoupaiCalculator.removePai(baibanDangPaiArray[i].getDangpai());
+			}
 		}
 		int chichuShunziCount = player.countChichupaiZu();
 		int pengchuKeziCount = player.countPengchupaiZu();
@@ -306,15 +318,19 @@ public class WenzhouMajiangJiesuanCalculator {
 			boolean hu = gouXingPanHu.panHu(gouXing.getGouXingCode(), chichuShunziCount, pengchuKeziCount,
 					gangchuGangziCount);
 			if (hu) {
-				// 先把所有当的白板加入计算器
-				for (int i = 0; i < baibanDangPaiArray.length; i++) {
-					shoupaiCalculator.addPai(baibanDangPaiArray[i].getDangpai());
+				if (baibanDangPaiArray.length > 0) {
+					// 先把所有当的白板加入计算器
+					for (int i = 0; i < baibanDangPaiArray.length; i++) {
+						shoupaiCalculator.addPai(baibanDangPaiArray[i].getDangpai());
+					}
 				}
 				// 计算牌型
 				List<PaiXing> paiXingList = shoupaiCalculator.calculateAllPaiXingFromGouXing(gouXing);
-				// 再把所有当的白板移出计算器
-				for (int i = 0; i < baibanDangPaiArray.length; i++) {
-					shoupaiCalculator.removePai(baibanDangPaiArray[i].getDangpai());
+				if (baibanDangPaiArray.length > 0) {
+					// 再把所有当的白板移出计算器
+					for (int i = 0; i < baibanDangPaiArray.length; i++) {
+						shoupaiCalculator.removePai(baibanDangPaiArray[i].getDangpai());
+					}
 				}
 				for (PaiXing paiXing : paiXingList) {
 					ShoupaiPaiXing shoupaiPaiXing = paiXing.generateAllBenPaiShoupaiPaiXing();
@@ -355,9 +371,11 @@ public class WenzhouMajiangJiesuanCalculator {
 					for (int i = 0; i < guipaiDangPaiArray.length; i++) {
 						shoupaiCalculator.addPai(guipaiDangPaiArray[i].getDangpai());
 					}
-					// 先把所有当的白板加入计算器
-					for (int i = 0; i < baibanDangPaiArray.length; i++) {
-						shoupaiCalculator.addPai(baibanDangPaiArray[i].getDangpai());
+					if (baibanDangPaiArray.length > 0) {
+						// 先把所有当的白板加入计算器
+						for (int i = 0; i < baibanDangPaiArray.length; i++) {
+							shoupaiCalculator.addPai(baibanDangPaiArray[i].getDangpai());
+						}
 					}
 					// 计算牌型
 					huPaiShoupaiPaiXingList.addAll(calculateAllShoupaiPaiXingForGouXingWithHupai(gouXing,
@@ -366,9 +384,11 @@ public class WenzhouMajiangJiesuanCalculator {
 					for (int i = 0; i < guipaiDangPaiArray.length; i++) {
 						shoupaiCalculator.removePai(guipaiDangPaiArray[i].getDangpai());
 					}
-					// 再把所有当的白板移出计算器
-					for (int i = 0; i < baibanDangPaiArray.length; i++) {
-						shoupaiCalculator.removePai(baibanDangPaiArray[i].getDangpai());
+					if (baibanDangPaiArray.length > 0) {
+						// 再把所有当的白板移出计算器
+						for (int i = 0; i < baibanDangPaiArray.length; i++) {
+							shoupaiCalculator.removePai(baibanDangPaiArray[i].getDangpai());
+						}
 					}
 				}
 
@@ -448,9 +468,11 @@ public class WenzhouMajiangJiesuanCalculator {
 				for (int i = 0; i < guipaiDangPaiArray.length; i++) {
 					shoupaiCalculator.addPai(guipaiDangPaiArray[i].getDangpai());
 				}
-				// 先把所有当的白板加入计算器
-				for (int i = 0; i < baibanDangPaiArray.length; i++) {
-					shoupaiCalculator.addPai(baibanDangPaiArray[i].getDangpai());
+				if (baibanDangPaiArray.length > 0) {
+					// 先把所有当的白板加入计算器
+					for (int i = 0; i < baibanDangPaiArray.length; i++) {
+						shoupaiCalculator.addPai(baibanDangPaiArray[i].getDangpai());
+					}
 				}
 				// 计算构型
 				List<GouXing> gouXingList = shoupaiCalculator.calculateAllGouXing();
@@ -458,9 +480,11 @@ public class WenzhouMajiangJiesuanCalculator {
 				for (int i = 0; i < guipaiDangPaiArray.length; i++) {
 					shoupaiCalculator.removePai(guipaiDangPaiArray[i].getDangpai());
 				}
-				// 再把所有当的白板移出计算器
-				for (int i = 0; i < baibanDangPaiArray.length; i++) {
-					shoupaiCalculator.removePai(baibanDangPaiArray[i].getDangpai());
+				if (baibanDangPaiArray.length > 0) {
+					// 再把所有当的白板移出计算器
+					for (int i = 0; i < baibanDangPaiArray.length; i++) {
+						shoupaiCalculator.removePai(baibanDangPaiArray[i].getDangpai());
+					}
 				}
 				ShoupaiWithGuipaiDangGouXingZu shoupaiWithGuipaiDangGouXingZu = new ShoupaiWithGuipaiDangGouXingZu();
 				shoupaiWithGuipaiDangGouXingZu.setGouXingList(gouXingList);

@@ -85,28 +85,92 @@ public class WenzhouMajiangMoActionUpdater implements MajiangPlayerMoActionUpdat
 				JuezhangStatisticsListener juezhangStatisticsListener = ju.getActionStatisticsListenerManager()
 						.findListener(JuezhangStatisticsListener.class);
 				Set<MajiangPai> guipaiTypeSet = player.getGuipaiTypeSet();
+				MajiangPai[] guipaiTypes = new MajiangPai[guipaiTypeSet.size()];
+				guipaiTypeSet.toArray(guipaiTypes);
+				MajiangPai guipaiType = guipaiTypes[0];
+				boolean juefeng = false;
+				boolean genfeng = false;
+				// 循环了三次、代码需要改进
 				for (MajiangPai pai : fangruShoupaiList) {
-					if (!guipaiTypeSet.contains(pai) && (MajiangPai.isZipai(pai) || MajiangPai.isFengpai(pai))) {
+					if (!MajiangPai.baiban.equals(pai)) {
+						if (!guipaiTypeSet.contains(pai) && (MajiangPai.isZipai(pai) || MajiangPai.isFengpai(pai))) {
+							if (juezhangStatisticsListener.ifJuezhang(pai)) {
+								player.addActionCandidate(new MajiangDaAction(player.getId(), pai));
+								juefeng = true;
+							}
+						}
+					} else if (!guipaiTypeSet.contains(pai)
+							&& (MajiangPai.isZipai(guipaiType) || MajiangPai.isFengpai(guipaiType))) {
 						if (juezhangStatisticsListener.ifJuezhang(pai)) {
 							player.addActionCandidate(new MajiangDaAction(player.getId(), pai));
-						} else if (juezhangStatisticsListener.ifMingPai(pai)
-								&& player.getShoupaiCalculator().count(pai) == 1) {
-							player.addActionCandidate(new MajiangDaAction(player.getId(), pai));
-						} else if (player.getShoupaiCalculator().count(pai) == 1) {
-							player.addActionCandidate(new MajiangDaAction(player.getId(), pai));
+							juefeng = true;
 						}
+					} else {
+
 					}
 				}
-				if (!guipaiTypeSet.contains(gangmoShoupai)
-						&& (MajiangPai.isZipai(gangmoShoupai) || MajiangPai.isFengpai(gangmoShoupai))) {
+				for (MajiangPai pai : fangruShoupaiList) {
+					if (!MajiangPai.baiban.equals(pai)) {
+						if (!guipaiTypeSet.contains(pai) && !gangmoShoupai.equals(pai)
+								&& (MajiangPai.isZipai(pai) || MajiangPai.isFengpai(pai))) {
+							if (!juefeng && juezhangStatisticsListener.ifMingPai(pai)
+									&& player.getShoupaiCalculator().count(pai) == 1) {
+								player.addActionCandidate(new MajiangDaAction(player.getId(), pai));
+								genfeng = true;
+							}
+						}
+					} else if (!guipaiTypeSet.contains(pai) && !gangmoShoupai.equals(pai)
+							&& (MajiangPai.isZipai(guipaiType) || MajiangPai.isFengpai(guipaiType))) {
+						if (!juefeng && juezhangStatisticsListener.ifMingPai(pai)
+								&& player.getShoupaiCalculator().count(pai) == 1) {
+							player.addActionCandidate(new MajiangDaAction(player.getId(), pai));
+							genfeng = true;
+						}
+					} else {
+
+					}
+				}
+				for (MajiangPai pai : fangruShoupaiList) {
+					if (!MajiangPai.baiban.equals(pai)) {
+						if (!guipaiTypeSet.contains(pai) && !gangmoShoupai.equals(pai)
+								&& (MajiangPai.isZipai(pai) || MajiangPai.isFengpai(pai))) {
+							if (!juefeng && !genfeng && player.getShoupaiCalculator().count(pai) == 1) {
+								player.addActionCandidate(new MajiangDaAction(player.getId(), pai));
+							}
+						}
+					} else if (!guipaiTypeSet.contains(pai) && !gangmoShoupai.equals(pai)
+							&& (MajiangPai.isZipai(guipaiType) || MajiangPai.isFengpai(guipaiType))) {
+						if (!juefeng && !genfeng && player.getShoupaiCalculator().count(pai) == 1) {
+							player.addActionCandidate(new MajiangDaAction(player.getId(), pai));
+						}
+					} else {
+
+					}
+				}
+				if (!MajiangPai.baiban.equals(gangmoShoupai)) {
+					if (!guipaiTypeSet.contains(gangmoShoupai)
+							&& (MajiangPai.isZipai(gangmoShoupai) || MajiangPai.isFengpai(gangmoShoupai))) {
+						if (juezhangStatisticsListener.ifJuezhang(gangmoShoupai)) {
+							player.addActionCandidate(new MajiangDaAction(player.getId(), gangmoShoupai));
+						} else if (!juefeng && juezhangStatisticsListener.ifMingPai(gangmoShoupai)
+								&& player.getShoupaiCalculator().count(gangmoShoupai) == 0) {
+							player.addActionCandidate(new MajiangDaAction(player.getId(), gangmoShoupai));
+						} else if (!juefeng && !genfeng && player.getShoupaiCalculator().count(gangmoShoupai) == 0) {
+							player.addActionCandidate(new MajiangDaAction(player.getId(), gangmoShoupai));
+						}
+					}
+				} else if (!guipaiTypeSet.contains(gangmoShoupai)
+						&& (MajiangPai.isZipai(guipaiType) || MajiangPai.isFengpai(guipaiType))) {
 					if (juezhangStatisticsListener.ifJuezhang(gangmoShoupai)) {
 						player.addActionCandidate(new MajiangDaAction(player.getId(), gangmoShoupai));
-					} else if (juezhangStatisticsListener.ifMingPai(gangmoShoupai)
+					} else if (!juefeng && juezhangStatisticsListener.ifMingPai(gangmoShoupai)
 							&& player.getShoupaiCalculator().count(gangmoShoupai) == 0) {
 						player.addActionCandidate(new MajiangDaAction(player.getId(), gangmoShoupai));
-					} else if (player.getShoupaiCalculator().count(gangmoShoupai) == 0) {
+					} else if (!juefeng && !genfeng && player.getShoupaiCalculator().count(gangmoShoupai) == 0) {
 						player.addActionCandidate(new MajiangDaAction(player.getId(), gangmoShoupai));
 					}
+				} else {
+
 				}
 			}
 			if (player.getActionCandidates().isEmpty()) {

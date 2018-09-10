@@ -41,29 +41,29 @@ public class WenzhouMajiangDaActionUpdater implements MajiangPlayerDaActionUpdat
 		MajiangPai[] guipaiType = new MajiangPai[guipaiTypeSet.size()];
 		guipaiTypeSet.toArray(guipaiType);
 		MajiangPai daPai = daAction.getPai();
+		// 下家可以吃，代码需要改进
 		if (daPai.equals(MajiangPai.baiban) && guipaiType.length > 0) {
 			daPai = guipaiType[0];
-			// 下家可以吃
 			ShoupaiCalculator shoupaiCalculator = xiajiaPlayer.getShoupaiCalculator();
 			Shunzi shunzi1 = shoupaiCalculator.tryAndMakeShunziWithPai1(daPai);
 			if (shunzi1 != null) {
 				shunzi1.setPai1(daAction.getPai());
-				xiajiaPlayer.addActionCandidate(
-						new MajiangChiAction(xiajiaPlayer.getId(), daAction.getActionPlayerId(), daPai, shunzi1));
+				xiajiaPlayer.addActionCandidate(new MajiangChiAction(xiajiaPlayer.getId(), daAction.getActionPlayerId(),
+						daAction.getPai(), shunzi1));
 			}
 
 			Shunzi shunzi2 = shoupaiCalculator.tryAndMakeShunziWithPai2(daPai);
 			if (shunzi2 != null) {
 				shunzi2.setPai2(daAction.getPai());
-				xiajiaPlayer.addActionCandidate(
-						new MajiangChiAction(xiajiaPlayer.getId(), daAction.getActionPlayerId(), daPai, shunzi2));
+				xiajiaPlayer.addActionCandidate(new MajiangChiAction(xiajiaPlayer.getId(), daAction.getActionPlayerId(),
+						daAction.getPai(), shunzi2));
 			}
 
 			Shunzi shunzi3 = shoupaiCalculator.tryAndMakeShunziWithPai3(daPai);
 			if (shunzi3 != null) {
 				shunzi3.setPai3(daAction.getPai());
-				xiajiaPlayer.addActionCandidate(
-						new MajiangChiAction(xiajiaPlayer.getId(), daAction.getActionPlayerId(), daPai, shunzi3));
+				xiajiaPlayer.addActionCandidate(new MajiangChiAction(xiajiaPlayer.getId(), daAction.getActionPlayerId(),
+						daAction.getPai(), shunzi3));
 			}
 		} else {
 			xiajiaPlayer.tryChiAndGenerateCandidateActions(daAction.getActionPlayerId(), daPai);
