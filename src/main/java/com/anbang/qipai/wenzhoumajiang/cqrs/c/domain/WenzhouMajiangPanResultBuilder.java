@@ -88,8 +88,10 @@ public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 					WenzhouMajiangPanPlayerCaishenqian caishenqian2 = playerResult2.getCaishenqian();
 					String playerId2 = playerResult2.getPlayerId();
 					// 结算财神钱
-					caishenqian1.jiesuan(-caishenqian2.getValue());
-					caishenqian2.jiesuan(-caishenqian1.getValue());
+					int qian1 = caishenqian1.getValue();
+					int qian2 = caishenqian2.getValue();
+					caishenqian1.jiesuan(-qian2);
+					caishenqian2.jiesuan(-qian1);
 					if (playerId1.equals(huPlayer.getId())) {// 1胡2不胡
 						// 是不是庄家胡
 						boolean zhuangHu = currentPan.getZhuangPlayerId().equals(playerId1);
