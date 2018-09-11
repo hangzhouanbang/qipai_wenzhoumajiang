@@ -48,7 +48,7 @@ public class WenzhouMajiangMoActionUpdater implements MajiangPlayerMoActionUpdat
 
 			boolean couldTianhu = false;
 			if (currentPan.getZhuangPlayerId().equals(player.getId())) {
-				if (player.countFangruShoupai() == 0) {
+				if (player.countAllFangruShoupai() == 0) {
 					couldTianhu = true;
 				}
 			}
