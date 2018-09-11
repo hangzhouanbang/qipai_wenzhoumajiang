@@ -5,7 +5,8 @@ import com.dml.majiang.player.MajiangPlayer;
 public class WenzhouMajiangPanPlayerCaishenqian {
 
 	private int caishenCount;
-	private int value;
+	private int totalscore;// 总得分
+	private int value;// 单人
 
 	public WenzhouMajiangPanPlayerCaishenqian() {
 
@@ -15,7 +16,7 @@ public class WenzhouMajiangPanPlayerCaishenqian {
 		caishenCount = player.countGuipai();
 	}
 
-	public void calculate(boolean hu, boolean caishenqian) {
+	public void calculate(boolean hu, boolean caishenqian, int playerCount) {
 		int caishenfen = 0;
 		if (caishenqian) {
 			caishenfen = caishenCount;
@@ -24,10 +25,11 @@ public class WenzhouMajiangPanPlayerCaishenqian {
 			}
 		}
 		value = caishenfen;
+		totalscore = caishenfen * (playerCount - 1);
 	}
 
 	public int jiesuan(int delta) {
-		return value += delta;
+		return totalscore += delta;
 	}
 
 	public int getCaishenCount() {
@@ -36,6 +38,14 @@ public class WenzhouMajiangPanPlayerCaishenqian {
 
 	public void setCaishenCount(int caishenCount) {
 		this.caishenCount = caishenCount;
+	}
+
+	public int getTotalscore() {
+		return totalscore;
+	}
+
+	public void setTotalscore(int totalscore) {
+		this.totalscore = totalscore;
 	}
 
 	public int getValue() {

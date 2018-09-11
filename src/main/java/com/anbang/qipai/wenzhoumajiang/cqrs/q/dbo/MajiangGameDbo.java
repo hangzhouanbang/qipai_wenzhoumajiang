@@ -16,11 +16,13 @@ public class MajiangGameDbo {
 	private int lianzhuangCount = 1;
 	private int panshu;
 	private int renshu;
-	private boolean jinjie;
+	private boolean jinjie1;
+	private boolean jinjie2;
 	private boolean teshushuangfan;
 	private boolean caishenqian;
 	private boolean shaozhongfa;
 	private boolean lazila;
+	private boolean gangsuanfen;
 	private MajiangGameState state;
 	private List<MajiangGamePlayerDbo> players;
 
@@ -32,7 +34,9 @@ public class MajiangGameDbo {
 		lianzhuangCount = majiangGame.getLianzhuangCount();
 		panshu = majiangGame.getPanshu();
 		renshu = majiangGame.getRenshu();
-		jinjie = majiangGame.isJinjie();
+		jinjie1 = majiangGame.isJinjie1();
+		jinjie2 = majiangGame.isJinjie2();
+		gangsuanfen = majiangGame.isGangsuanfen();
 		teshushuangfan = majiangGame.isTeshushuangfan();
 		caishenqian = majiangGame.isCaishenqian();
 		shaozhongfa = majiangGame.isShaozhongfa();
@@ -82,6 +86,14 @@ public class MajiangGameDbo {
 		this.id = id;
 	}
 
+	public int getLianzhuangCount() {
+		return lianzhuangCount;
+	}
+
+	public void setLianzhuangCount(int lianzhuangCount) {
+		this.lianzhuangCount = lianzhuangCount;
+	}
+
 	public int getPanshu() {
 		return panshu;
 	}
@@ -98,28 +110,20 @@ public class MajiangGameDbo {
 		this.renshu = renshu;
 	}
 
-	public MajiangGameState getState() {
-		return state;
+	public boolean isJinjie1() {
+		return jinjie1;
 	}
 
-	public void setState(MajiangGameState state) {
-		this.state = state;
+	public void setJinjie1(boolean jinjie1) {
+		this.jinjie1 = jinjie1;
 	}
 
-	public List<MajiangGamePlayerDbo> getPlayers() {
-		return players;
+	public boolean isJinjie2() {
+		return jinjie2;
 	}
 
-	public void setPlayers(List<MajiangGamePlayerDbo> players) {
-		this.players = players;
-	}
-
-	public boolean isJinjie() {
-		return jinjie;
-	}
-
-	public void setJinjie(boolean jinjie) {
-		this.jinjie = jinjie;
+	public void setJinjie2(boolean jinjie2) {
+		this.jinjie2 = jinjie2;
 	}
 
 	public boolean isTeshushuangfan() {
@@ -154,12 +158,27 @@ public class MajiangGameDbo {
 		this.lazila = lazila;
 	}
 
-	public int getLianzhuangCount() {
-		return lianzhuangCount;
+	public boolean isGangsuanfen() {
+		return gangsuanfen;
 	}
 
-	public void setLianzhuangCount(int lianzhuangCount) {
-		this.lianzhuangCount = lianzhuangCount;
+	public void setGangsuanfen(boolean gangsuanfen) {
+		this.gangsuanfen = gangsuanfen;
 	}
 
+	public MajiangGameState getState() {
+		return state;
+	}
+
+	public void setState(MajiangGameState state) {
+		this.state = state;
+	}
+
+	public List<MajiangGamePlayerDbo> getPlayers() {
+		return players;
+	}
+
+	public void setPlayers(List<MajiangGamePlayerDbo> players) {
+		this.players = players;
+	}
 }

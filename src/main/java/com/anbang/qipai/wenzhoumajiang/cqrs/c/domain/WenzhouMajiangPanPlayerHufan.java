@@ -47,6 +47,8 @@ public class WenzhouMajiangPanPlayerHufan {
 				shuangfan = true;
 			} else if (huxing.isDihu()) {
 				shuangfan = true;
+			} else if (huxing.isBadui() && !ruan) {
+				shuangfan = true;
 			}
 		}
 		if (sifan) {

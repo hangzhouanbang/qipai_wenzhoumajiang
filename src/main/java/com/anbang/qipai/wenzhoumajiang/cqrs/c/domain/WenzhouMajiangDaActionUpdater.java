@@ -40,33 +40,29 @@ public class WenzhouMajiangDaActionUpdater implements MajiangPlayerDaActionUpdat
 		Set<MajiangPai> guipaiTypeSet = xiajiaPlayer.getGuipaiTypeSet();
 		MajiangPai[] guipaiType = new MajiangPai[guipaiTypeSet.size()];
 		guipaiTypeSet.toArray(guipaiType);
+		MajiangPai guipaiai = guipaiType[0];
 		MajiangPai daPai = daAction.getPai();
 		// 下家可以吃，代码需要改进
-		if (daPai.equals(MajiangPai.baiban) && guipaiType.length > 0) {
-			daPai = guipaiType[0];
-			ShoupaiCalculator shoupaiCalculator = xiajiaPlayer.getShoupaiCalculator();
-			Shunzi shunzi1 = shoupaiCalculator.tryAndMakeShunziWithPai1(daPai);
-			if (shunzi1 != null) {
-				shunzi1.setPai1(daAction.getPai());
-				xiajiaPlayer.addActionCandidate(new MajiangChiAction(xiajiaPlayer.getId(), daAction.getActionPlayerId(),
-						daAction.getPai(), shunzi1));
-			}
+		ShoupaiCalculator shoupaiCalculator = xiajiaPlayer.getShoupaiCalculator();
+		Shunzi shunzi1 = tryAndMakeShunziWithPai1(shoupaiCalculator, guipaiai, daPai);
+		if (shunzi1 != null) {
+			shunzi1.setPai1(daPai);
+			xiajiaPlayer.addActionCandidate(
+					new MajiangChiAction(xiajiaPlayer.getId(), daAction.getActionPlayerId(), daPai, shunzi1));
+		}
 
-			Shunzi shunzi2 = shoupaiCalculator.tryAndMakeShunziWithPai2(daPai);
-			if (shunzi2 != null) {
-				shunzi2.setPai2(daAction.getPai());
-				xiajiaPlayer.addActionCandidate(new MajiangChiAction(xiajiaPlayer.getId(), daAction.getActionPlayerId(),
-						daAction.getPai(), shunzi2));
-			}
+		Shunzi shunzi2 = tryAndMakeShunziWithPai2(shoupaiCalculator, guipaiai, daPai);
+		if (shunzi2 != null) {
+			shunzi2.setPai2(daPai);
+			xiajiaPlayer.addActionCandidate(
+					new MajiangChiAction(xiajiaPlayer.getId(), daAction.getActionPlayerId(), daPai, shunzi2));
+		}
 
-			Shunzi shunzi3 = shoupaiCalculator.tryAndMakeShunziWithPai3(daPai);
-			if (shunzi3 != null) {
-				shunzi3.setPai3(daAction.getPai());
-				xiajiaPlayer.addActionCandidate(new MajiangChiAction(xiajiaPlayer.getId(), daAction.getActionPlayerId(),
-						daAction.getPai(), shunzi3));
-			}
-		} else {
-			xiajiaPlayer.tryChiAndGenerateCandidateActions(daAction.getActionPlayerId(), daPai);
+		Shunzi shunzi3 = tryAndMakeShunziWithPai3(shoupaiCalculator, guipaiai, daPai);
+		if (shunzi3 != null) {
+			shunzi3.setPai3(daPai);
+			xiajiaPlayer.addActionCandidate(
+					new MajiangChiAction(xiajiaPlayer.getId(), daAction.getActionPlayerId(), daPai, shunzi3));
 		}
 		MajiangPlayer bestHuplayer = null;
 		WenzhouMajiangHu playerBestHu = null;
@@ -123,4 +119,153 @@ public class WenzhouMajiangDaActionUpdater implements MajiangPlayerDaActionUpdat
 
 	}
 
+	private Shunzi tryAndMakeShunziWithPai1(ShoupaiCalculator shoupaiCalculator, MajiangPai guipai, MajiangPai pai1) {
+		int[] paiQuantityArray = shoupaiCalculator.getPaiQuantityArray();
+		int paiOrdinal = pai1.ordinal();
+		int pai2 = paiOrdinal + 1;
+		int pai3 = paiOrdinal + 2;
+		int guipaiOrdinal = guipai.ordinal();
+		if (guipaiOrdinal == pai2) {
+			pai2 = MajiangPai.baiban.ordinal();
+		}
+		if (guipaiOrdinal == pai3) {
+			pai3 = MajiangPai.baiban.ordinal();
+		}
+		if (paiOrdinal >= 0 && paiOrdinal <= 8) {// 万
+			if (paiOrdinal <= 6) {
+				if (paiQuantityArray[pai2] > 0 && paiQuantityArray[pai3] > 0) {
+					Shunzi shunzi = new Shunzi(pai1, MajiangPai.valueOf(pai2), MajiangPai.valueOf(pai3));
+					return shunzi;
+				} else {
+					return null;
+				}
+			} else {
+				return null;
+			}
+		} else if (paiOrdinal >= 9 && paiOrdinal <= 17) {// 筒
+			if (paiOrdinal <= 15) {
+				if (paiQuantityArray[pai2] > 0 && paiQuantityArray[pai3] > 0) {
+					Shunzi shunzi = new Shunzi(pai1, MajiangPai.valueOf(pai2), MajiangPai.valueOf(pai3));
+					return shunzi;
+				} else {
+					return null;
+				}
+			} else {
+				return null;
+			}
+		} else if (paiOrdinal >= 18 && paiOrdinal <= 26) {// 条
+			if (paiOrdinal <= 24) {
+				if (paiQuantityArray[pai2] > 0 && paiQuantityArray[pai3] > 0) {
+					Shunzi shunzi = new Shunzi(pai1, MajiangPai.valueOf(pai2), MajiangPai.valueOf(pai3));
+					return shunzi;
+				} else {
+					return null;
+				}
+			} else {
+				return null;
+			}
+		} else {
+			return null;
+		}
+	}
+
+	private Shunzi tryAndMakeShunziWithPai2(ShoupaiCalculator shoupaiCalculator, MajiangPai guipai, MajiangPai pai2) {
+		int[] paiQuantityArray = shoupaiCalculator.getPaiQuantityArray();
+		int paiOrdinal = pai2.ordinal();
+		int pai1 = paiOrdinal - 1;
+		int pai3 = paiOrdinal + 1;
+		int guipaiOrdinal = guipai.ordinal();
+		if (guipaiOrdinal == pai1) {
+			pai1 = MajiangPai.baiban.ordinal();
+		}
+		if (guipaiOrdinal == pai3) {
+			pai3 = MajiangPai.baiban.ordinal();
+		}
+		if (paiOrdinal >= 0 && paiOrdinal <= 8) {// 万
+			if (paiOrdinal >= 1 && paiOrdinal <= 7) {
+				if (paiQuantityArray[pai1] > 0 && paiQuantityArray[pai3] > 0) {
+					Shunzi shunzi = new Shunzi(MajiangPai.valueOf(pai1), pai2, MajiangPai.valueOf(pai3));
+					return shunzi;
+				} else {
+					return null;
+				}
+			} else {
+				return null;
+			}
+		} else if (paiOrdinal >= 9 && paiOrdinal <= 17) {// 筒
+			if (paiOrdinal >= 10 && paiOrdinal <= 16) {
+				if (paiQuantityArray[pai1] > 0 && paiQuantityArray[pai3] > 0) {
+					Shunzi shunzi = new Shunzi(MajiangPai.valueOf(pai1), pai2, MajiangPai.valueOf(pai3));
+					return shunzi;
+				} else {
+					return null;
+				}
+			} else {
+				return null;
+			}
+		} else if (paiOrdinal >= 18 && paiOrdinal <= 26) {// 条
+			if (paiOrdinal >= 19 && paiOrdinal <= 25) {
+				if (paiQuantityArray[pai1] > 0 && paiQuantityArray[pai3] > 0) {
+					Shunzi shunzi = new Shunzi(MajiangPai.valueOf(pai1), pai2, MajiangPai.valueOf(pai3));
+					return shunzi;
+				} else {
+					return null;
+				}
+			} else {
+				return null;
+			}
+		} else {
+			return null;
+		}
+	}
+
+	private Shunzi tryAndMakeShunziWithPai3(ShoupaiCalculator shoupaiCalculator, MajiangPai guipai, MajiangPai pai3) {
+		int[] paiQuantityArray = shoupaiCalculator.getPaiQuantityArray();
+		int paiOrdinal = pai3.ordinal();
+		int pai1 = paiOrdinal - 2;
+		int pai2 = paiOrdinal - 1;
+		int guipaiOrdinal = guipai.ordinal();
+		if (guipaiOrdinal == pai1) {
+			pai1 = MajiangPai.baiban.ordinal();
+		}
+		if (guipaiOrdinal == pai2) {
+			pai2 = MajiangPai.baiban.ordinal();
+		}
+		if (paiOrdinal >= 0 && paiOrdinal <= 8) {// 万
+			if (paiOrdinal >= 2) {
+				if (paiQuantityArray[pai1] > 0 && paiQuantityArray[pai2] > 0) {
+					Shunzi shunzi = new Shunzi(MajiangPai.valueOf(pai1), MajiangPai.valueOf(pai2), pai3);
+					return shunzi;
+				} else {
+					return null;
+				}
+			} else {
+				return null;
+			}
+		} else if (paiOrdinal >= 9 && paiOrdinal <= 17) {// 筒
+			if (paiOrdinal >= 11) {
+				if (paiQuantityArray[pai1] > 0 && paiQuantityArray[pai2] > 0) {
+					Shunzi shunzi = new Shunzi(MajiangPai.valueOf(pai1), MajiangPai.valueOf(pai2), pai3);
+					return shunzi;
+				} else {
+					return null;
+				}
+			} else {
+				return null;
+			}
+		} else if (paiOrdinal >= 18 && paiOrdinal <= 26) {// 条
+			if (paiOrdinal >= 20) {
+				if (paiQuantityArray[pai1] > 0 && paiQuantityArray[pai2] > 0) {
+					Shunzi shunzi = new Shunzi(MajiangPai.valueOf(pai1), MajiangPai.valueOf(pai2), pai3);
+					return shunzi;
+				} else {
+					return null;
+				}
+			} else {
+				return null;
+			}
+		} else {
+			return null;
+		}
+	}
 }

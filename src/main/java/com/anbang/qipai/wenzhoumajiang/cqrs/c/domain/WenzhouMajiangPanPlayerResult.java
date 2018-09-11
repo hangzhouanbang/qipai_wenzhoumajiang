@@ -22,6 +22,8 @@ public class WenzhouMajiangPanPlayerResult {
 
 	private WenzhouMajiangPanPlayerCaishenqian caishenqian;
 
+	private WenzhouMajiangGang gang;
+
 	private int score;// 一盘的结算分
 
 	private int totalScore;
@@ -167,5 +169,13 @@ public class WenzhouMajiangPanPlayerResult {
 
 	public void setScore(int score) {
 		this.score = score;
+	}
+
+	public WenzhouMajiangGang getGang() {
+		return gang;
+	}
+
+	public void setGang(WenzhouMajiangGang gang) {
+		this.gang = gang;
 	}
 }

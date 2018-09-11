@@ -168,20 +168,20 @@ public class ShoupaixingWuguanJiesuancanshu {
 		this.danzhangdiao = danzhangdiao;
 	}
 
-	public boolean isGuipaiIsZhongFaBai() {
-		return guipaiIsZhongFaBai;
-	}
-
-	public void setGuipaiIsZhongFaBai(boolean guipaiIsZhongFaBai) {
-		this.guipaiIsZhongFaBai = guipaiIsZhongFaBai;
-	}
-
 	public MajiangPai getGuipaiType() {
 		return guipaiType;
 	}
 
 	public void setGuipaiType(MajiangPai guipaiType) {
 		this.guipaiType = guipaiType;
+	}
+
+	public boolean isGuipaiIsZhongFaBai() {
+		return guipaiIsZhongFaBai;
+	}
+
+	public void setGuipaiIsZhongFaBai(boolean guipaiIsZhongFaBai) {
+		this.guipaiIsZhongFaBai = guipaiIsZhongFaBai;
 	}
 
 	public int getHongzhongCount() {
@@ -207,5 +207,4 @@ public class ShoupaixingWuguanJiesuancanshu {
 	public void setBaibanCount(int baibanCount) {
 		this.baibanCount = baibanCount;
 	}
-
 }

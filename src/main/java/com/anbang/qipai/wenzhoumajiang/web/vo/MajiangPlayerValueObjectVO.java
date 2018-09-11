@@ -8,7 +8,6 @@ import com.dml.majiang.player.action.MajiangPlayerAction;
 import com.dml.majiang.player.chupaizu.ChichuPaiZu;
 import com.dml.majiang.player.chupaizu.GangchuPaiZu;
 import com.dml.majiang.player.chupaizu.PengchuPaiZu;
-import com.dml.majiang.player.valueobj.FangruShoupaiListValueObject;
 import com.dml.majiang.player.valueobj.MajiangPlayerValueObject;
 import com.dml.majiang.position.MajiangPosition;
 
@@ -19,7 +18,7 @@ public class MajiangPlayerValueObjectVO {
 	 * 门风
 	 */
 	private MajiangPosition menFeng;
-	private FangruShoupaiListValueObject fangruShoupaiList;
+	private FangruShoupaiListVO fangruShoupaiList;
 	/**
 	 * 公开的牌，不能行牌
 	 */
@@ -46,7 +45,8 @@ public class MajiangPlayerValueObjectVO {
 	public MajiangPlayerValueObjectVO(MajiangPlayerValueObject majiangPlayerValueObject) {
 		id = majiangPlayerValueObject.getId();
 		menFeng = majiangPlayerValueObject.getMenFeng();
-		fangruShoupaiList = majiangPlayerValueObject.getFangruShoupaiList();
+		fangruShoupaiList = new FangruShoupaiListVO(majiangPlayerValueObject.getFangruShoupaiList(),
+				majiangPlayerValueObject.getFangruGuipaiList(), majiangPlayerValueObject.getTotalShoupaiCount());
 		publicPaiList = majiangPlayerValueObject.getPublicPaiList();
 		actionCandidates = majiangPlayerValueObject.getActionCandidates();
 		if (actionCandidates != null && !actionCandidates.isEmpty()) {
@@ -68,7 +68,7 @@ public class MajiangPlayerValueObjectVO {
 		return menFeng;
 	}
 
-	public FangruShoupaiListValueObject getFangruShoupaiList() {
+	public FangruShoupaiListVO getFangruShoupaiList() {
 		return fangruShoupaiList;
 	}
 

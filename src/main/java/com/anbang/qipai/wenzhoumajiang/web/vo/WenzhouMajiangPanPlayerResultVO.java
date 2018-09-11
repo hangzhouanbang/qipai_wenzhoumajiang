@@ -45,6 +45,11 @@ public class WenzhouMajiangPanPlayerResultVO {
 	private int caishenqian;
 
 	/**
+	 * 这个是杠分
+	 */
+	private int gangfen;
+
+	/**
 	 * 这个是结算分
 	 */
 	private int score;
@@ -61,7 +66,8 @@ public class WenzhouMajiangPanPlayerResultVO {
 		publicPaiList = new ArrayList<>(panPlayerResult.getPublicPaiList());
 		huxing = new WenzhouMajiangPanPlayerHuxingVO(panPlayerResult.getHufan().getHuxing());
 		this.hufan = panPlayerResult.getHufan().getValue();
-		this.caishenqian = panPlayerResult.getCaishenqian().getValue();
+		this.caishenqian = panPlayerResult.getCaishenqian().getTotalscore();
+		this.gangfen = panPlayerResult.getGang().getTotalscore();
 		this.score = panPlayerResult.getScore();
 		List<ChichuPaiZu> chichuPaiZuList = panPlayerResult.getChichupaiZuList();
 		for (ChichuPaiZu chichuPaiZu : chichuPaiZuList) {
@@ -272,5 +278,13 @@ public class WenzhouMajiangPanPlayerResultVO {
 
 	public void setScore(int score) {
 		this.score = score;
+	}
+
+	public int getGangfen() {
+		return gangfen;
+	}
+
+	public void setGangfen(int gangfen) {
+		this.gangfen = gangfen;
 	}
 }

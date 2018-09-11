@@ -16,9 +16,11 @@ import com.dml.majiang.player.shoupai.ShoupaiPaiXing;
 
 public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 	private Map<String, MajiangGamePlayerMaidiState> playerMaidiStateMap;
-	private boolean jinjie;
+	private boolean jinjie1;
+	private boolean jinjie2;
 	private boolean teshushuangfan;
 	private boolean caishenqian;
+	private boolean gangsuanfen;
 	private boolean shaozhongfa;
 	private boolean lazila;
 
@@ -34,22 +36,35 @@ public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 		}
 		ZhuangXiajiaIsDongIfZhuangNotHuPlayersMenFengDeterminer menfengDeterminer = (ZhuangXiajiaIsDongIfZhuangNotHuPlayersMenFengDeterminer) ju
 				.getPlayersMenFengDeterminerForNextPan();
-		int difen = 2;
-		if (menfengDeterminer.getLianZhunagCount() == 2) {
-			difen = 4;
-		}
-		if (menfengDeterminer.getLianZhunagCount() == 3) {
-			if (jinjie) {
-				difen = 8;
-			} else {
-				difen = 4;
+		int difen = 1;
+		if (menfengDeterminer.getLianZhuangCount() == 1) {
+			if (jinjie1 || jinjie2) {
+				difen = 2;
 			}
 		}
-		if (menfengDeterminer.getLianZhunagCount() >= 4) {
-			if (jinjie) {
+		if (menfengDeterminer.getLianZhuangCount() == 2) {
+			if (jinjie1 || jinjie2) {
+				difen = 4;
+			} else {
+				difen = 2;
+			}
+		}
+		if (menfengDeterminer.getLianZhuangCount() == 3) {
+			if (jinjie1) {
+				difen = 6;
+			} else if (jinjie2) {
+				difen = 8;
+			} else {
+				difen = 3;
+			}
+		}
+		if (menfengDeterminer.getLianZhuangCount() >= 4) {
+			if (jinjie1) {
+				difen = 8;
+			} else if (jinjie2) {
 				difen = 16;
 			} else {
-				difen = 8;
+				difen = 4;
 			}
 		}
 		MajiangPlayer huPlayer = currentPan.findHuPlayer();
@@ -67,14 +82,20 @@ public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 				if (playerId.equals(huPlayer.getId())) {
 					playerResult.setHufan(huPlayerHufan);
 					WenzhouMajiangPanPlayerCaishenqian caishenqian = new WenzhouMajiangPanPlayerCaishenqian(player);
-					caishenqian.calculate(true, this.caishenqian);
+					caishenqian.calculate(true, this.caishenqian, playerIdList.size());
 					playerResult.setCaishenqian(caishenqian);
+					WenzhouMajiangGang gang = new WenzhouMajiangGang(player);
+					gang.calculate(playerIdList.size(), gangsuanfen);
+					playerResult.setGang(gang);
 				} else {
 					// 计算非胡玩家分数
 					playerResult.setHufan(new WenzhouMajiangPanPlayerHufan());
 					WenzhouMajiangPanPlayerCaishenqian caishenqian = new WenzhouMajiangPanPlayerCaishenqian(player);
-					caishenqian.calculate(false, this.caishenqian);
+					caishenqian.calculate(false, this.caishenqian, playerIdList.size());
 					playerResult.setCaishenqian(caishenqian);
+					WenzhouMajiangGang gang = new WenzhouMajiangGang(player);
+					gang.calculate(playerIdList.size(), gangsuanfen);
+					playerResult.setGang(gang);
 				}
 				playerResultList.add(playerResult);
 			});
@@ -82,16 +103,23 @@ public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 			for (int i = 0; i < playerResultList.size(); i++) {
 				WenzhouMajiangPanPlayerResult playerResult1 = playerResultList.get(i);
 				WenzhouMajiangPanPlayerCaishenqian caishenqian1 = playerResult1.getCaishenqian();
+				WenzhouMajiangGang gang1 = playerResult1.getGang();
 				String playerId1 = playerResult1.getPlayerId();
 				for (int j = (i + 1); j < playerResultList.size(); j++) {
 					WenzhouMajiangPanPlayerResult playerResult2 = playerResultList.get(j);
 					WenzhouMajiangPanPlayerCaishenqian caishenqian2 = playerResult2.getCaishenqian();
+					WenzhouMajiangGang gang2 = playerResult2.getGang();
 					String playerId2 = playerResult2.getPlayerId();
 					// 结算财神钱
 					int qian1 = caishenqian1.getValue();
 					int qian2 = caishenqian2.getValue();
 					caishenqian1.jiesuan(-qian2);
 					caishenqian2.jiesuan(-qian1);
+					// 结算杠分
+					int gangfen1 = gang1.getValue();
+					int gangfen2 = gang2.getValue();
+					gang1.jiesuan(-gangfen2);
+					gang2.jiesuan(-gangfen1);
 					if (playerId1.equals(huPlayer.getId())) {// 1胡2不胡
 						// 是不是庄家胡
 						boolean zhuangHu = currentPan.getZhuangPlayerId().equals(playerId1);
@@ -188,7 +216,8 @@ public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 			playerResultList.forEach((playerResult) -> {
 				MajiangPlayer player = currentPan.findPlayerById(playerResult.getPlayerId());
 				// 计算当盘总分
-				playerResult.setScore(playerResult.getScore() + playerResult.getCaishenqian().getValue());
+				playerResult.setScore(playerResult.getScore() + playerResult.getCaishenqian().getTotalscore()
+						+ playerResult.getGang().getTotalscore());
 				// 计算累计总分
 				if (latestFinishedPanResult != null) {
 					playerResult.setTotalScore(
@@ -228,27 +257,40 @@ public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 				playerResult.setPlayerId(playerId);
 				playerResult.setHufan(new WenzhouMajiangPanPlayerHufan());
 				WenzhouMajiangPanPlayerCaishenqian caishenqian = new WenzhouMajiangPanPlayerCaishenqian(player);
-				caishenqian.calculate(false, this.caishenqian);
+				caishenqian.calculate(false, this.caishenqian, playerIdList.size());
 				playerResult.setCaishenqian(caishenqian);
+				WenzhouMajiangGang gang = new WenzhouMajiangGang(player);
+				gang.calculate(playerIdList.size(), gangsuanfen);
+				playerResult.setGang(gang);
 				playerResultList.add(playerResult);
 			});
 
 			for (int i = 0; i < playerResultList.size(); i++) {
 				WenzhouMajiangPanPlayerResult playerResult1 = playerResultList.get(i);
 				WenzhouMajiangPanPlayerCaishenqian caishenqian1 = playerResult1.getCaishenqian();
+				WenzhouMajiangGang gang1 = playerResult1.getGang();
 				for (int j = (i + 1); j < playerResultList.size(); j++) {
 					WenzhouMajiangPanPlayerResult playerResult2 = playerResultList.get(j);
 					WenzhouMajiangPanPlayerCaishenqian caishenqian2 = playerResult2.getCaishenqian();
+					WenzhouMajiangGang gang2 = playerResult2.getGang();
 					// 结算财神钱
-					caishenqian1.jiesuan(-caishenqian2.getValue());
-					caishenqian2.jiesuan(-caishenqian1.getValue());
+					int qian1 = caishenqian1.getValue();
+					int qian2 = caishenqian2.getValue();
+					caishenqian1.jiesuan(-qian2);
+					caishenqian2.jiesuan(-qian1);
+					// 结算杠分
+					int gangfen1 = gang1.getValue();
+					int gangfen2 = gang2.getValue();
+					gang1.jiesuan(-gangfen2);
+					gang2.jiesuan(-gangfen1);
 				}
 			}
 			// shoupailist放入结果
 			playerResultList.forEach((playerResult) -> {
 				MajiangPlayer player = currentPan.findPlayerById(playerResult.getPlayerId());
 				// 计算当盘总分
-				playerResult.setScore(playerResult.getScore() + playerResult.getCaishenqian().getValue());
+				playerResult.setScore(playerResult.getScore() + playerResult.getCaishenqian().getTotalscore()
+						+ playerResult.getGang().getTotalscore());
 				// 计算累计总分
 				if (latestFinishedPanResult != null) {
 					playerResult.setTotalScore(
@@ -278,12 +320,28 @@ public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 		}
 	}
 
-	public boolean isJinjie() {
-		return jinjie;
+	public Map<String, MajiangGamePlayerMaidiState> getPlayerMaidiStateMap() {
+		return playerMaidiStateMap;
 	}
 
-	public void setJinjie(boolean jinjie) {
-		this.jinjie = jinjie;
+	public void setPlayerMaidiStateMap(Map<String, MajiangGamePlayerMaidiState> playerMaidiStateMap) {
+		this.playerMaidiStateMap = playerMaidiStateMap;
+	}
+
+	public boolean isJinjie1() {
+		return jinjie1;
+	}
+
+	public void setJinjie1(boolean jinjie1) {
+		this.jinjie1 = jinjie1;
+	}
+
+	public boolean isJinjie2() {
+		return jinjie2;
+	}
+
+	public void setJinjie2(boolean jinjie2) {
+		this.jinjie2 = jinjie2;
 	}
 
 	public boolean isTeshushuangfan() {
@@ -302,6 +360,14 @@ public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 		this.caishenqian = caishenqian;
 	}
 
+	public boolean isGangsuanfen() {
+		return gangsuanfen;
+	}
+
+	public void setGangsuanfen(boolean gangsuanfen) {
+		this.gangsuanfen = gangsuanfen;
+	}
+
 	public boolean isShaozhongfa() {
 		return shaozhongfa;
 	}
@@ -316,14 +382,6 @@ public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 
 	public void setLazila(boolean lazila) {
 		this.lazila = lazila;
-	}
-
-	public Map<String, MajiangGamePlayerMaidiState> getPlayerMaidiStateMap() {
-		return playerMaidiStateMap;
-	}
-
-	public void setPlayerMaidiStateMap(Map<String, MajiangGamePlayerMaidiState> playerMaidiStateMap) {
-		this.playerMaidiStateMap = playerMaidiStateMap;
 	}
 
 }

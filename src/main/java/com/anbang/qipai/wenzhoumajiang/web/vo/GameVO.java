@@ -11,7 +11,9 @@ public class GameVO {
 	private int lianzhuangCount;
 	private int panshu;
 	private int renshu;
-	private boolean jinjie;
+	private boolean jinjie1;
+	private boolean jinjie2;
+	private boolean gangsuanfen;
 	private boolean teshushuangfan;
 	private boolean caishenqian;
 	private boolean shaozhongfa;
@@ -24,7 +26,9 @@ public class GameVO {
 		lianzhuangCount = majiangGameDbo.getLianzhuangCount();
 		panshu = majiangGameDbo.getPanshu();
 		renshu = majiangGameDbo.getRenshu();
-		jinjie = majiangGameDbo.isJinjie();
+		jinjie1 = majiangGameDbo.isJinjie1();
+		jinjie2 = majiangGameDbo.isJinjie2();
+		gangsuanfen = majiangGameDbo.isGangsuanfen();
 		teshushuangfan = majiangGameDbo.isTeshushuangfan();
 		caishenqian = majiangGameDbo.isCaishenqian();
 		shaozhongfa = majiangGameDbo.isShaozhongfa();
@@ -40,6 +44,14 @@ public class GameVO {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public int getLianzhuangCount() {
+		return lianzhuangCount;
+	}
+
+	public void setLianzhuangCount(int lianzhuangCount) {
+		this.lianzhuangCount = lianzhuangCount;
 	}
 
 	public int getPanshu() {
@@ -58,28 +70,28 @@ public class GameVO {
 		this.renshu = renshu;
 	}
 
-	public List<MajiangGamePlayerVO> getPlayerList() {
-		return playerList;
+	public boolean isJinjie1() {
+		return jinjie1;
 	}
 
-	public void setPlayerList(List<MajiangGamePlayerVO> playerList) {
-		this.playerList = playerList;
+	public void setJinjie1(boolean jinjie1) {
+		this.jinjie1 = jinjie1;
 	}
 
-	public MajiangGameState getState() {
-		return state;
+	public boolean isJinjie2() {
+		return jinjie2;
 	}
 
-	public void setState(MajiangGameState state) {
-		this.state = state;
+	public void setJinjie2(boolean jinjie2) {
+		this.jinjie2 = jinjie2;
 	}
 
-	public boolean isJinjie() {
-		return jinjie;
+	public boolean isGangsuanfen() {
+		return gangsuanfen;
 	}
 
-	public void setJinjie(boolean jinjie) {
-		this.jinjie = jinjie;
+	public void setGangsuanfen(boolean gangsuanfen) {
+		this.gangsuanfen = gangsuanfen;
 	}
 
 	public boolean isTeshushuangfan() {
@@ -114,12 +126,19 @@ public class GameVO {
 		this.lazila = lazila;
 	}
 
-	public int getLianzhuangCount() {
-		return lianzhuangCount;
+	public List<MajiangGamePlayerVO> getPlayerList() {
+		return playerList;
 	}
 
-	public void setLianzhuangCount(int lianzhuangCount) {
-		this.lianzhuangCount = lianzhuangCount;
+	public void setPlayerList(List<MajiangGamePlayerVO> playerList) {
+		this.playerList = playerList;
 	}
 
+	public MajiangGameState getState() {
+		return state;
+	}
+
+	public void setState(MajiangGameState state) {
+		this.state = state;
+	}
 }

@@ -13,11 +13,13 @@ public class MajiangGameValueObject {
 	private int lianzhuangCount;
 	private int panshu;
 	private int renshu;
-	private boolean jinjie;
+	private boolean jinjie1;
+	private boolean jinjie2;
 	private boolean teshushuangfan;
 	private boolean caishenqian;
 	private boolean shaozhongfa;
 	private boolean lazila;
+	private boolean gangsuanfen;
 	private MajiangGameState state;
 	private Map<String, MajiangGamePlayerMaidiState> playerMaidiStateMap = new HashMap<>();
 	private Map<String, MajiangGamePlayerState> playerStateMap = new HashMap<>();
@@ -32,11 +34,13 @@ public class MajiangGameValueObject {
 		lianzhuangCount = majiangGame.getLianzhuangCount();
 		panshu = majiangGame.getPanshu();
 		renshu = majiangGame.getRenshu();
-		jinjie = majiangGame.isJinjie();
+		jinjie1 = majiangGame.isJinjie1();
+		jinjie2 = majiangGame.isJinjie2();
 		teshushuangfan = majiangGame.isTeshushuangfan();
 		caishenqian = majiangGame.isCaishenqian();
 		shaozhongfa = majiangGame.isShaozhongfa();
 		lazila = majiangGame.isLazila();
+		gangsuanfen = majiangGame.isGangsuanfen();
 		state = majiangGame.getState();
 		playerMaidiStateMap.putAll(majiangGame.getPlayerMaidiStateMap());
 		playerStateMap.putAll(majiangGame.getPlayerStateMap());
@@ -56,6 +60,14 @@ public class MajiangGameValueObject {
 		this.gameId = gameId;
 	}
 
+	public int getLianzhuangCount() {
+		return lianzhuangCount;
+	}
+
+	public void setLianzhuangCount(int lianzhuangCount) {
+		this.lianzhuangCount = lianzhuangCount;
+	}
+
 	public int getPanshu() {
 		return panshu;
 	}
@@ -72,44 +84,20 @@ public class MajiangGameValueObject {
 		this.renshu = renshu;
 	}
 
-	public MajiangGameState getState() {
-		return state;
+	public boolean isJinjie1() {
+		return jinjie1;
 	}
 
-	public void setState(MajiangGameState state) {
-		this.state = state;
+	public void setJinjie1(boolean jinjie1) {
+		this.jinjie1 = jinjie1;
 	}
 
-	public Map<String, MajiangGamePlayerState> getPlayerStateMap() {
-		return playerStateMap;
+	public boolean isJinjie2() {
+		return jinjie2;
 	}
 
-	public void setPlayerStateMap(Map<String, MajiangGamePlayerState> playerStateMap) {
-		this.playerStateMap = playerStateMap;
-	}
-
-	public Map<String, GamePlayerOnlineState> getPlayerOnlineStateMap() {
-		return playerOnlineStateMap;
-	}
-
-	public void setPlayerOnlineStateMap(Map<String, GamePlayerOnlineState> playerOnlineStateMap) {
-		this.playerOnlineStateMap = playerOnlineStateMap;
-	}
-
-	public Map<String, Integer> getPlayeTotalScoreMap() {
-		return playeTotalScoreMap;
-	}
-
-	public void setPlayeTotalScoreMap(Map<String, Integer> playeTotalScoreMap) {
-		this.playeTotalScoreMap = playeTotalScoreMap;
-	}
-
-	public boolean isJinjie() {
-		return jinjie;
-	}
-
-	public void setJinjie(boolean jinjie) {
-		this.jinjie = jinjie;
+	public void setJinjie2(boolean jinjie2) {
+		this.jinjie2 = jinjie2;
 	}
 
 	public boolean isTeshushuangfan() {
@@ -144,6 +132,22 @@ public class MajiangGameValueObject {
 		this.lazila = lazila;
 	}
 
+	public boolean isGangsuanfen() {
+		return gangsuanfen;
+	}
+
+	public void setGangsuanfen(boolean gangsuanfen) {
+		this.gangsuanfen = gangsuanfen;
+	}
+
+	public MajiangGameState getState() {
+		return state;
+	}
+
+	public void setState(MajiangGameState state) {
+		this.state = state;
+	}
+
 	public Map<String, MajiangGamePlayerMaidiState> getPlayerMaidiStateMap() {
 		return playerMaidiStateMap;
 	}
@@ -152,12 +156,28 @@ public class MajiangGameValueObject {
 		this.playerMaidiStateMap = playerMaidiStateMap;
 	}
 
-	public int getLianzhuangCount() {
-		return lianzhuangCount;
+	public Map<String, MajiangGamePlayerState> getPlayerStateMap() {
+		return playerStateMap;
 	}
 
-	public void setLianzhuangCount(int lianzhuangCount) {
-		this.lianzhuangCount = lianzhuangCount;
+	public void setPlayerStateMap(Map<String, MajiangGamePlayerState> playerStateMap) {
+		this.playerStateMap = playerStateMap;
+	}
+
+	public Map<String, GamePlayerOnlineState> getPlayerOnlineStateMap() {
+		return playerOnlineStateMap;
+	}
+
+	public void setPlayerOnlineStateMap(Map<String, GamePlayerOnlineState> playerOnlineStateMap) {
+		this.playerOnlineStateMap = playerOnlineStateMap;
+	}
+
+	public Map<String, Integer> getPlayeTotalScoreMap() {
+		return playeTotalScoreMap;
+	}
+
+	public void setPlayeTotalScoreMap(Map<String, Integer> playeTotalScoreMap) {
+		this.playeTotalScoreMap = playeTotalScoreMap;
 	}
 
 }

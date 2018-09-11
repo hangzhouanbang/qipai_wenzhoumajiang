@@ -48,7 +48,7 @@ public class WenzhouMajiangMoActionUpdater implements MajiangPlayerMoActionUpdat
 
 			boolean couldTianhu = false;
 			if (currentPan.getZhuangPlayerId().equals(player.getId())) {
-				if (player.countFangruShoupai() == 0) {
+				if (player.countAllFangruShoupai() == 0) {
 					couldTianhu = true;
 				}
 			}
@@ -93,14 +93,13 @@ public class WenzhouMajiangMoActionUpdater implements MajiangPlayerMoActionUpdat
 				// 循环了三次、代码需要改进
 				for (MajiangPai pai : fangruShoupaiList) {
 					if (!MajiangPai.baiban.equals(pai)) {
-						if (!guipaiTypeSet.contains(pai) && (MajiangPai.isZipai(pai) || MajiangPai.isFengpai(pai))) {
+						if (!guipaiTypeSet.contains(pai) && MajiangPai.isZipai(pai)) {
 							if (juezhangStatisticsListener.ifJuezhang(pai)) {
 								player.addActionCandidate(new MajiangDaAction(player.getId(), pai));
 								juefeng = true;
 							}
 						}
-					} else if (!guipaiTypeSet.contains(pai)
-							&& (MajiangPai.isZipai(guipaiType) || MajiangPai.isFengpai(guipaiType))) {
+					} else if (!guipaiTypeSet.contains(pai) && MajiangPai.isZipai(guipaiType)) {
 						if (juezhangStatisticsListener.ifJuezhang(pai)) {
 							player.addActionCandidate(new MajiangDaAction(player.getId(), pai));
 							juefeng = true;
@@ -111,8 +110,7 @@ public class WenzhouMajiangMoActionUpdater implements MajiangPlayerMoActionUpdat
 				}
 				for (MajiangPai pai : fangruShoupaiList) {
 					if (!MajiangPai.baiban.equals(pai)) {
-						if (!guipaiTypeSet.contains(pai) && !gangmoShoupai.equals(pai)
-								&& (MajiangPai.isZipai(pai) || MajiangPai.isFengpai(pai))) {
+						if (!guipaiTypeSet.contains(pai) && !gangmoShoupai.equals(pai) && MajiangPai.isZipai(pai)) {
 							if (!juefeng && juezhangStatisticsListener.ifMingPai(pai)
 									&& player.getShoupaiCalculator().count(pai) == 1) {
 								player.addActionCandidate(new MajiangDaAction(player.getId(), pai));
@@ -120,7 +118,7 @@ public class WenzhouMajiangMoActionUpdater implements MajiangPlayerMoActionUpdat
 							}
 						}
 					} else if (!guipaiTypeSet.contains(pai) && !gangmoShoupai.equals(pai)
-							&& (MajiangPai.isZipai(guipaiType) || MajiangPai.isFengpai(guipaiType))) {
+							&& MajiangPai.isZipai(guipaiType)) {
 						if (!juefeng && juezhangStatisticsListener.ifMingPai(pai)
 								&& player.getShoupaiCalculator().count(pai) == 1) {
 							player.addActionCandidate(new MajiangDaAction(player.getId(), pai));
@@ -132,14 +130,13 @@ public class WenzhouMajiangMoActionUpdater implements MajiangPlayerMoActionUpdat
 				}
 				for (MajiangPai pai : fangruShoupaiList) {
 					if (!MajiangPai.baiban.equals(pai)) {
-						if (!guipaiTypeSet.contains(pai) && !gangmoShoupai.equals(pai)
-								&& (MajiangPai.isZipai(pai) || MajiangPai.isFengpai(pai))) {
+						if (!guipaiTypeSet.contains(pai) && !gangmoShoupai.equals(pai) && MajiangPai.isZipai(pai)) {
 							if (!juefeng && !genfeng && player.getShoupaiCalculator().count(pai) == 1) {
 								player.addActionCandidate(new MajiangDaAction(player.getId(), pai));
 							}
 						}
 					} else if (!guipaiTypeSet.contains(pai) && !gangmoShoupai.equals(pai)
-							&& (MajiangPai.isZipai(guipaiType) || MajiangPai.isFengpai(guipaiType))) {
+							&& MajiangPai.isZipai(guipaiType)) {
 						if (!juefeng && !genfeng && player.getShoupaiCalculator().count(pai) == 1) {
 							player.addActionCandidate(new MajiangDaAction(player.getId(), pai));
 						}
@@ -148,8 +145,7 @@ public class WenzhouMajiangMoActionUpdater implements MajiangPlayerMoActionUpdat
 					}
 				}
 				if (!MajiangPai.baiban.equals(gangmoShoupai)) {
-					if (!guipaiTypeSet.contains(gangmoShoupai)
-							&& (MajiangPai.isZipai(gangmoShoupai) || MajiangPai.isFengpai(gangmoShoupai))) {
+					if (!guipaiTypeSet.contains(gangmoShoupai) && MajiangPai.isZipai(gangmoShoupai)) {
 						if (juezhangStatisticsListener.ifJuezhang(gangmoShoupai)) {
 							player.addActionCandidate(new MajiangDaAction(player.getId(), gangmoShoupai));
 						} else if (!juefeng && juezhangStatisticsListener.ifMingPai(gangmoShoupai)
@@ -159,8 +155,7 @@ public class WenzhouMajiangMoActionUpdater implements MajiangPlayerMoActionUpdat
 							player.addActionCandidate(new MajiangDaAction(player.getId(), gangmoShoupai));
 						}
 					}
-				} else if (!guipaiTypeSet.contains(gangmoShoupai)
-						&& (MajiangPai.isZipai(guipaiType) || MajiangPai.isFengpai(guipaiType))) {
+				} else if (!guipaiTypeSet.contains(gangmoShoupai) && MajiangPai.isZipai(guipaiType)) {
 					if (juezhangStatisticsListener.ifJuezhang(gangmoShoupai)) {
 						player.addActionCandidate(new MajiangDaAction(player.getId(), gangmoShoupai));
 					} else if (!juefeng && juezhangStatisticsListener.ifMingPai(gangmoShoupai)
