@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGamePlayerMaidiState;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGamePlayerState;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGameState;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGameValueObject;
@@ -13,7 +12,6 @@ import com.dml.mpgame.game.GamePlayerOnlineState;
 
 public class MajiangGameDbo {
 	private String id;// 就是gameid
-	private int lianzhuangCount = 1;
 	private int panshu;
 	private int renshu;
 	private boolean jinjie1;
@@ -23,6 +21,7 @@ public class MajiangGameDbo {
 	private boolean shaozhongfa;
 	private boolean lazila;
 	private boolean gangsuanfen;
+	private Map<String, Integer> playerLianZhuangCountMap;
 	private MajiangGameState state;
 	private List<MajiangGamePlayerDbo> players;
 
@@ -31,7 +30,7 @@ public class MajiangGameDbo {
 
 	public MajiangGameDbo(MajiangGameValueObject majiangGame, Map<String, PlayerInfo> playerInfoMap) {
 		id = majiangGame.getGameId();
-		lianzhuangCount = majiangGame.getLianzhuangCount();
+		playerLianZhuangCountMap = majiangGame.getPlayerLianZhuangCountMap();
 		panshu = majiangGame.getPanshu();
 		renshu = majiangGame.getRenshu();
 		jinjie1 = majiangGame.isJinjie1();
@@ -44,7 +43,6 @@ public class MajiangGameDbo {
 		state = majiangGame.getState();
 
 		players = new ArrayList<>();
-		Map<String, MajiangGamePlayerMaidiState> playerMaidiStateMap = majiangGame.getPlayerMaidiStateMap();
 		Map<String, MajiangGamePlayerState> playerStateMap = majiangGame.getPlayerStateMap();
 		Map<String, GamePlayerOnlineState> playerOnlineStateMap = majiangGame.getPlayerOnlineStateMap();
 		Map<String, Integer> playeTotalScoreMap = majiangGame.getPlayeTotalScoreMap();
@@ -55,11 +53,6 @@ public class MajiangGameDbo {
 			playerDbo.setNickname(playerInfo.getNickname());
 			playerDbo.setOnlineState(playerOnlineStateMap.get(playerId));
 			playerDbo.setPlayerId(playerId);
-			if (!playerMaidiStateMap.isEmpty()) {
-				playerDbo.setMaidiState(playerMaidiStateMap.get(playerId));
-			} else {
-				playerDbo.setMaidiState(MajiangGamePlayerMaidiState.weimai);
-			}
 			playerDbo.setState(playerStateMap.get(playerId));
 			if (playeTotalScoreMap.get(playerId) != null) {
 				playerDbo.setTotalScore(playeTotalScoreMap.get(playerId));
@@ -84,14 +77,6 @@ public class MajiangGameDbo {
 
 	public void setId(String id) {
 		this.id = id;
-	}
-
-	public int getLianzhuangCount() {
-		return lianzhuangCount;
-	}
-
-	public void setLianzhuangCount(int lianzhuangCount) {
-		this.lianzhuangCount = lianzhuangCount;
 	}
 
 	public int getPanshu() {
@@ -180,5 +165,13 @@ public class MajiangGameDbo {
 
 	public void setPlayers(List<MajiangGamePlayerDbo> players) {
 		this.players = players;
+	}
+
+	public Map<String, Integer> getPlayerLianZhuangCountMap() {
+		return playerLianZhuangCountMap;
+	}
+
+	public void setPlayerLianZhuangCountMap(Map<String, Integer> playerLianZhuangCountMap) {
+		this.playerLianZhuangCountMap = playerLianZhuangCountMap;
 	}
 }

@@ -2,13 +2,13 @@ package com.anbang.qipai.wenzhoumajiang.web.vo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGameState;
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.dbo.MajiangGameDbo;
 
 public class GameVO {
 	private String id;// 就是gameid
-	private int lianzhuangCount;
 	private int panshu;
 	private int renshu;
 	private boolean jinjie1;
@@ -18,12 +18,13 @@ public class GameVO {
 	private boolean caishenqian;
 	private boolean shaozhongfa;
 	private boolean lazila;
+	private Map<String, Integer> playerLianZhuangCountMap;
 	private List<MajiangGamePlayerVO> playerList;
 	private MajiangGameState state;
 
 	public GameVO(MajiangGameDbo majiangGameDbo) {
 		id = majiangGameDbo.getId();
-		lianzhuangCount = majiangGameDbo.getLianzhuangCount();
+		playerLianZhuangCountMap = majiangGameDbo.getPlayerLianZhuangCountMap();
 		panshu = majiangGameDbo.getPanshu();
 		renshu = majiangGameDbo.getRenshu();
 		jinjie1 = majiangGameDbo.isJinjie1();
@@ -44,14 +45,6 @@ public class GameVO {
 
 	public void setId(String id) {
 		this.id = id;
-	}
-
-	public int getLianzhuangCount() {
-		return lianzhuangCount;
-	}
-
-	public void setLianzhuangCount(int lianzhuangCount) {
-		this.lianzhuangCount = lianzhuangCount;
 	}
 
 	public int getPanshu() {
@@ -140,5 +133,13 @@ public class GameVO {
 
 	public void setState(MajiangGameState state) {
 		this.state = state;
+	}
+
+	public Map<String, Integer> getPlayerLianZhuangCountMap() {
+		return playerLianZhuangCountMap;
+	}
+
+	public void setPlayerLianZhuangCountMap(Map<String, Integer> playerLianZhuangCountMap) {
+		this.playerLianZhuangCountMap = playerLianZhuangCountMap;
 	}
 }

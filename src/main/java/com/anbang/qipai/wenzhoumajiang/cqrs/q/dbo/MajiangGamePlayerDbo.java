@@ -1,6 +1,5 @@
 package com.anbang.qipai.wenzhoumajiang.cqrs.q.dbo;
 
-import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGamePlayerMaidiState;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGamePlayerState;
 import com.dml.mpgame.game.GamePlayerOnlineState;
 
@@ -8,7 +7,6 @@ public class MajiangGamePlayerDbo {
 	private String playerId;
 	private String nickname;
 	private String headimgurl;
-	private MajiangGamePlayerMaidiState maidiState;
 	private MajiangGamePlayerState state;
 	private GamePlayerOnlineState onlineState;
 	private int totalScore;
@@ -59,14 +57,6 @@ public class MajiangGamePlayerDbo {
 
 	public void setTotalScore(int totalScore) {
 		this.totalScore = totalScore;
-	}
-
-	public MajiangGamePlayerMaidiState getMaidiState() {
-		return maidiState;
-	}
-
-	public void setMaidiState(MajiangGamePlayerMaidiState maidiState) {
-		this.maidiState = maidiState;
 	}
 
 }

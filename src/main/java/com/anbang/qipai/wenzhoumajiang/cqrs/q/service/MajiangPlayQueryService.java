@@ -16,10 +16,12 @@ import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.WenzhouMajiangPanResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.dao.GameLatestPanActionFrameDboDao;
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.dao.JuResultDboDao;
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.dao.MajiangGameDboDao;
+import com.anbang.qipai.wenzhoumajiang.cqrs.q.dao.MajiangGamePlayerMaidiDboDao;
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.dao.PanResultDboDao;
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.dbo.GameLatestPanActionFrameDbo;
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.dbo.JuResultDbo;
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.dbo.MajiangGameDbo;
+import com.anbang.qipai.wenzhoumajiang.cqrs.q.dbo.MajiangGamePlayerMaidiDbo;
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.dbo.PanResultDbo;
 import com.anbang.qipai.wenzhoumajiang.plan.bean.PlayerInfo;
 import com.anbang.qipai.wenzhoumajiang.plan.dao.PlayerInfoDao;
@@ -40,6 +42,9 @@ public class MajiangPlayQueryService {
 
 	@Autowired
 	private PlayerInfoDao playerInfoDao;
+
+	@Autowired
+	private MajiangGamePlayerMaidiDboDao majiangGamePlayerMaidiDboDao;
 
 	@Autowired
 	private GameLatestPanActionFrameDboDao gameLatestPanActionFrameDboDao;
@@ -74,6 +79,10 @@ public class MajiangPlayQueryService {
 		MajiangGameDbo majiangGameDbo = new MajiangGameDbo(majiangGame, playerInfoMap);
 		majiangGameDboDao.save(majiangGameDbo);
 
+		MajiangGamePlayerMaidiDbo maidiDbo = new MajiangGamePlayerMaidiDbo(majiangGame);
+		majiangGamePlayerMaidiDboDao.updateMajiangGamePlayerMaidiDbo(maidiDbo.getGameId(), maidiDbo.getPanNo(),
+				maidiDbo.getPlayerMaidiStateMap());
+
 		if (maidiResult.getFirstActionFrame() != null) {
 			gameLatestPanActionFrameDboDao.save(majiangGame.getGameId(),
 					maidiResult.getFirstActionFrame().toByteArray(1024 * 8));
@@ -88,11 +97,16 @@ public class MajiangPlayQueryService {
 		majiangGame.allPlayerIds().forEach((pid) -> playerInfoMap.put(pid, playerInfoDao.findById(pid)));
 		MajiangGameDbo majiangGameDbo = new MajiangGameDbo(majiangGame, playerInfoMap);
 		majiangGameDboDao.save(majiangGameDbo);
-
+		if (majiangGame.getPlayerMaidiStateMap() != null) {
+			MajiangGamePlayerMaidiDbo maidiDbo = new MajiangGamePlayerMaidiDbo(majiangGame);
+			majiangGamePlayerMaidiDboDao.addMajiangGamePlayerMaidiDbo(maidiDbo);
+		}
 		if (readyToNextPanResult.getFirstActionFrame() != null) {
+
 			gameLatestPanActionFrameDboDao.save(majiangGame.getGameId(),
 					readyToNextPanResult.getFirstActionFrame().toByteArray(1024 * 8));
 			// TODO 记录一条Frame，回放的时候要做
+
 		}
 
 	}

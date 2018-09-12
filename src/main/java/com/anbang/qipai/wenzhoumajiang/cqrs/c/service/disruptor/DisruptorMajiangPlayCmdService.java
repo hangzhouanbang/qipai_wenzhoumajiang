@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MaidiResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangActionResult;
-import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGamePlayerMaidiState;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.ReadyToNextPanResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.service.MajiangPlayCmdService;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.service.impl.MajiangPlayCmdServiceImpl;
@@ -49,7 +48,7 @@ public class DisruptorMajiangPlayCmdService extends DisruptorCmdServiceBase impl
 	}
 
 	@Override
-	public MaidiResult maidi(String playerId, MajiangGamePlayerMaidiState state) throws Exception {
+	public MaidiResult maidi(String playerId, Boolean state) throws Exception {
 		CommonCommand cmd = new CommonCommand(MajiangPlayCmdServiceImpl.class.getName(), "maidi", playerId, state);
 		DeferredResult<MaidiResult> result = publishEvent(disruptorFactory.getCoreCmdDisruptor(), cmd, () -> {
 			MaidiResult maidiResult = majiangPlayCmdServiceImpl.maidi(cmd.getParameter(), cmd.getParameter());

@@ -3,7 +3,6 @@ package com.anbang.qipai.wenzhoumajiang.cqrs.c.domain;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.dml.majiang.pan.frame.PanActionFrame;
 import com.dml.mpgame.game.GameValueObject;
 
 public class MajiangGameManager {
@@ -50,10 +49,9 @@ public class MajiangGameManager {
 		return majiangGame.createJuAndReadyFirstPan(game, currentTime);
 	}
 
-	public MaidiResult maidi(String playerId, MajiangGamePlayerMaidiState state, String gameId) throws Exception {
+	public MaidiResult maidi(String playerId, boolean state, String gameId) throws Exception {
 		MajiangGame majiangGame = gameIdMajiangGameMap.get(gameId);
 		MaidiResult maidiResult = majiangGame.maidi(playerId, state);
-		maidiResult.setMajiangGame(new MajiangGameValueObject(majiangGame));
 		return maidiResult;
 	}
 
@@ -68,11 +66,8 @@ public class MajiangGameManager {
 	}
 
 	public ReadyToNextPanResult readyToNextPan(String playerId, String gameId) throws Exception {
-		ReadyToNextPanResult readyToNextPanResult = new ReadyToNextPanResult();
 		MajiangGame game = gameIdMajiangGameMap.get(gameId);
-		PanActionFrame firstActionFrame = game.readyToNextPan(playerId);
-		readyToNextPanResult.setFirstActionFrame(firstActionFrame);
-		readyToNextPanResult.setMajiangGame(new MajiangGameValueObject(game));
+		ReadyToNextPanResult readyToNextPanResult = game.readyToNextPan(playerId);
 		return readyToNextPanResult;
 	}
 }

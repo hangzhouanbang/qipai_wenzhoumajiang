@@ -10,7 +10,6 @@ import com.dml.mpgame.game.GamePlayerOnlineState;
 public class MajiangGameValueObject {
 
 	private String gameId;
-	private int lianzhuangCount;
 	private int panshu;
 	private int renshu;
 	private boolean jinjie1;
@@ -21,7 +20,9 @@ public class MajiangGameValueObject {
 	private boolean lazila;
 	private boolean gangsuanfen;
 	private MajiangGameState state;
-	private Map<String, MajiangGamePlayerMaidiState> playerMaidiStateMap = new HashMap<>();
+	private int currentPanNo;
+	private Map<String, Integer> playerLianZhuangCountMap = new HashMap<>();
+	private Map<String, MajiangGamePlayerMaidiState> playerMaidiStateMap;
 	private Map<String, MajiangGamePlayerState> playerStateMap = new HashMap<>();
 	private Map<String, GamePlayerOnlineState> playerOnlineStateMap = new HashMap<>();
 	private Map<String, Integer> playeTotalScoreMap = new HashMap<>();
@@ -31,7 +32,7 @@ public class MajiangGameValueObject {
 
 	public MajiangGameValueObject(MajiangGame majiangGame) {
 		gameId = majiangGame.getGameId();
-		lianzhuangCount = majiangGame.getLianzhuangCount();
+		playerLianZhuangCountMap = majiangGame.getPlayerLianZhuangCountMap();
 		panshu = majiangGame.getPanshu();
 		renshu = majiangGame.getRenshu();
 		jinjie1 = majiangGame.isJinjie1();
@@ -42,7 +43,7 @@ public class MajiangGameValueObject {
 		lazila = majiangGame.isLazila();
 		gangsuanfen = majiangGame.isGangsuanfen();
 		state = majiangGame.getState();
-		playerMaidiStateMap.putAll(majiangGame.getPlayerMaidiStateMap());
+		currentPanNo = majiangGame.getJu().getCurrentPan().getNo();
 		playerStateMap.putAll(majiangGame.getPlayerStateMap());
 		playerOnlineStateMap.putAll(majiangGame.getPlayerOnlineStateMap());
 		playeTotalScoreMap.putAll(majiangGame.getPlayeTotalScoreMap());
@@ -58,14 +59,6 @@ public class MajiangGameValueObject {
 
 	public void setGameId(String gameId) {
 		this.gameId = gameId;
-	}
-
-	public int getLianzhuangCount() {
-		return lianzhuangCount;
-	}
-
-	public void setLianzhuangCount(int lianzhuangCount) {
-		this.lianzhuangCount = lianzhuangCount;
 	}
 
 	public int getPanshu() {
@@ -178,6 +171,22 @@ public class MajiangGameValueObject {
 
 	public void setPlayeTotalScoreMap(Map<String, Integer> playeTotalScoreMap) {
 		this.playeTotalScoreMap = playeTotalScoreMap;
+	}
+
+	public int getCurrentPanNo() {
+		return currentPanNo;
+	}
+
+	public void setCurrentPanNo(int currentPanNo) {
+		this.currentPanNo = currentPanNo;
+	}
+
+	public Map<String, Integer> getPlayerLianZhuangCountMap() {
+		return playerLianZhuangCountMap;
+	}
+
+	public void setPlayerLianZhuangCountMap(Map<String, Integer> playerLianZhuangCountMap) {
+		this.playerLianZhuangCountMap = playerLianZhuangCountMap;
 	}
 
 }

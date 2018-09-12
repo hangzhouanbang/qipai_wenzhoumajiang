@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MaidiResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangActionResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGamePlayerMaidiState;
-import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGameState;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.ReadyToNextPanResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.service.MajiangPlayCmdService;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.service.PlayerAuthService;
@@ -132,15 +131,9 @@ public class MajiangController {
 			vo.setMsg("invalid token");
 			return vo;
 		}
-		MajiangGamePlayerMaidiState state;
-		if (yes) {
-			state = MajiangGamePlayerMaidiState.maidi;
-		} else {
-			state = MajiangGamePlayerMaidiState.bumai;
-		}
 		MaidiResult maidiResult;
 		try {
-			maidiResult = majiangPlayCmdService.maidi(playerId, state);
+			maidiResult = majiangPlayCmdService.maidi(playerId, yes);
 		} catch (Exception e) {
 			vo.setSuccess(false);
 			vo.setMsg(e.getClass().getName());
@@ -155,8 +148,14 @@ public class MajiangController {
 		}
 		// 通知其他人
 		for (String otherPlayerId : maidiResult.getMajiangGame().allPlayerIds()) {
+			Map<String, MajiangGamePlayerMaidiState> playerMaidiStateMap = maidiResult.getMajiangGame()
+					.getPlayerMaidiStateMap();
 			if (!otherPlayerId.equals(playerId)) {
 				wsNotifier.notifyToQuery(otherPlayerId, QueryScope.gameInfo.name());
+				wsNotifier.notifyToQuery(otherPlayerId, QueryScope.maidiState.name());
+				if (playerMaidiStateMap.get(otherPlayerId).equals(MajiangGamePlayerMaidiState.startMaidi)) {
+					wsNotifier.notifyToQuery(otherPlayerId, QueryScope.maidi.name());
+				}
 				if (maidiResult.getFirstActionFrame() != null) {
 					wsNotifier.notifyToQuery(otherPlayerId, QueryScope.panForMe.name());
 				}
@@ -165,6 +164,7 @@ public class MajiangController {
 
 		List<QueryScope> queryScopes = new ArrayList<>();
 		queryScopes.add(QueryScope.gameInfo);
+		queryScopes.add(QueryScope.maidiState);
 		if (maidiResult.getFirstActionFrame() != null) {
 			queryScopes.add(QueryScope.panForMe);
 		}
@@ -280,21 +280,31 @@ public class MajiangController {
 			vo.setMsg(e.getMessage());
 			return vo;
 		}
-
+		Map<String, MajiangGamePlayerMaidiState> playerMaidiStateMap = readyToNextPanResult.getMajiangGame()
+				.getPlayerMaidiStateMap();
 		// 通知其他人
-		List<QueryScope> queryScopes = new ArrayList<>();
-		queryScopes.add(QueryScope.gameInfo);
-		if (readyToNextPanResult.getMajiangGame().getState().equals(MajiangGameState.playing)) {
-			if (readyToNextPanResult.getFirstActionFrame() != null) {
-				queryScopes.add(QueryScope.panForMe);
-			} else {
-				queryScopes.add(QueryScope.maidi);
-			}
-		}
 		for (String otherPlayerId : readyToNextPanResult.getMajiangGame().allPlayerIds()) {
 			if (!otherPlayerId.equals(playerId)) {
-				queryScopes.forEach((scope) -> wsNotifier.notifyToQuery(otherPlayerId, scope.name()));
+				wsNotifier.notifyToQuery(otherPlayerId, QueryScope.gameInfo.name());
+				wsNotifier.notifyToQuery(otherPlayerId, QueryScope.maidiState.name());
+				if (readyToNextPanResult.getFirstActionFrame() != null) {
+					wsNotifier.notifyToQuery(otherPlayerId, QueryScope.panForMe.name());
+				}
+				if (playerMaidiStateMap != null
+						&& playerMaidiStateMap.get(otherPlayerId).equals(MajiangGamePlayerMaidiState.startDingdi)) {
+					wsNotifier.notifyToQuery(otherPlayerId, QueryScope.maidi.name());
+				}
 			}
+		}
+		List<QueryScope> queryScopes = new ArrayList<>();
+		queryScopes.add(QueryScope.gameInfo);
+		queryScopes.add(QueryScope.maidiState);
+		if (readyToNextPanResult.getFirstActionFrame() != null) {
+			queryScopes.add(QueryScope.panForMe);
+		}
+		if (playerMaidiStateMap != null
+				&& playerMaidiStateMap.get(playerId).equals(MajiangGamePlayerMaidiState.startDingdi)) {
+			queryScopes.add(QueryScope.maidi);
 		}
 		data.put("queryScopes", queryScopes);
 		return vo;

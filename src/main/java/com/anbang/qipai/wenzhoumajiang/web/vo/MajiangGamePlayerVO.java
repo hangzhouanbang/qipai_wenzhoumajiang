@@ -6,7 +6,6 @@ public class MajiangGamePlayerVO {
 	private String playerId;
 	private String nickname;
 	private String headimgurl;
-	private String maidiState;
 	private String state;
 	private String onlineState;
 	private int totalScore;
@@ -15,7 +14,6 @@ public class MajiangGamePlayerVO {
 		playerId = dbo.getPlayerId();
 		nickname = dbo.getNickname();
 		headimgurl = dbo.getHeadimgurl();
-		maidiState = dbo.getMaidiState().name();
 		state = dbo.getState().name();
 		onlineState = dbo.getOnlineState().name();
 		totalScore = dbo.getTotalScore();
@@ -67,14 +65,6 @@ public class MajiangGamePlayerVO {
 
 	public void setTotalScore(int totalScore) {
 		this.totalScore = totalScore;
-	}
-
-	public String getMaidiState() {
-		return maidiState;
-	}
-
-	public void setMaidiState(String maidiState) {
-		this.maidiState = maidiState;
 	}
 
 }

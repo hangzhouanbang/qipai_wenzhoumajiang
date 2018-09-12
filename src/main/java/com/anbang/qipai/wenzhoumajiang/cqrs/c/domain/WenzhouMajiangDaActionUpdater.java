@@ -121,10 +121,13 @@ public class WenzhouMajiangDaActionUpdater implements MajiangPlayerDaActionUpdat
 
 	private Shunzi tryAndMakeShunziWithPai1(ShoupaiCalculator shoupaiCalculator, MajiangPai guipai, MajiangPai pai1) {
 		int[] paiQuantityArray = shoupaiCalculator.getPaiQuantityArray();
+		int guipaiOrdinal = guipai.ordinal();
 		int paiOrdinal = pai1.ordinal();
+		if (guipaiOrdinal == paiOrdinal) {
+			paiOrdinal = guipaiOrdinal;
+		}
 		int pai2 = paiOrdinal + 1;
 		int pai3 = paiOrdinal + 2;
-		int guipaiOrdinal = guipai.ordinal();
 		if (guipaiOrdinal == pai2) {
 			pai2 = MajiangPai.baiban.ordinal();
 		}
@@ -171,10 +174,13 @@ public class WenzhouMajiangDaActionUpdater implements MajiangPlayerDaActionUpdat
 
 	private Shunzi tryAndMakeShunziWithPai2(ShoupaiCalculator shoupaiCalculator, MajiangPai guipai, MajiangPai pai2) {
 		int[] paiQuantityArray = shoupaiCalculator.getPaiQuantityArray();
+		int guipaiOrdinal = guipai.ordinal();
 		int paiOrdinal = pai2.ordinal();
+		if (guipaiOrdinal == paiOrdinal) {
+			paiOrdinal = guipaiOrdinal;
+		}
 		int pai1 = paiOrdinal - 1;
 		int pai3 = paiOrdinal + 1;
-		int guipaiOrdinal = guipai.ordinal();
 		if (guipaiOrdinal == pai1) {
 			pai1 = MajiangPai.baiban.ordinal();
 		}
@@ -221,10 +227,13 @@ public class WenzhouMajiangDaActionUpdater implements MajiangPlayerDaActionUpdat
 
 	private Shunzi tryAndMakeShunziWithPai3(ShoupaiCalculator shoupaiCalculator, MajiangPai guipai, MajiangPai pai3) {
 		int[] paiQuantityArray = shoupaiCalculator.getPaiQuantityArray();
+		int guipaiOrdinal = guipai.ordinal();
 		int paiOrdinal = pai3.ordinal();
+		if (guipaiOrdinal == paiOrdinal) {
+			paiOrdinal = guipaiOrdinal;
+		}
 		int pai1 = paiOrdinal - 2;
 		int pai2 = paiOrdinal - 1;
-		int guipaiOrdinal = guipai.ordinal();
 		if (guipaiOrdinal == pai1) {
 			pai1 = MajiangPai.baiban.ordinal();
 		}

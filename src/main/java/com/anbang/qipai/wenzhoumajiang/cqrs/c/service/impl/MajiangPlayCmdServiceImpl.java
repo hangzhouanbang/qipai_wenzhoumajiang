@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MaidiResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangActionResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGameManager;
-import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGamePlayerMaidiState;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.ReadyToNextPanResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.service.MajiangPlayCmdService;
 import com.dml.mpgame.game.PlayerNotInGameException;
@@ -46,7 +45,7 @@ public class MajiangPlayCmdServiceImpl extends CmdServiceBase implements Majiang
 	}
 
 	@Override
-	public MaidiResult maidi(String playerId, MajiangGamePlayerMaidiState state) throws Exception {
+	public MaidiResult maidi(String playerId, Boolean state) throws Exception {
 		MajiangGameManager majiangGameManager = singletonEntityRepository.getEntity(MajiangGameManager.class);
 		GameServer gameServer = singletonEntityRepository.getEntity(GameServer.class);
 		String gameId = gameServer.findBindGameId(playerId);

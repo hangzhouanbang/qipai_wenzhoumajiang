@@ -13,9 +13,11 @@ import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.WenzhouMajiangJuResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.dao.GameFinishVoteDboDao;
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.dao.JuResultDboDao;
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.dao.MajiangGameDboDao;
+import com.anbang.qipai.wenzhoumajiang.cqrs.q.dao.MajiangGamePlayerMaidiDboDao;
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.dbo.GameFinishVoteDbo;
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.dbo.JuResultDbo;
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.dbo.MajiangGameDbo;
+import com.anbang.qipai.wenzhoumajiang.cqrs.q.dbo.MajiangGamePlayerMaidiDbo;
 import com.anbang.qipai.wenzhoumajiang.plan.bean.PlayerInfo;
 import com.anbang.qipai.wenzhoumajiang.plan.dao.PlayerInfoDao;
 import com.dml.mpgame.game.finish.vote.GameFinishVoteValueObject;
@@ -31,6 +33,9 @@ public class MajiangGameQueryService {
 
 	@Autowired
 	private GameFinishVoteDboDao gameFinishVoteDboDao;
+
+	@Autowired
+	private MajiangGamePlayerMaidiDboDao majiangGamePlayerMaidiDboDao;
 
 	@Autowired
 	private JuResultDboDao juResultDboDao;
@@ -121,6 +126,14 @@ public class MajiangGameQueryService {
 		majiangGame.allPlayerIds().forEach((playerId) -> playerInfoMap.put(playerId, playerInfoDao.findById(playerId)));
 		MajiangGameDbo majiangGameDbo = new MajiangGameDbo(majiangGame, playerInfoMap);
 		majiangGameDboDao.save(majiangGameDbo);
+		if (majiangGame.getPlayerMaidiStateMap() != null) {
+			MajiangGamePlayerMaidiDbo maidiDbo = new MajiangGamePlayerMaidiDbo(majiangGame);
+			majiangGamePlayerMaidiDboDao.addMajiangGamePlayerMaidiDbo(maidiDbo);
+		}
+	}
+
+	public MajiangGamePlayerMaidiDbo findMajiangGamePlayerMaidiDbo(String gameId, int panNo) {
+		return majiangGamePlayerMaidiDboDao.findByGameIdAndPanNo(gameId, panNo);
 	}
 
 }
