@@ -2,12 +2,12 @@ package com.anbang.qipai.wenzhoumajiang.cqrs.c.domain;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
 import com.dml.majiang.ju.Ju;
 import com.dml.majiang.pan.Pan;
+import com.dml.majiang.pan.frame.PanValueObject;
 import com.dml.majiang.pan.result.CurrentPanResultBuilder;
 import com.dml.majiang.pan.result.PanResult;
 import com.dml.majiang.player.MajiangPlayer;
@@ -225,26 +225,11 @@ public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 				} else {
 					playerResult.setTotalScore(playerResult.getScore());
 				}
-				playerResult.setMenFeng(player.getMenFeng());
-				// 吃碰杠出去的要加到结果
-				playerResult.setPublicPaiList(new ArrayList<>(player.getPublicPaiList()));
-				playerResult.setChichupaiZuList(new ArrayList<>(player.getChichupaiZuList()));
-				playerResult.setPengchupaiZuList(new ArrayList<>(player.getPengchupaiZuList()));
-				playerResult.setGangchupaiZuList(new ArrayList<>(player.getGangchupaiZuList()));
-				playerResult.setGuipaiTypeSet(new HashSet<>(player.getGuipaiTypeSet()));
-				playerResult.setShoupaiList(new ArrayList<>(player.getFangruShoupaiList()));
-				if (playerResult.getPlayerId().equals(huPlayer.getId())) {
-					playerResult.setHu(true);
-					playerResult.setBestShoupaiPaiXing(huShoupaiPaiXing);
-				} else {
-					playerResult.setHu(false);
-				}
 			});
 
 			WenzhouMajiangPanResult wenzhouMajiangPanResult = new WenzhouMajiangPanResult();
-			wenzhouMajiangPanResult.setPanNo(currentPan.getNo());
+			wenzhouMajiangPanResult.setPan(new PanValueObject(currentPan));
 			wenzhouMajiangPanResult.setPanFinishTime(panFinishTime);
-			wenzhouMajiangPanResult.setZhuangPlayerId(currentPan.getZhuangPlayerId());
 			wenzhouMajiangPanResult.setPlayerResultList(playerResultList);
 			wenzhouMajiangPanResult.setHu(true);
 			wenzhouMajiangPanResult.setZimo(hu.isZimo());
@@ -298,21 +283,11 @@ public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 				} else {
 					playerResult.setTotalScore(playerResult.getScore());
 				}
-				playerResult.setMenFeng(player.getMenFeng());
-				// 吃碰杠出去的要加到结果
-				playerResult.setPublicPaiList(new ArrayList<>(player.getPublicPaiList()));
-				playerResult.setChichupaiZuList(new ArrayList<>(player.getChichupaiZuList()));
-				playerResult.setPengchupaiZuList(new ArrayList<>(player.getPengchupaiZuList()));
-				playerResult.setGangchupaiZuList(new ArrayList<>(player.getGangchupaiZuList()));
-				playerResult.setGuipaiTypeSet(new HashSet<>(player.getGuipaiTypeSet()));
-				playerResult.setShoupaiList(new ArrayList<>(player.getFangruShoupaiList()));
-				playerResult.setHu(false);
 			});
 
 			WenzhouMajiangPanResult wenzhouMajiangPanResult = new WenzhouMajiangPanResult();
-			wenzhouMajiangPanResult.setPanNo(currentPan.getNo());
+			wenzhouMajiangPanResult.setPan(new PanValueObject(currentPan));
 			wenzhouMajiangPanResult.setPanFinishTime(panFinishTime);
-			wenzhouMajiangPanResult.setZhuangPlayerId(currentPan.getZhuangPlayerId());
 			wenzhouMajiangPanResult.setPlayerResultList(playerResultList);
 			wenzhouMajiangPanResult.setHu(false);
 

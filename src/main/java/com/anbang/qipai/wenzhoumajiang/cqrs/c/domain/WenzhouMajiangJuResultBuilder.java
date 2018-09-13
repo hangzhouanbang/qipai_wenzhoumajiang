@@ -26,10 +26,11 @@ public class WenzhouMajiangJuResultBuilder implements JuResultBuilder {
 						juPlayerResult.setPlayerId(panPlayerResult.getPlayerId());
 						juPlayerResultMap.put(panPlayerResult.getPlayerId(), juPlayerResult);
 					}
-					if (panPlayerResult.isHu()) {
+					if (wenzhouMajiangPanResult.ifPlayerHu(panPlayerResult.getPlayerId())) {
 						juPlayerResult.increaseHuCount();
 					}
-					juPlayerResult.increaseCaishenCount(panPlayerResult.countCaishen());
+					juPlayerResult.increaseCaishenCount(
+							wenzhouMajiangPanResult.playerGuipaiCount(panPlayerResult.getPlayerId()));
 					if (panPlayerResult.getHufan().getValue() == 2) {
 						juPlayerResult.increaseShuangfanCount();
 					}

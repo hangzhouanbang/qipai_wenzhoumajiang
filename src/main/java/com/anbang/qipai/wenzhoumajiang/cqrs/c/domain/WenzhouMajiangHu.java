@@ -5,27 +5,17 @@ import java.nio.ByteBuffer;
 import com.dml.majiang.player.Hu;
 import com.dml.majiang.player.shoupai.ShoupaiPaiXing;
 
-public class WenzhouMajiangHu implements Hu {
-
-	private ShoupaiPaiXing shoupaiPaiXing;
+public class WenzhouMajiangHu extends Hu {
 
 	private WenzhouMajiangPanPlayerHufan hufan;
 
-	private boolean zimo;
-
-	private boolean dianpao;
-
-	private boolean qianggang;
-
 	private boolean huxingHu;// 三财神推倒就不是胡形的胡
-
-	private String dianpaoPlayerId;
 
 	public WenzhouMajiangHu() {
 	}
 
 	public WenzhouMajiangHu(ShoupaiPaiXing shoupaiPaiXing, WenzhouMajiangPanPlayerHufan hufan) {
-		this.shoupaiPaiXing = shoupaiPaiXing;
+		super(shoupaiPaiXing);
 		this.hufan = hufan;
 		this.huxingHu = true;
 	}
@@ -33,14 +23,6 @@ public class WenzhouMajiangHu implements Hu {
 	public WenzhouMajiangHu(WenzhouMajiangPanPlayerHufan hufan) {
 		this.hufan = hufan;
 		this.huxingHu = false;
-	}
-
-	public ShoupaiPaiXing getShoupaiPaiXing() {
-		return shoupaiPaiXing;
-	}
-
-	public void setShoupaiPaiXing(ShoupaiPaiXing shoupaiPaiXing) {
-		this.shoupaiPaiXing = shoupaiPaiXing;
 	}
 
 	public WenzhouMajiangPanPlayerHufan getHufan() {
@@ -51,44 +33,12 @@ public class WenzhouMajiangHu implements Hu {
 		this.hufan = hufan;
 	}
 
-	public boolean isZimo() {
-		return zimo;
-	}
-
-	public void setZimo(boolean zimo) {
-		this.zimo = zimo;
-	}
-
-	public boolean isDianpao() {
-		return dianpao;
-	}
-
-	public void setDianpao(boolean dianpao) {
-		this.dianpao = dianpao;
-	}
-
-	public boolean isQianggang() {
-		return qianggang;
-	}
-
-	public void setQianggang(boolean qianggang) {
-		this.qianggang = qianggang;
-	}
-
 	public boolean isHuxingHu() {
 		return huxingHu;
 	}
 
 	public void setHuxingHu(boolean huxingHu) {
 		this.huxingHu = huxingHu;
-	}
-
-	public String getDianpaoPlayerId() {
-		return dianpaoPlayerId;
-	}
-
-	public void setDianpaoPlayerId(String dianpaoPlayerId) {
-		this.dianpaoPlayerId = dianpaoPlayerId;
 	}
 
 	@Override
