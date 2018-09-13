@@ -12,7 +12,6 @@ import com.dml.majiang.pan.result.CurrentPanResultBuilder;
 import com.dml.majiang.pan.result.PanResult;
 import com.dml.majiang.player.MajiangPlayer;
 import com.dml.majiang.player.menfeng.ZhuangXiajiaIsDongIfZhuangNotHuPlayersMenFengDeterminer;
-import com.dml.majiang.player.shoupai.ShoupaiPaiXing;
 
 public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 	private Map<String, MajiangGamePlayerMaidiState> playerMaidiStateMap;
@@ -73,7 +72,6 @@ public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 		if (huPlayer != null) {// 正常有人胡
 			WenzhouMajiangHu hu = (WenzhouMajiangHu) huPlayer.getHu();
 			WenzhouMajiangPanPlayerHufan huPlayerHufan = hu.getHufan();
-			ShoupaiPaiXing huShoupaiPaiXing = hu.getShoupaiPaiXing();
 			int paixingbeishu = huPlayerHufan.getValue();
 			playerIdList.forEach((playerId) -> {
 				MajiangPlayer player = currentPan.findPlayerById(playerId);
@@ -224,9 +222,7 @@ public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 				}
 			}
 
-			// 胡的那家shoupaixing放入结果，其余不胡的shoupailist放入结果
 			playerResultList.forEach((playerResult) -> {
-				MajiangPlayer player = currentPan.findPlayerById(playerResult.getPlayerId());
 				// 计算当盘总分
 				playerResult.setScore(playerResult.getScore() + playerResult.getCaishenqian().getTotalscore()
 						+ playerResult.getGang().getTotalscore());
@@ -284,7 +280,6 @@ public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 			}
 			// shoupailist放入结果
 			playerResultList.forEach((playerResult) -> {
-				MajiangPlayer player = currentPan.findPlayerById(playerResult.getPlayerId());
 				// 计算当盘总分
 				playerResult.setScore(playerResult.getScore() + playerResult.getCaishenqian().getTotalscore()
 						+ playerResult.getGang().getTotalscore());
