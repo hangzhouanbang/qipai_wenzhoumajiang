@@ -12,6 +12,7 @@ import com.dml.majiang.player.action.da.MajiangDaAction;
 import com.dml.majiang.player.action.da.MajiangPlayerDaActionUpdater;
 import com.dml.majiang.player.action.hu.MajiangHuAction;
 import com.dml.majiang.player.action.listener.comprehensive.DianpaoDihuOpportunityDetector;
+import com.dml.majiang.player.action.listener.comprehensive.GuoPengBuPengStatisticsListener;
 import com.dml.majiang.player.action.mo.LundaoMopai;
 import com.dml.majiang.player.action.mo.MajiangMoAction;
 import com.dml.majiang.player.shoupai.ShoupaiCalculator;
@@ -66,10 +67,15 @@ public class WenzhouMajiangDaActionUpdater implements MajiangPlayerDaActionUpdat
 		}
 		MajiangPlayer bestHuplayer = null;
 		WenzhouMajiangHu playerBestHu = null;
+		GuoPengBuPengStatisticsListener guoPengBuPengStatisticsListener = ju.getActionStatisticsListenerManager()
+				.findListener(GuoPengBuPengStatisticsListener.class);
+		Set<String> canNotPengPlayers = guoPengBuPengStatisticsListener.getCanNotPengPlayers();
 		while (true) {
 			if (!xiajiaPlayer.getId().equals(daAction.getActionPlayerId())) {
 				// 其他的可以碰杠胡
-				xiajiaPlayer.tryPengAndGenerateCandidateAction(daAction.getActionPlayerId(), daAction.getPai());
+				if (!canNotPengPlayers.contains(xiajiaPlayer.getId())) {
+					xiajiaPlayer.tryPengAndGenerateCandidateAction(daAction.getActionPlayerId(), daAction.getPai());
+				}
 				xiajiaPlayer.tryGangdachuAndGenerateCandidateAction(daAction.getActionPlayerId(), daAction.getPai());
 
 				// 点炮胡

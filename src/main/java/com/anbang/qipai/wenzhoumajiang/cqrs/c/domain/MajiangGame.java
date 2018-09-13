@@ -24,6 +24,7 @@ import com.dml.majiang.player.action.guo.DoNothingGuoActionProcessor;
 import com.dml.majiang.player.action.hu.PlayerSetHuHuActionProcessor;
 import com.dml.majiang.player.action.initial.ZhuangMoPaiInitialActionUpdater;
 import com.dml.majiang.player.action.listener.comprehensive.DianpaoDihuOpportunityDetector;
+import com.dml.majiang.player.action.listener.comprehensive.GuoPengBuPengStatisticsListener;
 import com.dml.majiang.player.action.listener.comprehensive.JuezhangStatisticsListener;
 import com.dml.majiang.player.action.listener.mo.MoGuipaiCounter;
 import com.dml.majiang.player.action.peng.HuFirstPengActionProcessor;
@@ -159,6 +160,7 @@ public class MajiangGame {
 		ju.addActionStatisticsListener(new JuezhangStatisticsListener());
 		ju.addActionStatisticsListener(new MoGuipaiCounter());
 		ju.addActionStatisticsListener(new DianpaoDihuOpportunityDetector());
+		ju.addActionStatisticsListener(new GuoPengBuPengStatisticsListener());
 
 		Pan firstPan = new Pan();
 		firstPan.setNo(1);
