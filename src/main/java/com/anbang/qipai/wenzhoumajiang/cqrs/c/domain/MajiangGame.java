@@ -67,21 +67,21 @@ public class MajiangGame {
 		List<String> playerIdList = new ArrayList<>(playerMaidiStateMap.keySet());
 		if (state) {
 			if (zhuangPlayerId.equals(playerId)) {
-				playerMaidiStateMap.put(playerId, MajiangGamePlayerMaidiState.dingdi);
+				playerMaidiStateMap.put(playerId, MajiangGamePlayerMaidiState.maidi);
 				for (String pid : playerIdList) {
 					if (!zhuangPlayerId.equals(pid)) {
-						playerMaidiStateMap.put(playerId, MajiangGamePlayerMaidiState.startMaidi);
+						playerMaidiStateMap.put(playerId, MajiangGamePlayerMaidiState.startDingdi);
 					}
 				}
 			} else {
-				playerMaidiStateMap.put(playerId, MajiangGamePlayerMaidiState.maidi);
+				playerMaidiStateMap.put(playerId, MajiangGamePlayerMaidiState.dingdi);
 			}
 		} else {
 			playerMaidiStateMap.put(playerId, MajiangGamePlayerMaidiState.bumai);
 			if (zhuangPlayerId.equals(playerId)) {
 				for (String pid : playerIdList) {
 					if (!zhuangPlayerId.equals(pid)) {
-						playerMaidiStateMap.put(playerId, MajiangGamePlayerMaidiState.startMaidi);
+						playerMaidiStateMap.put(playerId, MajiangGamePlayerMaidiState.startDingdi);
 					}
 				}
 			}
@@ -90,7 +90,7 @@ public class MajiangGame {
 		for (String pid : playerIdList) {
 			if (MajiangGamePlayerMaidiState.startDingdi.equals(playerMaidiStateMap.get(pid))
 					|| MajiangGamePlayerMaidiState.startMaidi.equals(playerMaidiStateMap.get(pid))
-					|| MajiangGamePlayerMaidiState.waitForDingdi.equals(playerMaidiStateMap.get(pid))) {
+					|| MajiangGamePlayerMaidiState.waitForMaidi.equals(playerMaidiStateMap.get(pid))) {
 				start = false;
 			}
 		}
@@ -172,8 +172,8 @@ public class MajiangGame {
 		ju.determineZhuangForFirstPan();
 		String zhuangPlayerId = firstPan.getZhuangPlayerId();
 		playerLianZhuangCountMap.put(zhuangPlayerId, 1);
-		game.allPlayerIds().forEach((pid) -> playerMaidiStateMap.put(pid, MajiangGamePlayerMaidiState.waitForDingdi));
-		playerMaidiStateMap.put(zhuangPlayerId, MajiangGamePlayerMaidiState.startDingdi);
+		game.allPlayerIds().forEach((pid) -> playerMaidiStateMap.put(pid, MajiangGamePlayerMaidiState.waitForMaidi));
+		playerMaidiStateMap.put(zhuangPlayerId, MajiangGamePlayerMaidiState.startMaidi);
 		return playerMaidiStateMap;
 	}
 
@@ -282,6 +282,7 @@ public class MajiangGame {
 		Map<String, MajiangGamePlayerMaidiState> playerMaidiStateMap = wenzhouMajiangPanResultBuilder
 				.getPlayerMaidiStateMap();
 		Map<String, MajiangGamePlayerMaidiState> newMaidiStateMap = null;
+		wenzhouMajiangPanResultBuilder.setPlayerMaidiStateMap(newMaidiStateMap);
 		// 如果可以创建下一盘,那就创建下一盘
 		if (ju.determineToCreateNextPan()) {
 			state = MajiangGameState.playing;
@@ -344,10 +345,10 @@ public class MajiangGame {
 			} else {// 重新买底
 				newMaidiStateMap = new HashMap<>();
 				for (String pid : allPlayerIds) {
-					newMaidiStateMap.put(pid, MajiangGamePlayerMaidiState.waitForDingdi);
+					newMaidiStateMap.put(pid, MajiangGamePlayerMaidiState.waitForMaidi);
 				}
 				String zhuangPlayerId = menFengDeterminer.getZhuangPlayerId();
-				newMaidiStateMap.put(zhuangPlayerId, MajiangGamePlayerMaidiState.startDingdi);
+				newMaidiStateMap.put(zhuangPlayerId, MajiangGamePlayerMaidiState.startMaidi);
 			}
 		}
 		MajiangGameValueObject majiangGame = new MajiangGameValueObject(this);

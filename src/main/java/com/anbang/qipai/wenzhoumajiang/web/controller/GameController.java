@@ -248,7 +248,7 @@ public class GameController {
 					wsNotifier.notifyToQuery(otherPlayerId, QueryScope.maidiState.name());
 					Map<String, MajiangGamePlayerMaidiState> playerMaidiStateMap = readyForGameResult.getMajiangGame()
 							.getPlayerMaidiStateMap();
-					if (playerMaidiStateMap.get(otherPlayerId).equals(MajiangGamePlayerMaidiState.startDingdi)) {
+					if (playerMaidiStateMap.get(otherPlayerId).equals(MajiangGamePlayerMaidiState.startMaidi)) {
 						wsNotifier.notifyToQuery(otherPlayerId, QueryScope.maidi.name());
 					}
 				}
@@ -260,10 +260,10 @@ public class GameController {
 		if (readyForGameResult.getMajiangGame().getState().equals(MajiangGameState.playing)) {
 			Map<String, MajiangGamePlayerMaidiState> playerMaidiStateMap = readyForGameResult.getMajiangGame()
 					.getPlayerMaidiStateMap();
-			if (playerMaidiStateMap.get(playerId).equals(MajiangGamePlayerMaidiState.startDingdi)) {
+			if (playerMaidiStateMap.get(playerId).equals(MajiangGamePlayerMaidiState.startMaidi)) {
 				queryScopes.add(QueryScope.maidi);
 			}
-			if (playerMaidiStateMap.get(playerId).equals(MajiangGamePlayerMaidiState.waitForDingdi)) {
+			if (playerMaidiStateMap.get(playerId).equals(MajiangGamePlayerMaidiState.waitForMaidi)) {
 				queryScopes.add(QueryScope.maidiState);
 			}
 		}

@@ -153,7 +153,7 @@ public class MajiangController {
 			if (!otherPlayerId.equals(playerId)) {
 				wsNotifier.notifyToQuery(otherPlayerId, QueryScope.gameInfo.name());
 				wsNotifier.notifyToQuery(otherPlayerId, QueryScope.maidiState.name());
-				if (playerMaidiStateMap.get(otherPlayerId).equals(MajiangGamePlayerMaidiState.startMaidi)) {
+				if (playerMaidiStateMap.get(otherPlayerId).equals(MajiangGamePlayerMaidiState.startDingdi)) {
 					wsNotifier.notifyToQuery(otherPlayerId, QueryScope.maidi.name());
 				}
 				if (maidiResult.getFirstActionFrame() != null) {
@@ -291,7 +291,7 @@ public class MajiangController {
 					wsNotifier.notifyToQuery(otherPlayerId, QueryScope.panForMe.name());
 				}
 				if (playerMaidiStateMap != null
-						&& playerMaidiStateMap.get(otherPlayerId).equals(MajiangGamePlayerMaidiState.startDingdi)) {
+						&& playerMaidiStateMap.get(otherPlayerId).equals(MajiangGamePlayerMaidiState.startMaidi)) {
 					wsNotifier.notifyToQuery(otherPlayerId, QueryScope.maidi.name());
 				}
 			}
@@ -303,7 +303,7 @@ public class MajiangController {
 			queryScopes.add(QueryScope.panForMe);
 		}
 		if (playerMaidiStateMap != null
-				&& playerMaidiStateMap.get(playerId).equals(MajiangGamePlayerMaidiState.startDingdi)) {
+				&& playerMaidiStateMap.get(playerId).equals(MajiangGamePlayerMaidiState.startMaidi)) {
 			queryScopes.add(QueryScope.maidi);
 		}
 		data.put("queryScopes", queryScopes);

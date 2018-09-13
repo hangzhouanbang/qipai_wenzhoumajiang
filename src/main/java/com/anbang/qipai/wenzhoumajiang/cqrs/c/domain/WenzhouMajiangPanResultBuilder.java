@@ -125,10 +125,12 @@ public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 						boolean zhuangHu = currentPan.getZhuangPlayerId().equals(playerId1);
 						if (zhuangHu) {// 闲家输庄家
 							int maidiCount = 1;// 底分倍数
-							if (playerMaidiStateMap.get(playerId1).equals(MajiangGamePlayerMaidiState.maidi)) {
+							if (playerMaidiStateMap.get(playerId1).equals(MajiangGamePlayerMaidiState.maidi)
+									|| playerMaidiStateMap.get(playerId1).equals(MajiangGamePlayerMaidiState.dingdi)) {
 								maidiCount += 1;
 							}
-							if (playerMaidiStateMap.get(playerId2).equals(MajiangGamePlayerMaidiState.maidi)) {
+							if (playerMaidiStateMap.get(playerId2).equals(MajiangGamePlayerMaidiState.maidi)
+									|| playerMaidiStateMap.get(playerId1).equals(MajiangGamePlayerMaidiState.dingdi)) {
 								maidiCount += 1;
 							}
 							int score1 = playerResult1.getScore();
@@ -142,10 +144,14 @@ public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 							boolean zhuangShu = currentPan.getZhuangPlayerId().equals(playerId2);
 							if (zhuangShu) {// 庄家输闲家
 								int maidiCount = 1;// 底分倍数
-								if (playerMaidiStateMap.get(playerId1).equals(MajiangGamePlayerMaidiState.maidi)) {
+								if (playerMaidiStateMap.get(playerId1).equals(MajiangGamePlayerMaidiState.maidi)
+										|| playerMaidiStateMap.get(playerId1)
+												.equals(MajiangGamePlayerMaidiState.dingdi)) {
 									maidiCount += 1;
 								}
-								if (playerMaidiStateMap.get(playerId2).equals(MajiangGamePlayerMaidiState.maidi)) {
+								if (playerMaidiStateMap.get(playerId2).equals(MajiangGamePlayerMaidiState.maidi)
+										|| playerMaidiStateMap.get(playerId1)
+												.equals(MajiangGamePlayerMaidiState.dingdi)) {
 									maidiCount += 1;
 								}
 								int score1 = playerResult1.getScore();
@@ -168,10 +174,12 @@ public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 						boolean zhuangHu = currentPan.getZhuangPlayerId().equals(playerId2);
 						if (zhuangHu) {// 闲家输庄家
 							int maidiCount = 1;// 底分倍数
-							if (playerMaidiStateMap.get(playerId1).equals(MajiangGamePlayerMaidiState.maidi)) {
+							if (playerMaidiStateMap.get(playerId1).equals(MajiangGamePlayerMaidiState.maidi)
+									|| playerMaidiStateMap.get(playerId1).equals(MajiangGamePlayerMaidiState.dingdi)) {
 								maidiCount += 1;
 							}
-							if (playerMaidiStateMap.get(playerId2).equals(MajiangGamePlayerMaidiState.maidi)) {
+							if (playerMaidiStateMap.get(playerId2).equals(MajiangGamePlayerMaidiState.maidi)
+									|| playerMaidiStateMap.get(playerId1).equals(MajiangGamePlayerMaidiState.dingdi)) {
 								maidiCount += 1;
 							}
 							int score1 = playerResult1.getScore();
@@ -185,10 +193,14 @@ public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 							boolean zhuangShu = currentPan.getZhuangPlayerId().equals(playerId1);
 							if (zhuangShu) {// 庄家输闲家
 								int maidiCount = 1;// 底分倍数
-								if (playerMaidiStateMap.get(playerId1).equals(MajiangGamePlayerMaidiState.maidi)) {
+								if (playerMaidiStateMap.get(playerId1).equals(MajiangGamePlayerMaidiState.maidi)
+										|| playerMaidiStateMap.get(playerId1)
+												.equals(MajiangGamePlayerMaidiState.dingdi)) {
 									maidiCount += 1;
 								}
-								if (playerMaidiStateMap.get(playerId2).equals(MajiangGamePlayerMaidiState.maidi)) {
+								if (playerMaidiStateMap.get(playerId2).equals(MajiangGamePlayerMaidiState.maidi)
+										|| playerMaidiStateMap.get(playerId1)
+												.equals(MajiangGamePlayerMaidiState.dingdi)) {
 									maidiCount += 1;
 								}
 								int score1 = playerResult1.getScore();
