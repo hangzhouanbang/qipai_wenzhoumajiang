@@ -23,6 +23,7 @@ public class MajiangGameDbo {
 	private boolean gangsuanfen;
 	private Map<String, Integer> playerLianZhuangCountMap;
 	private MajiangGameState state;
+	private int currentPanNo;
 	private List<MajiangGamePlayerDbo> players;
 
 	public MajiangGameDbo() {
@@ -41,7 +42,7 @@ public class MajiangGameDbo {
 		shaozhongfa = majiangGame.isShaozhongfa();
 		lazila = majiangGame.isLazila();
 		state = majiangGame.getState();
-
+		currentPanNo = majiangGame.getCurrentPanNo();
 		players = new ArrayList<>();
 		Map<String, MajiangGamePlayerState> playerStateMap = majiangGame.getPlayerStateMap();
 		Map<String, GamePlayerOnlineState> playerOnlineStateMap = majiangGame.getPlayerOnlineStateMap();
@@ -173,5 +174,13 @@ public class MajiangGameDbo {
 
 	public void setPlayerLianZhuangCountMap(Map<String, Integer> playerLianZhuangCountMap) {
 		this.playerLianZhuangCountMap = playerLianZhuangCountMap;
+	}
+
+	public int getCurrentPanNo() {
+		return currentPanNo;
+	}
+
+	public void setCurrentPanNo(int currentPanNo) {
+		this.currentPanNo = currentPanNo;
 	}
 }

@@ -18,7 +18,6 @@ import com.dml.majiang.pan.guipai.RandomGuipaiDeterminer;
 import com.dml.majiang.pan.publicwaitingplayer.WaitDaPlayerPanPublicWaitingPlayerDeterminer;
 import com.dml.majiang.pan.result.PanResult;
 import com.dml.majiang.player.action.chi.PengganghuFirstChiActionProcessor;
-import com.dml.majiang.player.action.da.DachushoupaiDaActionProcessor;
 import com.dml.majiang.player.action.gang.HuFirstGangActionProcessor;
 import com.dml.majiang.player.action.guo.DoNothingGuoActionProcessor;
 import com.dml.majiang.player.action.hu.PlayerSetHuHuActionProcessor;
@@ -71,7 +70,7 @@ public class MajiangGame {
 				playerMaidiStateMap.put(playerId, MajiangGamePlayerMaidiState.maidi);
 				for (String pid : playerIdList) {
 					if (!zhuangPlayerId.equals(pid)) {
-						playerMaidiStateMap.put(playerId, MajiangGamePlayerMaidiState.startDingdi);
+						playerMaidiStateMap.put(pid, MajiangGamePlayerMaidiState.startDingdi);
 					}
 				}
 			} else {
@@ -82,7 +81,7 @@ public class MajiangGame {
 			if (zhuangPlayerId.equals(playerId)) {
 				for (String pid : playerIdList) {
 					if (!zhuangPlayerId.equals(pid)) {
-						playerMaidiStateMap.put(playerId, MajiangGamePlayerMaidiState.startDingdi);
+						playerMaidiStateMap.put(pid, MajiangGamePlayerMaidiState.startDingdi);
 					}
 				}
 			}
@@ -145,7 +144,7 @@ public class MajiangGame {
 		ju.setInitialActionUpdater(new ZhuangMoPaiInitialActionUpdater());
 		ju.setMoActionProcessor(new WenzhouMajiangMoActionProcessor());
 		ju.setMoActionUpdater(new WenzhouMajiangMoActionUpdater());
-		ju.setDaActionProcessor(new DachushoupaiDaActionProcessor());
+		ju.setDaActionProcessor(new WenzhouMajiangDaActionProcessor());
 		ju.setDaActionUpdater(new WenzhouMajiangDaActionUpdater());
 		ju.setChiActionProcessor(new PengganghuFirstChiActionProcessor());
 		ju.setChiActionUpdater(new WenzhouMajiangChiActionUpdater());

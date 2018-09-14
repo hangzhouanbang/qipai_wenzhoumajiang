@@ -135,7 +135,7 @@ public class GamePlayWsController extends TextWebSocketHandler {
 			if (!majiangGameDbo.getState().equals(MajiangGameState.finished)) {
 				wsNotifier.notifyToQuery(playerId, QueryScope.gameInfo.name());
 				if (majiangGameDbo.getState().equals(MajiangGameState.playing)) {
-					wsNotifier.notifyToQuery(playerId, QueryScope.panForMe.name());
+					wsNotifier.notifyToQuery(playerId, QueryScope.maidiState.name());
 				}
 			}
 		}

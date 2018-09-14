@@ -1,5 +1,6 @@
 package com.anbang.qipai.wenzhoumajiang.cqrs.c.domain;
 
+import java.util.List;
 import java.util.Set;
 
 import com.dml.majiang.ju.Ju;
@@ -44,26 +45,29 @@ public class WenzhouMajiangDaActionUpdater implements MajiangPlayerDaActionUpdat
 		MajiangPai guipaiai = guipaiType[0];
 		MajiangPai daPai = daAction.getPai();
 		// 下家可以吃，代码需要改进
-		ShoupaiCalculator shoupaiCalculator = xiajiaPlayer.getShoupaiCalculator();
-		Shunzi shunzi1 = tryAndMakeShunziWithPai1(shoupaiCalculator, guipaiai, daPai);
-		if (shunzi1 != null) {
-			shunzi1.setPai1(daPai);
-			xiajiaPlayer.addActionCandidate(
-					new MajiangChiAction(xiajiaPlayer.getId(), daAction.getActionPlayerId(), daPai, shunzi1));
-		}
+		List<MajiangPai> fangruShoupaiList = xiajiaPlayer.getFangruShoupaiList();
+		if (fangruShoupaiList.size() != 2) {
+			ShoupaiCalculator shoupaiCalculator = xiajiaPlayer.getShoupaiCalculator();
+			Shunzi shunzi1 = tryAndMakeShunziWithPai1(shoupaiCalculator, guipaiai, daPai);
+			if (shunzi1 != null) {
+				shunzi1.setPai1(daPai);
+				xiajiaPlayer.addActionCandidate(
+						new MajiangChiAction(xiajiaPlayer.getId(), daAction.getActionPlayerId(), daPai, shunzi1));
+			}
 
-		Shunzi shunzi2 = tryAndMakeShunziWithPai2(shoupaiCalculator, guipaiai, daPai);
-		if (shunzi2 != null) {
-			shunzi2.setPai2(daPai);
-			xiajiaPlayer.addActionCandidate(
-					new MajiangChiAction(xiajiaPlayer.getId(), daAction.getActionPlayerId(), daPai, shunzi2));
-		}
+			Shunzi shunzi2 = tryAndMakeShunziWithPai2(shoupaiCalculator, guipaiai, daPai);
+			if (shunzi2 != null) {
+				shunzi2.setPai2(daPai);
+				xiajiaPlayer.addActionCandidate(
+						new MajiangChiAction(xiajiaPlayer.getId(), daAction.getActionPlayerId(), daPai, shunzi2));
+			}
 
-		Shunzi shunzi3 = tryAndMakeShunziWithPai3(shoupaiCalculator, guipaiai, daPai);
-		if (shunzi3 != null) {
-			shunzi3.setPai3(daPai);
-			xiajiaPlayer.addActionCandidate(
-					new MajiangChiAction(xiajiaPlayer.getId(), daAction.getActionPlayerId(), daPai, shunzi3));
+			Shunzi shunzi3 = tryAndMakeShunziWithPai3(shoupaiCalculator, guipaiai, daPai);
+			if (shunzi3 != null) {
+				shunzi3.setPai3(daPai);
+				xiajiaPlayer.addActionCandidate(
+						new MajiangChiAction(xiajiaPlayer.getId(), daAction.getActionPlayerId(), daPai, shunzi3));
+			}
 		}
 		MajiangPlayer bestHuplayer = null;
 		WenzhouMajiangHu playerBestHu = null;
@@ -73,8 +77,11 @@ public class WenzhouMajiangDaActionUpdater implements MajiangPlayerDaActionUpdat
 		while (true) {
 			if (!xiajiaPlayer.getId().equals(daAction.getActionPlayerId())) {
 				// 其他的可以碰杠胡
-				if (!canNotPengPlayers.contains(xiajiaPlayer.getId())) {
-					xiajiaPlayer.tryPengAndGenerateCandidateAction(daAction.getActionPlayerId(), daAction.getPai());
+				List<MajiangPai> fangruShoupaiList1 = xiajiaPlayer.getFangruShoupaiList();
+				if (fangruShoupaiList1.size() != 2) {
+					if (!canNotPengPlayers.contains(xiajiaPlayer.getId())) {
+						xiajiaPlayer.tryPengAndGenerateCandidateAction(daAction.getActionPlayerId(), daAction.getPai());
+					}
 				}
 				xiajiaPlayer.tryGangdachuAndGenerateCandidateAction(daAction.getActionPlayerId(), daAction.getPai());
 

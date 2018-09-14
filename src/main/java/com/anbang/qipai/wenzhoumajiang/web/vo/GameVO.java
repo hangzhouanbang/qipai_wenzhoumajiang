@@ -18,6 +18,7 @@ public class GameVO {
 	private boolean caishenqian;
 	private boolean shaozhongfa;
 	private boolean lazila;
+	private int currentPanNo;
 	private Map<String, Integer> playerLianZhuangCountMap;
 	private List<MajiangGamePlayerVO> playerList;
 	private MajiangGameState state;
@@ -37,6 +38,7 @@ public class GameVO {
 		playerList = new ArrayList<>();
 		majiangGameDbo.getPlayers().forEach((dbo) -> playerList.add(new MajiangGamePlayerVO(dbo)));
 		state = majiangGameDbo.getState();
+		currentPanNo = majiangGameDbo.getCurrentPanNo();
 	}
 
 	public String getId() {
@@ -141,5 +143,13 @@ public class GameVO {
 
 	public void setPlayerLianZhuangCountMap(Map<String, Integer> playerLianZhuangCountMap) {
 		this.playerLianZhuangCountMap = playerLianZhuangCountMap;
+	}
+
+	public int getCurrentPanNo() {
+		return currentPanNo;
+	}
+
+	public void setCurrentPanNo(int currentPanNo) {
+		this.currentPanNo = currentPanNo;
 	}
 }

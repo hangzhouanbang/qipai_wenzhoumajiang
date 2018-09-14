@@ -399,8 +399,21 @@ public class GameController {
 		CommonVO vo = new CommonVO();
 		MajiangGamePlayerMaidiDbo majiangGamePlayerMaidiDbo = majiangGameQueryService
 				.findMajiangGamePlayerMaidiDbo(gameId, panNo);
+		Map<String, MajiangGamePlayerMaidiState> playerMaidiStateMap = majiangGamePlayerMaidiDbo
+				.getPlayerMaidiStateMap();
 		Map data = new HashMap();
-		data.put("maidiState", majiangGamePlayerMaidiDbo.getPlayerMaidiStateMap());
+		data.put("maidiState", playerMaidiStateMap);
+		boolean start = true;
+		for (String pid : playerMaidiStateMap.keySet()) {
+			if (MajiangGamePlayerMaidiState.startDingdi.equals(playerMaidiStateMap.get(pid))
+					|| MajiangGamePlayerMaidiState.startMaidi.equals(playerMaidiStateMap.get(pid))
+					|| MajiangGamePlayerMaidiState.waitForMaidi.equals(playerMaidiStateMap.get(pid))) {
+				start = false;
+			}
+		}
+		if (start) {
+			data.put("queryScope", QueryScope.panForMe);
+		}
 		vo.setData(data);
 		return vo;
 
