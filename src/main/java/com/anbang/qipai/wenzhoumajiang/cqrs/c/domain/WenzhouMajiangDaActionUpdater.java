@@ -136,7 +136,7 @@ public class WenzhouMajiangDaActionUpdater implements MajiangPlayerDaActionUpdat
 		int[] paiQuantityArray = shoupaiCalculator.getPaiQuantityArray();
 		int guipaiOrdinal = guipai.ordinal();
 		int paiOrdinal = pai1.ordinal();
-		if (guipaiOrdinal == paiOrdinal) {
+		if (paiOrdinal == 33) {
 			paiOrdinal = guipaiOrdinal;
 		}
 		int pai2 = paiOrdinal + 1;
@@ -189,7 +189,7 @@ public class WenzhouMajiangDaActionUpdater implements MajiangPlayerDaActionUpdat
 		int[] paiQuantityArray = shoupaiCalculator.getPaiQuantityArray();
 		int guipaiOrdinal = guipai.ordinal();
 		int paiOrdinal = pai2.ordinal();
-		if (guipaiOrdinal == paiOrdinal) {
+		if (paiOrdinal == 33) {
 			paiOrdinal = guipaiOrdinal;
 		}
 		int pai1 = paiOrdinal - 1;
@@ -242,7 +242,7 @@ public class WenzhouMajiangDaActionUpdater implements MajiangPlayerDaActionUpdat
 		int[] paiQuantityArray = shoupaiCalculator.getPaiQuantityArray();
 		int guipaiOrdinal = guipai.ordinal();
 		int paiOrdinal = pai3.ordinal();
-		if (guipaiOrdinal == paiOrdinal) {
+		if (paiOrdinal == 33) {
 			paiOrdinal = guipaiOrdinal;
 		}
 		int pai1 = paiOrdinal - 2;

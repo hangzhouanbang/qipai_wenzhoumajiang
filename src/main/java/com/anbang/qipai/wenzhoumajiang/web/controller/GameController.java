@@ -8,7 +8,6 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -394,11 +393,11 @@ public class GameController {
 
 	@RequestMapping(value = "/maidi_info")
 	@ResponseBody
-	public CommonVO maidiinfo(String gameId, @RequestParam(defaultValue = "1") int panNo) {
+	public CommonVO maidiinfo(String gameId) {
 
 		CommonVO vo = new CommonVO();
 		MajiangGamePlayerMaidiDbo majiangGamePlayerMaidiDbo = majiangGameQueryService
-				.findMajiangGamePlayerMaidiDbo(gameId, panNo);
+				.findLastMajiangGamePlayerMaidiDbo(gameId);
 		Map<String, MajiangGamePlayerMaidiState> playerMaidiStateMap = majiangGamePlayerMaidiDbo
 				.getPlayerMaidiStateMap();
 		Map data = new HashMap();

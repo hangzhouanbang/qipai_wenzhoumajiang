@@ -3,6 +3,9 @@ package com.anbang.qipai.wenzhoumajiang.cqrs.q.dao.mongodb;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -25,10 +28,11 @@ public class MongodbMajiangGamePlayerMaidiDboDao implements MajiangGamePlayerMai
 	}
 
 	@Override
-	public MajiangGamePlayerMaidiDbo findByGameIdAndPanNo(String gameId, int panNo) {
+	public MajiangGamePlayerMaidiDbo findLastByGameId(String gameId) {
 		Query query = new Query();
 		query.addCriteria(Criteria.where("gameId").is(gameId));
-		query.addCriteria(Criteria.where("panNo").is(panNo));
+		Sort sort = new Sort(new Order(Direction.DESC, "panNo"));
+		query.with(sort);
 		return mongoTemplate.findOne(query, MajiangGamePlayerMaidiDbo.class);
 	}
 

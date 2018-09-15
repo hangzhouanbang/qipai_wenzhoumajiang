@@ -12,5 +12,5 @@ public interface MajiangGamePlayerMaidiDboDao {
 	void updateMajiangGamePlayerMaidiDbo(String gameId, int panNo,
 			Map<String, MajiangGamePlayerMaidiState> playerMaidiStateMap);
 
-	MajiangGamePlayerMaidiDbo findByGameIdAndPanNo(String gameId, int panNo);
+	MajiangGamePlayerMaidiDbo findLastByGameId(String gameId);
 }

@@ -132,8 +132,8 @@ public class MajiangGameQueryService {
 		}
 	}
 
-	public MajiangGamePlayerMaidiDbo findMajiangGamePlayerMaidiDbo(String gameId, int panNo) {
-		return majiangGamePlayerMaidiDboDao.findByGameIdAndPanNo(gameId, panNo);
+	public MajiangGamePlayerMaidiDbo findLastMajiangGamePlayerMaidiDbo(String gameId) {
+		return majiangGamePlayerMaidiDboDao.findLastByGameId(gameId);
 	}
 
 }
