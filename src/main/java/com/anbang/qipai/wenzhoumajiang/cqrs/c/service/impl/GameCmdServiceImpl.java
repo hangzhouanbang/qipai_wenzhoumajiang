@@ -68,6 +68,7 @@ public class GameCmdServiceImpl extends CmdServiceBase implements GameCmdService
 		if (gameValueObject.getState().equals(GameState.playing)) {
 			Map<String, MajiangGamePlayerMaidiState> playerMaidiStateMap = majiangGameManager
 					.createJuAndReadyFirstPan(gameValueObject, currentTime);
+			majiangGameValueObject.setCurrentPanNo(1);
 			majiangGameValueObject.setPlayerMaidiStateMap(playerMaidiStateMap);
 		}
 		return result;

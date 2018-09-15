@@ -10,8 +10,12 @@ import com.dml.majiang.pan.Pan;
 import com.dml.majiang.player.MajiangPlayer;
 import com.dml.majiang.player.action.da.MajiangDaAction;
 import com.dml.majiang.player.action.da.MajiangPlayerDaActionProcessor;
+import com.dml.majiang.player.shoupai.ShoupaiDanpai;
 import com.dml.majiang.player.shoupai.ShoupaiDuiziZu;
+import com.dml.majiang.player.shoupai.ShoupaiGangziZu;
+import com.dml.majiang.player.shoupai.ShoupaiKeziZu;
 import com.dml.majiang.player.shoupai.ShoupaiPaiXing;
+import com.dml.majiang.player.shoupai.ShoupaiShunziZu;
 import com.dml.majiang.player.shoupai.gouxing.GouXingPanHu;
 
 public class WenzhouMajiangDaActionProcessor implements MajiangPlayerDaActionProcessor {
@@ -54,6 +58,14 @@ public class WenzhouMajiangDaActionProcessor implements MajiangPlayerDaActionPro
 			duiziZu.fillAllBlankPaiWithBenPai();
 			duiziList.add(duiziZu);
 			shoupaiPaiXing.setDuiziList(duiziList);
+			List<ShoupaiDanpai> danpaiList = new ArrayList<>();
+			shoupaiPaiXing.setDanpaiList(danpaiList);
+			List<ShoupaiKeziZu> keziList = new ArrayList<>();
+			shoupaiPaiXing.setKeziList(keziList);
+			List<ShoupaiGangziZu> gangziList = new ArrayList<>();
+			shoupaiPaiXing.setGangziList(gangziList);
+			List<ShoupaiShunziZu> shunziList = new ArrayList<>();
+			shoupaiPaiXing.setShunziList(shunziList);
 			bestHu.setShoupaiPaiXing(shoupaiPaiXing);
 
 			MajiangPlayer xiajiaPlayer = currentPan.findXiajia(player);

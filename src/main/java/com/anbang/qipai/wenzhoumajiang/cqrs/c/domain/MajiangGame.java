@@ -52,6 +52,7 @@ public class MajiangGame {
 	private boolean gangsuanfen;
 	private Ju ju;
 	private MajiangGameState state;
+	private int currentPanNo;
 	private Map<String, Integer> playerLianZhuangCountMap = new HashMap<>();
 	private Map<String, MajiangGamePlayerState> playerStateMap = new HashMap<>();
 	private Map<String, GamePlayerOnlineState> playerOnlineStateMap = new HashMap<>();
@@ -175,6 +176,7 @@ public class MajiangGame {
 		playerLianZhuangCountMap.put(zhuangPlayerId, 1);
 		game.allPlayerIds().forEach((pid) -> playerMaidiStateMap.put(pid, MajiangGamePlayerMaidiState.waitForMaidi));
 		playerMaidiStateMap.put(zhuangPlayerId, MajiangGamePlayerMaidiState.startMaidi);
+		this.currentPanNo = firstPan.getNo();
 		return playerMaidiStateMap;
 	}
 
@@ -211,6 +213,7 @@ public class MajiangGame {
 		result.setPanActionFrame(panActionFrame);
 		if (ju.getCurrentPan() == null) {// 盘结束了
 			state = MajiangGameState.waitingNextPan;
+			this.currentPanNo = ju.countFinishedPan();
 			playerStateMap.keySet().forEach((pid) -> playerStateMap.put(pid, MajiangGamePlayerState.panFinished));
 			WenzhouMajiangPanResult panResult = (WenzhouMajiangPanResult) ju.findLatestFinishedPanResult();
 			panResult.getPlayerResultList()
@@ -283,7 +286,6 @@ public class MajiangGame {
 		Map<String, MajiangGamePlayerMaidiState> playerMaidiStateMap = wenzhouMajiangPanResultBuilder
 				.getPlayerMaidiStateMap();
 		Map<String, MajiangGamePlayerMaidiState> newMaidiStateMap = null;
-		wenzhouMajiangPanResultBuilder.setPlayerMaidiStateMap(newMaidiStateMap);
 		// 如果可以创建下一盘,那就创建下一盘
 		if (ju.determineToCreateNextPan()) {
 			state = MajiangGameState.playing;
@@ -292,6 +294,7 @@ public class MajiangGame {
 			createNextPanDeterminer.reset();
 			Pan nextPan = new Pan();
 			nextPan.setNo(ju.countFinishedPan() + 1);
+			this.currentPanNo = nextPan.getNo();
 			PanResult latestFinishedPanResult = ju.findLatestFinishedPanResult();
 			List<String> allPlayerIds = latestFinishedPanResult.allPlayerIds();
 			allPlayerIds.forEach((pid) -> nextPan.addPlayer(pid));
@@ -341,6 +344,7 @@ public class MajiangGame {
 			playerLianZhuangCountMap.put(lianZhuangPlayerId, lianZhuangCount);
 			if (lianZhuangCount > 1) {// 连庄
 				newMaidiStateMap = playerMaidiStateMap;
+				wenzhouMajiangPanResultBuilder.setPlayerMaidiStateMap(newMaidiStateMap);
 				PanActionFrame firstActionFrame = startPan(allPlayerIds, System.currentTimeMillis());
 				readyToNextPanResult.setFirstActionFrame(firstActionFrame);
 			} else {// 重新买底
@@ -348,6 +352,7 @@ public class MajiangGame {
 				for (String pid : allPlayerIds) {
 					newMaidiStateMap.put(pid, MajiangGamePlayerMaidiState.waitForMaidi);
 				}
+				wenzhouMajiangPanResultBuilder.setPlayerMaidiStateMap(newMaidiStateMap);
 				String zhuangPlayerId = menFengDeterminer.getZhuangPlayerId();
 				newMaidiStateMap.put(zhuangPlayerId, MajiangGamePlayerMaidiState.startMaidi);
 			}
@@ -489,6 +494,14 @@ public class MajiangGame {
 
 	public void setPlayerLianZhuangCountMap(Map<String, Integer> playerLianZhuangCountMap) {
 		this.playerLianZhuangCountMap = playerLianZhuangCountMap;
+	}
+
+	public int getCurrentPanNo() {
+		return currentPanNo;
+	}
+
+	public void setCurrentPanNo(int currentPanNo) {
+		this.currentPanNo = currentPanNo;
 	}
 
 }

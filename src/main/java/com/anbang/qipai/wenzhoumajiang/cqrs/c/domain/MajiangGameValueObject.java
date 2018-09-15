@@ -43,11 +43,7 @@ public class MajiangGameValueObject {
 		lazila = majiangGame.isLazila();
 		gangsuanfen = majiangGame.isGangsuanfen();
 		state = majiangGame.getState();
-		if (majiangGame.getJu() != null) {
-			currentPanNo = majiangGame.getJu().getCurrentPan().getNo();
-		} else {
-			currentPanNo = 1;
-		}
+		currentPanNo = majiangGame.getCurrentPanNo();
 		playerStateMap.putAll(majiangGame.getPlayerStateMap());
 		playerOnlineStateMap.putAll(majiangGame.getPlayerOnlineStateMap());
 		playeTotalScoreMap.putAll(majiangGame.getPlayeTotalScoreMap());
