@@ -17,6 +17,8 @@ public class PanResultVO {
 
 	private long finishTime;
 
+	private int paiCount;
+
 	public PanResultVO(PanResultDbo dbo, MajiangGameDbo majiangGameDbo) {
 		List<WenzhouMajiangPanPlayerResultDbo> list = dbo.getPlayerResultList();
 		if (list != null) {
@@ -28,6 +30,7 @@ public class PanResultVO {
 		hu = dbo.isHu();
 		panNo = dbo.getPanNo();
 		finishTime = dbo.getFinishTime();
+		paiCount = dbo.getPanActionFrame().getPanAfterAction().getAvaliablePaiList().getPaiCount();
 	}
 
 	public List<WenzhouMajiangPanPlayerResultVO> getPlayerResultList() {
@@ -44,6 +47,14 @@ public class PanResultVO {
 
 	public int getPanNo() {
 		return panNo;
+	}
+
+	public int getPaiCount() {
+		return paiCount;
+	}
+
+	public void setPaiCount(int paiCount) {
+		this.paiCount = paiCount;
 	}
 
 }

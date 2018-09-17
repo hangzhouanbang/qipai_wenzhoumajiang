@@ -128,6 +128,7 @@ public class MajiangPlayQueryService {
 		WenzhouMajiangPanResult wenzhouMajiangPanResult = majiangActionResult.getPanResult();
 		if (wenzhouMajiangPanResult != null) {
 			PanResultDbo panResultDbo = new PanResultDbo(gameId, wenzhouMajiangPanResult);
+			panResultDbo.setPanActionFrame(panActionFrame);
 			panResultDboDao.save(panResultDbo);
 			if (majiangActionResult.getJuResult() != null) {// 一切都结束了
 				// 要记录局结果
