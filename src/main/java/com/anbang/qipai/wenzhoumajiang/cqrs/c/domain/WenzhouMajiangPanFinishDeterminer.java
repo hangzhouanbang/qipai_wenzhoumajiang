@@ -10,7 +10,8 @@ public class WenzhouMajiangPanFinishDeterminer implements CurrentPanFinishiDeter
 	public boolean determineToFinishCurrentPan(Ju ju) {
 		Pan currentPan = ju.getCurrentPan();
 		boolean hu = currentPan.anyPlayerHu();
-		if (hu) {
+		// 当有人胡并且所有人行牌结束游戏结束
+		if (hu && currentPan.allPlayerHasNoActionCandidates()) {
 			return true;
 		} else {
 			int liupai = 0;

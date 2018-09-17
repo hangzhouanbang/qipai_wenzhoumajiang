@@ -66,18 +66,49 @@ public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 				difen = 4;
 			}
 		}
-		MajiangPlayer huPlayer = currentPan.findHuPlayer();
+		List<MajiangPlayer> huPlayers = currentPan.findAllHuPlayers();
 		List<String> playerIdList = currentPan.sortedPlayerIdList();
 		List<WenzhouMajiangPanPlayerResult> playerResultList = new ArrayList<>();
-		if (huPlayer != null) {// 正常有人胡
-			WenzhouMajiangHu hu = (WenzhouMajiangHu) huPlayer.getHu();
-			WenzhouMajiangPanPlayerHufan huPlayerHufan = hu.getHufan();
+		if (huPlayers.size() > 0) {// 正常有人胡
+			MajiangPlayer bestHuPlayer = huPlayers.get(0);
+			WenzhouMajiangHu bestHu = (WenzhouMajiangHu) bestHuPlayer.getHu();
+			if (huPlayers.size() == 1) {// 一人胡
+
+			} else {
+				String dianpaoPlayerId = bestHu.getDianpaoPlayerId();
+				MajiangPlayer xiajiaPlayer = currentPan.findPlayerById(dianpaoPlayerId);
+				// 按点炮者开始遍历出最佳胡
+				while (true) {
+					if (!xiajiaPlayer.getId().equals(dianpaoPlayerId)) {
+						WenzhouMajiangHu hu = (WenzhouMajiangHu) xiajiaPlayer.getHu();
+						if (hu != null && bestHu.getHufan().getValue() < hu.getHufan().getValue()) {
+							bestHuPlayer = xiajiaPlayer;
+							bestHu = hu;
+						}
+					} else {
+						break;
+					}
+					xiajiaPlayer = currentPan.findXiajia(xiajiaPlayer);
+				}
+				// 将其他胡的玩家的胡设置为null
+				xiajiaPlayer = currentPan.findXiajia(xiajiaPlayer);
+				while (true) {
+					if (!xiajiaPlayer.getId().equals(dianpaoPlayerId)) {
+						if (!xiajiaPlayer.getId().equals(bestHuPlayer.getId())) {
+							xiajiaPlayer.setHu(null);
+						}
+					} else {
+						break;
+					}
+				}
+			}
+			WenzhouMajiangPanPlayerHufan huPlayerHufan = bestHu.getHufan();
 			int paixingbeishu = huPlayerHufan.getValue();
-			playerIdList.forEach((playerId) -> {
+			for (String playerId : playerIdList) {
 				MajiangPlayer player = currentPan.findPlayerById(playerId);
 				WenzhouMajiangPanPlayerResult playerResult = new WenzhouMajiangPanPlayerResult();
 				playerResult.setPlayerId(playerId);
-				if (playerId.equals(huPlayer.getId())) {
+				if (playerId.equals(bestHuPlayer.getId())) {
 					playerResult.setHufan(huPlayerHufan);
 					WenzhouMajiangPanPlayerCaishenqian caishenqian = new WenzhouMajiangPanPlayerCaishenqian(player);
 					caishenqian.calculate(true, this.caishenqian, playerIdList.size());
@@ -96,7 +127,7 @@ public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 					playerResult.setGang(gang);
 				}
 				playerResultList.add(playerResult);
-			});
+			}
 
 			for (int i = 0; i < playerResultList.size(); i++) {
 				WenzhouMajiangPanPlayerResult playerResult1 = playerResultList.get(i);
@@ -118,7 +149,7 @@ public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 					int gangfen2 = gang2.getValue();
 					gang1.jiesuan(-gangfen2);
 					gang2.jiesuan(-gangfen1);
-					if (playerId1.equals(huPlayer.getId())) {// 1胡2不胡
+					if (playerId1.equals(bestHuPlayer.getId())) {// 1胡2不胡
 						// 是不是庄家胡
 						boolean zhuangHu = currentPan.getZhuangPlayerId().equals(playerId1);
 						if (zhuangHu) {// 闲家输庄家
@@ -167,7 +198,7 @@ public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 								playerResult2.setScore(score2);
 							}
 						}
-					} else if (playerId2.equals(huPlayer.getId())) {// 2胡1不胡
+					} else if (playerId2.equals(bestHuPlayer.getId())) {// 2胡1不胡
 						// 是不是庄家胡
 						boolean zhuangHu = currentPan.getZhuangPlayerId().equals(playerId2);
 						if (zhuangHu) {// 闲家输庄家
@@ -240,8 +271,8 @@ public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 			wenzhouMajiangPanResult.setPanFinishTime(panFinishTime);
 			wenzhouMajiangPanResult.setPlayerResultList(playerResultList);
 			wenzhouMajiangPanResult.setHu(true);
-			wenzhouMajiangPanResult.setZimo(hu.isZimo());
-			wenzhouMajiangPanResult.setDianpaoPlayerId(hu.getDianpaoPlayerId());
+			wenzhouMajiangPanResult.setZimo(bestHu.isZimo());
+			wenzhouMajiangPanResult.setDianpaoPlayerId(bestHu.getDianpaoPlayerId());
 			return wenzhouMajiangPanResult;
 		} else {// 流局
 			playerIdList.forEach((playerId) -> {

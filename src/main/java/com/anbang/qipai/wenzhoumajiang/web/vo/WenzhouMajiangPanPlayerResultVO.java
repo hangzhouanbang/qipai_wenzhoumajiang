@@ -32,7 +32,10 @@ public class WenzhouMajiangPanPlayerResultVO {
 	private List<MajiangPai> keziTypeList = new ArrayList<>();
 	private List<GangchuPaiZuVO> gangchuList = new ArrayList<>();
 
-	WenzhouMajiangPanPlayerHuxingVO huxing;
+	private WenzhouMajiangPanPlayerHuxingVO huxing;
+
+	private WenzhouMajiangPanPlayerHufanVO hufanVo;
+
 	/**
 	 * 这个是胡翻
 	 */
@@ -64,6 +67,11 @@ public class WenzhouMajiangPanPlayerResultVO {
 		hu = panPlayerResult.getPlayer().getHu() != null;
 		publicPaiList = new ArrayList<>(panPlayerResult.getPlayer().getPublicPaiList());
 		huxing = new WenzhouMajiangPanPlayerHuxingVO(panPlayerResult.getPlayerResult().getHufan().getHuxing());
+		if (hu) {
+			hufanVo = new WenzhouMajiangPanPlayerHufanVO(panPlayerResult.getPlayerResult().getHufan());
+		} else {
+			hufanVo = new WenzhouMajiangPanPlayerHufanVO();
+		}
 		this.hufan = panPlayerResult.getPlayerResult().getHufan().getValue();
 		this.caishenqian = panPlayerResult.getPlayerResult().getCaishenqian().getTotalscore();
 		this.gangfen = panPlayerResult.getPlayerResult().getGang().getTotalscore();
@@ -280,5 +288,13 @@ public class WenzhouMajiangPanPlayerResultVO {
 
 	public void setGangfen(int gangfen) {
 		this.gangfen = gangfen;
+	}
+
+	public WenzhouMajiangPanPlayerHufanVO getHufanVo() {
+		return hufanVo;
+	}
+
+	public void setHufanVo(WenzhouMajiangPanPlayerHufanVO hufanVo) {
+		this.hufanVo = hufanVo;
 	}
 }

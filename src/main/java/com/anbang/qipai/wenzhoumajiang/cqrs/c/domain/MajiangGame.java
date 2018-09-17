@@ -193,6 +193,7 @@ public class MajiangGame {
 		MajiangPai[] guipaiTypes = new MajiangPai[publicGuipaiSet.size()];
 		publicGuipaiSet.toArray(guipaiTypes);
 		MajiangPai guipai = guipaiTypes[0];
+		System.out.println(guipai);
 		ju.updateShoupaiListSortComparatorForAllPlayersInCurrentPan(
 				new BaibanDangGuipaiBenpaiShoupaiSortComparator(guipai));
 		// 开始发牌

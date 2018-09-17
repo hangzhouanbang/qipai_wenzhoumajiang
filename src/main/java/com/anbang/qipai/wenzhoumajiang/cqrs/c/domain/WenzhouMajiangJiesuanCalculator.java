@@ -212,6 +212,9 @@ public class WenzhouMajiangJiesuanCalculator {
 				ruan = true;
 			}
 		}
+		if (zimoHu || qianggangHu) {
+			ruan = false;
+		}
 		hufan.setRuan(ruan);
 		if ((shoupaixingWuguanJiesuancanshu.getCaishenShu() == 2 && caishenDangPai == 0)
 				|| (shoupaixingWuguanJiesuancanshu.getCaishenShu() == 3 && caishenDangPai == 1)) {
@@ -300,32 +303,52 @@ public class WenzhouMajiangJiesuanCalculator {
 		int pengchuKeziCount = player.countPengchupaiZu();
 		int gangchuGangziCount = player.countGangchupaiZu();
 		List<ShoupaiPaiXing> huPaiShoupaiPaiXingList = new ArrayList<>();
-		List<ShoupaiWithGuipaiDangGouXingZu> shoupaiWithGuipaiDangGouXingZuList = calculateShoupaiWithBaibanDangGouXingZuList(
-				baibanDangPaiArray, shoupaiCalculator);
-		// 对于可胡的构型，计算出所有牌型
-		for (ShoupaiWithGuipaiDangGouXingZu shoupaiWithGuipaiDangGouXingZu : shoupaiWithGuipaiDangGouXingZuList) {
-			GuipaiDangPai[] guipaiDangPaiArray = shoupaiWithGuipaiDangGouXingZu.getGuipaiDangPaiArray();
-			ShoupaiJiesuanPai[] dangPaiArray = new ShoupaiJiesuanPai[baibanDangPaiArray.length];
-			System.arraycopy(baibanDangPaiArray, 0, dangPaiArray, 0, baibanDangPaiArray.length);
-			List<GouXing> gouXingList = shoupaiWithGuipaiDangGouXingZu.getGouXingList();
+		if (baibanDangPaiArray.length > 0) {
+			List<ShoupaiWithGuipaiDangGouXingZu> shoupaiWithGuipaiDangGouXingZuList = calculateShoupaiWithBaibanDangGouXingZuList(
+					baibanDangPaiArray, shoupaiCalculator);
+			// 对于可胡的构型，计算出所有牌型
+			for (ShoupaiWithGuipaiDangGouXingZu shoupaiWithGuipaiDangGouXingZu : shoupaiWithGuipaiDangGouXingZuList) {
+				GuipaiDangPai[] guipaiDangPaiArray = shoupaiWithGuipaiDangGouXingZu.getGuipaiDangPaiArray();
+				ShoupaiJiesuanPai[] dangPaiArray = new ShoupaiJiesuanPai[baibanDangPaiArray.length];
+				System.arraycopy(baibanDangPaiArray, 0, dangPaiArray, 0, baibanDangPaiArray.length);
+				List<GouXing> gouXingList = shoupaiWithGuipaiDangGouXingZu.getGouXingList();
+				for (GouXing gouXing : gouXingList) {
+					boolean hu = gouXingPanHu.panHu(gouXing.getGouXingCode(), chichuShunziCount, pengchuKeziCount,
+							gangchuGangziCount);
+					if (hu) {
+						if (baibanDangPaiArray.length > 0) {
+							// 先把所有当的白板加入计算器
+							for (int i = 0; i < baibanDangPaiArray.length; i++) {
+								shoupaiCalculator.addPai(baibanDangPaiArray[i].getDangpai());
+							}
+						}
+						// 计算牌型
+						huPaiShoupaiPaiXingList.addAll(calculateAllShoupaiPaiXingForGouXingWithHupai(gouXing,
+								shoupaiCalculator, dangPaiArray, guipaiDangPaiArray, huPai));
+						if (baibanDangPaiArray.length > 0) {
+							// 再把所有当的白板移出计算器
+							for (int i = 0; i < baibanDangPaiArray.length; i++) {
+								shoupaiCalculator.removePai(baibanDangPaiArray[i].getDangpai());
+							}
+						}
+					}
+				}
+			}
+		} else {
+			// 计算构型
+			List<GouXing> gouXingList = shoupaiCalculator.calculateAllGouXing();
 			for (GouXing gouXing : gouXingList) {
 				boolean hu = gouXingPanHu.panHu(gouXing.getGouXingCode(), chichuShunziCount, pengchuKeziCount,
 						gangchuGangziCount);
 				if (hu) {
-					if (baibanDangPaiArray.length > 0) {
-						// 先把所有当的白板加入计算器
-						for (int i = 0; i < baibanDangPaiArray.length; i++) {
-							shoupaiCalculator.addPai(baibanDangPaiArray[i].getDangpai());
-						}
-					}
 					// 计算牌型
-					huPaiShoupaiPaiXingList.addAll(calculateAllShoupaiPaiXingForGouXingWithHupai(gouXing,
-							shoupaiCalculator, dangPaiArray, guipaiDangPaiArray, huPai));
-					if (baibanDangPaiArray.length > 0) {
-						// 再把所有当的白板移出计算器
-						for (int i = 0; i < baibanDangPaiArray.length; i++) {
-							shoupaiCalculator.removePai(baibanDangPaiArray[i].getDangpai());
-						}
+					List<PaiXing> paiXingList = shoupaiCalculator.calculateAllPaiXingFromGouXing(gouXing);
+					for (PaiXing paiXing : paiXingList) {
+						ShoupaiPaiXing shoupaiPaiXing = paiXing.generateAllBenPaiShoupaiPaiXing();
+						// 对ShoupaiPaiXing还要变换最后弄进的牌
+						List<ShoupaiPaiXing> shoupaiPaiXingListWithDifftentLastActionPaiInZu = shoupaiPaiXing
+								.differentiateShoupaiPaiXingByLastActionPai(huPai);
+						huPaiShoupaiPaiXingList.addAll(shoupaiPaiXingListWithDifftentLastActionPaiInZu);
 					}
 				}
 			}
