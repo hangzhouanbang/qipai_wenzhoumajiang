@@ -11,7 +11,6 @@ import com.dml.majiang.player.MajiangPlayer;
 import com.dml.majiang.player.action.da.MajiangDaAction;
 import com.dml.majiang.player.action.hu.MajiangHuAction;
 import com.dml.majiang.player.action.listener.comprehensive.JuezhangStatisticsListener;
-import com.dml.majiang.player.action.listener.mo.MoGuipaiCounter;
 import com.dml.majiang.player.action.mo.MajiangMoAction;
 import com.dml.majiang.player.action.mo.MajiangPlayerMoActionUpdater;
 import com.dml.majiang.player.shoupai.gouxing.GouXingPanHu;
@@ -56,9 +55,8 @@ public class WenzhouMajiangMoActionUpdater implements MajiangPlayerMoActionUpdat
 			player.addActionCandidate(new MajiangHuAction(player.getId(), bestHu));
 		} else {
 			// 非胡牌型特殊胡-三财神
-			MoGuipaiCounter moGuipaiCounter = ju.getActionStatisticsListenerManager()
-					.findListener(MoGuipaiCounter.class);
-			if (moGuipaiCounter.getCount() == 3) {
+			int guipaiCount = player.countGuipai();
+			if (guipaiCount == 3) {
 				WenzhouMajiangPanPlayerHufan hufan = new WenzhouMajiangPanPlayerHufan();
 				WenzhouMajiangPanPlayerHuxing huxing = new WenzhouMajiangPanPlayerHuxing();
 				hufan.setHuxing(huxing);

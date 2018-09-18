@@ -251,7 +251,8 @@ public class WenzhouMajiangJiesuanCalculator {
 				huxing.setQuanqiushen(true);// 全求神
 			}
 		}
-		if (shoupaixingWuguanJiesuancanshu.getChichupaiZuCount() == 0 && shoupaiPaiXing.countShunzi() == 0) {// 碰碰胡
+		if (shoupaiPaiXing.getDuiziList().size() == 1 && shoupaixingWuguanJiesuancanshu.getChichupaiZuCount() == 0
+				&& shoupaiPaiXing.countShunzi() == 0) {// 碰碰胡
 			huxing.setPengpenghu(true);
 		}
 		return huxing;
