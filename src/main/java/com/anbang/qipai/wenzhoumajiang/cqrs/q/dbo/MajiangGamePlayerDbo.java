@@ -6,10 +6,19 @@ import com.dml.mpgame.game.GamePlayerOnlineState;
 public class MajiangGamePlayerDbo {
 	private String playerId;
 	private String nickname;
+	private String gender;// 会员性别:男:male,女:female
 	private String headimgurl;
 	private MajiangGamePlayerState state;
 	private GamePlayerOnlineState onlineState;
 	private int totalScore;
+	
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
 
 	public String getPlayerId() {
 		return playerId;

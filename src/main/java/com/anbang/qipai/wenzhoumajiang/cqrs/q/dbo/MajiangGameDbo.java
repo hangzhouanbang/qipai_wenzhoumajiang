@@ -52,6 +52,7 @@ public class MajiangGameDbo {
 			MajiangGamePlayerDbo playerDbo = new MajiangGamePlayerDbo();
 			playerDbo.setHeadimgurl(playerInfo.getHeadimgurl());
 			playerDbo.setNickname(playerInfo.getNickname());
+			playerDbo.setGender(playerInfo.getGender());
 			playerDbo.setOnlineState(playerOnlineStateMap.get(playerId));
 			playerDbo.setPlayerId(playerId);
 			playerDbo.setState(playerStateMap.get(playerId));

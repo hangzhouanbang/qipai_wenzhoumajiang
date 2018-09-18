@@ -5,14 +5,24 @@ import com.anbang.qipai.wenzhoumajiang.cqrs.q.dbo.MajiangGamePlayerDbo;
 public class MajiangGamePlayerVO {
 	private String playerId;
 	private String nickname;
+	private String gender;// 会员性别:男:male,女:female
 	private String headimgurl;
 	private String state;
 	private String onlineState;
 	private int totalScore;
 
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
 	public MajiangGamePlayerVO(MajiangGamePlayerDbo dbo) {
 		playerId = dbo.getPlayerId();
 		nickname = dbo.getNickname();
+		gender = dbo.getGender();
 		headimgurl = dbo.getHeadimgurl();
 		state = dbo.getState().name();
 		onlineState = dbo.getOnlineState().name();
