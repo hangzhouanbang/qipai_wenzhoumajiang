@@ -11,6 +11,7 @@ import com.dml.majiang.pan.frame.PanValueObject;
 import com.dml.majiang.pan.result.CurrentPanResultBuilder;
 import com.dml.majiang.pan.result.PanResult;
 import com.dml.majiang.player.MajiangPlayer;
+import com.dml.majiang.player.chupaizu.GangchuPaiZu;
 import com.dml.majiang.player.menfeng.ZhuangXiajiaIsDongIfZhuangNotHuPlayersMenFengDeterminer;
 
 public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
@@ -69,13 +70,15 @@ public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 		List<MajiangPlayer> huPlayers = currentPan.findAllHuPlayers();
 		List<String> playerIdList = currentPan.sortedPlayerIdList();
 		List<WenzhouMajiangPanPlayerResult> playerResultList = new ArrayList<>();
+		// 放炮玩家id
+		String dianpaoPlayerId = "";
 		if (huPlayers.size() > 0) {// 正常有人胡
 			MajiangPlayer bestHuPlayer = huPlayers.get(0);
 			WenzhouMajiangHu bestHu = (WenzhouMajiangHu) bestHuPlayer.getHu();
 			if (huPlayers.size() == 1) {// 一人胡
 
 			} else {
-				String dianpaoPlayerId = bestHu.getDianpaoPlayerId();
+				dianpaoPlayerId = bestHu.getDianpaoPlayerId();
 				if (dianpaoPlayerId == null) {
 					dianpaoPlayerId = bestHuPlayer.getId();
 				}
@@ -132,6 +135,11 @@ public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 					caishenqian.calculate(false, this.caishenqian, playerIdList.size());
 					playerResult.setCaishenqian(caishenqian);
 					WenzhouMajiangGang gang = new WenzhouMajiangGang(player);
+					if (dianpaoPlayerId.equals(playerId) && bestHu.isQianggang()) {// 如果是抢杠胡，删除最后的杠
+						List<GangchuPaiZu> gangchupaiZuList = player.getGangchupaiZuList();
+						gangchupaiZuList.remove(gangchupaiZuList.size() - 1);
+						gang.setMinggangCount(gang.getMinggangCount() - 1);// 被抢的杠不算杠分
+					}
 					gang.calculate(playerIdList.size(), gangsuanfen);
 					playerResult.setGang(gang);
 				}

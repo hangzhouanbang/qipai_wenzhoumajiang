@@ -70,7 +70,7 @@ public class WenzhouMajiangJiesuanCalculator {
 
 		shoupaiCalculator.addPai(gangPai);
 		List<ShoupaiPaiXing> huPaiShoupaiPaiXingList = calculateZimoHuPaiShoupaiPaiXingList(guipaiList, shaozhongfa,
-				shoupaiCalculator, player, gouXingPanHu, player.getGangmoShoupai());
+				shoupaiCalculator, player, gouXingPanHu, gangPai);
 
 		shoupaiCalculator.removePai(gangPai);
 		if (!huPaiShoupaiPaiXingList.isEmpty()) {// 有胡牌型

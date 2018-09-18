@@ -39,6 +39,7 @@ public class WenzhouMajiangGangActionUpdater implements MajiangPlayerGangActionU
 						gouXingPanHu, xiajia, shaozhongfa, teshushuangfan, lazila);
 				if (bestHu != null) {
 					bestHu.setQianggang(true);
+					bestHu.setDianpaoPlayerId(player.getId());
 					xiajia.addActionCandidate(new MajiangHuAction(xiajia.getId(), bestHu));
 					xiajia.checkAndGenerateGuoCandidateAction();
 					qiangganghu = true;
