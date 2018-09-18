@@ -35,6 +35,12 @@ public class WenzhouMajiangGuoActionUpdater implements MajiangPlayerGuoActionUpd
 						.findXiajia(currentPan.findPlayerById(action.getActionPlayerId()));
 				xiajiaPlayer.addActionCandidate(new MajiangMoAction(xiajiaPlayer.getId(), new LundaoMopai()));
 			}
+		} else if (action.getType().equals(MajiangPlayerActionType.gang)) {// 过的是别人杠牌之后我可以胡
+			if (currentPan.allPlayerHasNoActionCandidates()) {// 如果所有玩家啥也干不了
+				// 杠牌那家摸牌
+				MajiangPlayer gangPlayer = currentPan.findPlayerById(action.getActionPlayerId());
+				gangPlayer.addActionCandidate(new MajiangMoAction(gangPlayer.getId(), new LundaoMopai()));
+			}
 		} else {
 		}
 	}
