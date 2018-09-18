@@ -76,7 +76,11 @@ public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 
 			} else {
 				String dianpaoPlayerId = bestHu.getDianpaoPlayerId();
-				MajiangPlayer xiajiaPlayer = currentPan.findPlayerById(dianpaoPlayerId);
+				if (dianpaoPlayerId == null) {
+					dianpaoPlayerId = bestHuPlayer.getId();
+				}
+				MajiangPlayer dianpaoPlayer = currentPan.findPlayerById(dianpaoPlayerId);
+				MajiangPlayer xiajiaPlayer = currentPan.findXiajia(dianpaoPlayer);
 				// 按点炮者开始遍历出最佳胡
 				while (true) {
 					if (!xiajiaPlayer.getId().equals(dianpaoPlayerId)) {
@@ -86,6 +90,11 @@ public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 							bestHu = hu;
 						}
 					} else {
+						WenzhouMajiangHu hu = (WenzhouMajiangHu) xiajiaPlayer.getHu();
+						if (hu != null && bestHu.getHufan().getValue() < hu.getHufan().getValue()) {
+							bestHuPlayer = xiajiaPlayer;
+							bestHu = hu;
+						}
 						break;
 					}
 					xiajiaPlayer = currentPan.findXiajia(xiajiaPlayer);

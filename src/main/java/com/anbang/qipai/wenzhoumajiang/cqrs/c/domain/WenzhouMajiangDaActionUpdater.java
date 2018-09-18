@@ -81,7 +81,6 @@ public class WenzhouMajiangDaActionUpdater implements MajiangPlayerDaActionUpdat
 		GuoPengBuPengStatisticsListener guoPengBuPengStatisticsListener = ju.getActionStatisticsListenerManager()
 				.findListener(GuoPengBuPengStatisticsListener.class);
 		Set<String> canNotPengPlayers = guoPengBuPengStatisticsListener.getCanNotPengPlayers();
-		boolean anyPlayerHu = false;
 		while (true) {
 			if (!xiajiaPlayer.getId().equals(daAction.getActionPlayerId())) {
 				// 其他的可以碰杠胡
@@ -110,7 +109,6 @@ public class WenzhouMajiangDaActionUpdater implements MajiangPlayerDaActionUpdat
 					bestHu.setDianpao(true);
 					bestHu.setDianpaoPlayerId(daPlayer.getId());
 					xiajiaPlayer.addActionCandidate(new MajiangHuAction(xiajiaPlayer.getId(), bestHu));
-					anyPlayerHu = true;
 				}
 
 				xiajiaPlayer.checkAndGenerateGuoCandidateAction();
@@ -121,7 +119,7 @@ public class WenzhouMajiangDaActionUpdater implements MajiangPlayerDaActionUpdat
 			xiajiaPlayer.clearActionCandidates();
 		}
 
-		if (!anyPlayerHu && daplayerFangruShoupaiList.size() == 0) {// 全求神时自动胡
+		if (daplayerFangruShoupaiList.size() == 0) {// 全求神时自动胡
 			// 胡
 			WenzhouMajiangPanResultBuilder wenzhouMajiangJuResultBuilder = (WenzhouMajiangPanResultBuilder) ju
 					.getCurrentPanResultBuilder();
@@ -158,12 +156,10 @@ public class WenzhouMajiangDaActionUpdater implements MajiangPlayerDaActionUpdat
 			List<ShoupaiShunziZu> shunziList = new ArrayList<>();
 			shoupaiPaiXing.setShunziList(shunziList);
 			bestHu.setShoupaiPaiXing(shoupaiPaiXing);
-			daPlayer.setHu(bestHu);
-			currentPan.clearAllPlayersActionCandidates();
+			daPlayer.addActionCandidate(new MajiangHuAction(xiajiaPlayer.getId(), bestHu));
 		}
 		// 如果所有玩家啥也做不了,那就下家摸牌
-
-		if (currentPan.allPlayerHasNoActionCandidates() && daPlayer.getHu() == null) {
+		if (currentPan.allPlayerHasNoActionCandidates()) {
 			xiajiaPlayer = currentPan.findXiajia(daPlayer);
 			xiajiaPlayer.addActionCandidate(new MajiangMoAction(xiajiaPlayer.getId(), new LundaoMopai()));
 		}
