@@ -1,6 +1,6 @@
 package com.anbang.qipai.wenzhoumajiang.cqrs.q.dbo;
 
-import com.dml.mpgame.game.finish.vote.GameFinishVoteValueObject;
+import com.dml.mpgame.game.extend.vote.GameFinishVoteValueObject;
 
 public class GameFinishVoteDbo {
 

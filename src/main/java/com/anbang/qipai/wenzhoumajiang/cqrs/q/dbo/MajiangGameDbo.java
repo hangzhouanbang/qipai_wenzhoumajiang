@@ -4,14 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGamePlayerState;
-import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGameState;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGameValueObject;
 import com.anbang.qipai.wenzhoumajiang.plan.bean.PlayerInfo;
-import com.dml.mpgame.game.GamePlayerOnlineState;
+import com.dml.mpgame.game.GamePlayerValueObject;
+import com.dml.mpgame.game.GameState;
 
 public class MajiangGameDbo {
-	private String id;// 就是gameid
+	private String id;
 	private int panshu;
 	private int renshu;
 	private boolean jinjie1;
@@ -22,7 +21,7 @@ public class MajiangGameDbo {
 	private boolean lazila;
 	private boolean gangsuanfen;
 	private Map<String, Integer> playerLianZhuangCountMap;
-	private MajiangGameState state;
+	private GameState state;// 原来是 waitingStart, playing, waitingNextPan, finished
 	private int currentPanNo;
 	private List<MajiangGamePlayerDbo> players;
 
@@ -30,7 +29,7 @@ public class MajiangGameDbo {
 	}
 
 	public MajiangGameDbo(MajiangGameValueObject majiangGame, Map<String, PlayerInfo> playerInfoMap) {
-		id = majiangGame.getGameId();
+		id = majiangGame.getId();
 		playerLianZhuangCountMap = majiangGame.getPlayerLianZhuangCountMap();
 		panshu = majiangGame.getPanshu();
 		renshu = majiangGame.getRenshu();
@@ -44,23 +43,22 @@ public class MajiangGameDbo {
 		state = majiangGame.getState();
 		currentPanNo = majiangGame.getCurrentPanNo();
 		players = new ArrayList<>();
-		Map<String, MajiangGamePlayerState> playerStateMap = majiangGame.getPlayerStateMap();
-		Map<String, GamePlayerOnlineState> playerOnlineStateMap = majiangGame.getPlayerOnlineStateMap();
 		Map<String, Integer> playeTotalScoreMap = majiangGame.getPlayeTotalScoreMap();
-		majiangGame.allPlayerIds().forEach((playerId) -> {
+		for (GamePlayerValueObject playerValueObject : majiangGame.getPlayers()) {
+			String playerId = playerValueObject.getId();
 			PlayerInfo playerInfo = playerInfoMap.get(playerId);
 			MajiangGamePlayerDbo playerDbo = new MajiangGamePlayerDbo();
 			playerDbo.setHeadimgurl(playerInfo.getHeadimgurl());
 			playerDbo.setNickname(playerInfo.getNickname());
 			playerDbo.setGender(playerInfo.getGender());
-			playerDbo.setOnlineState(playerOnlineStateMap.get(playerId));
+			playerDbo.setOnlineState(playerValueObject.getOnlineState());
 			playerDbo.setPlayerId(playerId);
-			playerDbo.setState(playerStateMap.get(playerId));
+			playerDbo.setState(playerValueObject.getState());
 			if (playeTotalScoreMap.get(playerId) != null) {
 				playerDbo.setTotalScore(playeTotalScoreMap.get(playerId));
 			}
 			players.add(playerDbo);
-		});
+		}
 
 	}
 
@@ -153,11 +151,11 @@ public class MajiangGameDbo {
 		this.gangsuanfen = gangsuanfen;
 	}
 
-	public MajiangGameState getState() {
+	public GameState getState() {
 		return state;
 	}
 
-	public void setState(MajiangGameState state) {
+	public void setState(GameState state) {
 		this.state = state;
 	}
 

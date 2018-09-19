@@ -1,7 +1,7 @@
 package com.anbang.qipai.wenzhoumajiang.cqrs.q.dao;
 
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.dbo.MajiangGameDbo;
-import com.dml.mpgame.game.GamePlayerOnlineState;
+import com.dml.mpgame.game.player.GamePlayerOnlineState;
 
 public interface MajiangGameDboDao {
 

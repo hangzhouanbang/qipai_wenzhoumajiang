@@ -30,7 +30,7 @@ public class WenzhouMajiangGameMsgService {
 			CommonMO mo = new CommonMO();
 			mo.setMsg("playerQuit");
 			Map data = new HashMap();
-			data.put("gameId", majiangGameValueObject.getGameId());
+			data.put("gameId", majiangGameValueObject.getId());
 			data.put("playerId", playerId);
 			mo.setData(data);
 			wenzhouMajiangGameSource.wenzhouMajiangGame().send(MessageBuilder.withPayload(mo).build());
@@ -50,7 +50,7 @@ public class WenzhouMajiangGameMsgService {
 		CommonMO mo = new CommonMO();
 		mo.setMsg("pan finished");
 		Map data = new HashMap();
-		data.put("gameId", majiangGameValueObject.getGameId());
+		data.put("gameId", majiangGameValueObject.getId());
 		data.put("no", panAfterAction.getNo());
 		data.put("playerIds", majiangGameValueObject.allPlayerIds());
 		mo.setData(data);

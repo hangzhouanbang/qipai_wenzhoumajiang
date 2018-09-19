@@ -233,7 +233,7 @@ public class GameController {
 		}
 
 		try {
-			majiangGameQueryService.readyForGame(readyForGameResult);// TODO 一起点准备的时候可能有同步问题.要靠框架解决
+			majiangPlayQueryService.readyForGame(readyForGameResult);// TODO 一起点准备的时候可能有同步问题.要靠框架解决
 		} catch (Throwable e) {
 			vo.setSuccess(false);
 			vo.setMsg(e.getMessage());

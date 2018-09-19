@@ -5,22 +5,22 @@ import java.util.Map;
 import org.springframework.stereotype.Component;
 
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.FinishResult;
-import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGameManager;
+import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGame;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGamePlayerMaidiState;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGameValueObject;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.ReadyForGameResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.WenzhouMajiangJuResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.service.GameCmdService;
 import com.dml.mpgame.game.Game;
-import com.dml.mpgame.game.GameState;
 import com.dml.mpgame.game.GameValueObject;
-import com.dml.mpgame.game.finish.vote.GameFinishVote;
-import com.dml.mpgame.game.finish.vote.MostPlayersWinVoteCalculator;
-import com.dml.mpgame.game.finish.vote.VoteAfterStartedGameFinishStrategy;
-import com.dml.mpgame.game.finish.vote.VoteAfterStartedGameFinishStrategyValueObject;
-import com.dml.mpgame.game.finish.vote.VoteOption;
+import com.dml.mpgame.game.Playing;
+import com.dml.mpgame.game.WaitingStart;
+import com.dml.mpgame.game.extend.fpmpv.back.FpmpvBackStrategy;
+import com.dml.mpgame.game.extend.fpmpv.leave.FpmpvLeaveStrategy;
+import com.dml.mpgame.game.extend.vote.FinishedByVote;
+import com.dml.mpgame.game.extend.vote.MostPlayersWinVoteCalculator;
+import com.dml.mpgame.game.extend.vote.VoteOption;
 import com.dml.mpgame.game.join.FixedNumberOfPlayersGameJoinStrategy;
-import com.dml.mpgame.game.leave.HostGameLeaveStrategy;
 import com.dml.mpgame.game.ready.FixedNumberOfPlayersGameReadyStrategy;
 import com.dml.mpgame.server.GameServer;
 
@@ -31,68 +31,76 @@ public class GameCmdServiceImpl extends CmdServiceBase implements GameCmdService
 	public MajiangGameValueObject newMajiangGame(String gameId, String playerId, Integer panshu, Integer renshu,
 			Boolean jinjie1, Boolean jinjie2, Boolean teshushuangfan, Boolean caishenqian, Boolean shaozhongfa,
 			Boolean lazila, Boolean gangsuanfen) {
+
 		GameServer gameServer = singletonEntityRepository.getEntity(GameServer.class);
-		GameValueObject gameValueObject = gameServer.playerCreateGame(gameId,
-				new FixedNumberOfPlayersGameJoinStrategy(renshu), new FixedNumberOfPlayersGameReadyStrategy(renshu),
-				new HostGameLeaveStrategy(playerId),
-				new VoteAfterStartedGameFinishStrategy(playerId, new MostPlayersWinVoteCalculator()), playerId);
-		MajiangGameManager majiangGameManager = singletonEntityRepository.getEntity(MajiangGameManager.class);
-		MajiangGameValueObject majiangGameValueObject = majiangGameManager.newMajiangGame(gameValueObject, panshu,
-				renshu, jinjie1, jinjie2, teshushuangfan, caishenqian, shaozhongfa, lazila, gangsuanfen);
-		return majiangGameValueObject;
+
+		MajiangGame newGame = new MajiangGame();
+
+		newGame.setPanshu(panshu);
+		newGame.setRenshu(renshu);
+		newGame.setJinjie1(jinjie1);
+		newGame.setJinjie2(jinjie2);
+		newGame.setTeshushuangfan(teshushuangfan);
+		newGame.setCaishenqian(caishenqian);
+		newGame.setShaozhongfa(shaozhongfa);
+		newGame.setLazila(lazila);
+		newGame.setGangsuanfen(gangsuanfen);
+
+		newGame.setJoinStrategy(new FixedNumberOfPlayersGameJoinStrategy(renshu));
+		newGame.setReadyStrategy(new FixedNumberOfPlayersGameReadyStrategy(renshu));
+		newGame.setLeaveStrategy(new FpmpvLeaveStrategy(playerId));
+		newGame.setBackStrategy(new FpmpvBackStrategy());
+		newGame.create(gameId, playerId);
+		gameServer.playerCreateGame(newGame, playerId);
+
+		return new MajiangGameValueObject(newGame);
+
 	}
 
 	@Override
 	public MajiangGameValueObject leaveGame(String playerId) throws Exception {
 		GameServer gameServer = singletonEntityRepository.getEntity(GameServer.class);
-		GameValueObject gameValueObject = gameServer.leave(playerId);
-
-		if (gameValueObject != null) {
-			MajiangGameManager majiangGameManager = singletonEntityRepository.getEntity(MajiangGameManager.class);
-			MajiangGameValueObject majiangGameValueObject = majiangGameManager.updateMajiangGameByGame(gameValueObject);
-
-			return majiangGameValueObject;
-		} else {
-			return null;
-		}
+		Game game = gameServer.findGamePlayerPlaying(playerId);
+		gameServer.leave(playerId);
+		return new MajiangGameValueObject((MajiangGame) game);
 	}
 
 	@Override
 	public ReadyForGameResult readyForGame(String playerId, Long currentTime) throws Exception {
+
 		ReadyForGameResult result = new ReadyForGameResult();
 		GameServer gameServer = singletonEntityRepository.getEntity(GameServer.class);
-		GameValueObject gameValueObject = gameServer.ready(playerId);
+		gameServer.ready(playerId);
 
-		MajiangGameManager majiangGameManager = singletonEntityRepository.getEntity(MajiangGameManager.class);
-		MajiangGameValueObject majiangGameValueObject = majiangGameManager.updateMajiangGameByGame(gameValueObject);
+		MajiangGame majiangGame = (MajiangGame) gameServer.findGamePlayerPlaying(playerId);
+		MajiangGameValueObject majiangGameValueObject = new MajiangGameValueObject(majiangGame);
 		result.setMajiangGame(majiangGameValueObject);
-		if (gameValueObject.getState().equals(GameState.playing)) {
-			Map<String, MajiangGamePlayerMaidiState> playerMaidiStateMap = majiangGameManager
-					.createJuAndReadyFirstPan(gameValueObject, currentTime);
+
+		if (majiangGameValueObject.getState().name().equals(Playing.name)) {
+			Map<String, MajiangGamePlayerMaidiState> playerMaidiStateMap = majiangGame
+					.createJuAndReadyFirstPan(currentTime);
 			majiangGameValueObject.setCurrentPanNo(1);
 			majiangGameValueObject.setPlayerMaidiStateMap(playerMaidiStateMap);
 		}
 		return result;
+
 	}
 
 	@Override
 	public MajiangGameValueObject joinGame(String playerId, String gameId) throws Exception {
 		GameServer gameServer = singletonEntityRepository.getEntity(GameServer.class);
-		GameValueObject gameValueObject = gameServer.join(playerId, gameId);
-
-		MajiangGameManager majiangGameManager = singletonEntityRepository.getEntity(MajiangGameManager.class);
-		MajiangGameValueObject majiangGameValueObject = majiangGameManager.updateMajiangGameByGame(gameValueObject);
-
-		return majiangGameValueObject;
+		gameServer.join(playerId, gameId);
+		MajiangGame majiangGame = (MajiangGame) gameServer.findGame(gameId);
+		return new MajiangGameValueObject(majiangGame);
 	}
 
 	@Override
 	public MajiangGameValueObject backToGame(String playerId, String gameId) throws Exception {
 		GameServer gameServer = singletonEntityRepository.getEntity(GameServer.class);
-		GameValueObject gameValueObject = gameServer.back(playerId, gameId);
+		gameServer.back(playerId, gameId);
 
-		MajiangGameManager majiangGameManager = singletonEntityRepository.getEntity(MajiangGameManager.class);
-		MajiangGameValueObject majiangGameValueObject = majiangGameManager.updateMajiangGameByGame(gameValueObject);
+		MajiangGame majiangGame = (MajiangGame) gameServer.findGame(gameId);
+		MajiangGameValueObject majiangGameValueObject = new MajiangGameValueObject(majiangGame);
 
 		return majiangGameValueObject;
 	}
@@ -107,16 +115,26 @@ public class GameCmdServiceImpl extends CmdServiceBase implements GameCmdService
 	public FinishResult finish(String playerId) throws Exception {
 		FinishResult result = new FinishResult();
 		GameServer gameServer = singletonEntityRepository.getEntity(GameServer.class);
-		GameValueObject gameValueObject = gameServer.finishGame(playerId);
-		result.setVoteFinishStrategy(
-				(VoteAfterStartedGameFinishStrategyValueObject) gameValueObject.getFinishStrategy());
+		MajiangGame majiangGame = (MajiangGame) gameServer.findGamePlayerPlaying(playerId);
+		// 在准备阶段不会发起投票
+		if (majiangGame.getState().name().equals(WaitingStart.name)) {
+			// 是主机的话直接解散，不是的话自己走人
+			if (majiangGame.getCreatePlayerId().equals(playerId)) {
+				majiangGame.cancel();
+			} else {
+				majiangGame.quit(playerId);
+			}
+		} else {
+			majiangGame.launchVoteToFinish(playerId, new MostPlayersWinVoteCalculator());
+			majiangGame.voteToFinish(playerId, VoteOption.yes);
+		}
 
-		MajiangGameManager majiangGameManager = singletonEntityRepository.getEntity(MajiangGameManager.class);
-		MajiangGameValueObject majiangGameValueObject = majiangGameManager.updateMajiangGameByGame(gameValueObject);
+		MajiangGameValueObject majiangGameValueObject = new MajiangGameValueObject(majiangGame);
+
 		result.setMajiangGameValueObject(majiangGameValueObject);
 
-		if (gameValueObject.getState().equals(GameState.finished)) {
-			WenzhouMajiangJuResult juResult = majiangGameManager.finishMajiangGame(gameValueObject.getId());
+		if (majiangGameValueObject.getState().name().equals(FinishedByVote.name)) {
+			WenzhouMajiangJuResult juResult = (WenzhouMajiangJuResult) majiangGame.finishJu();
 			result.setJuResult(juResult);
 		}
 		return result;
@@ -126,40 +144,30 @@ public class GameCmdServiceImpl extends CmdServiceBase implements GameCmdService
 	public FinishResult voteToFinish(String playerId, Boolean yes) throws Exception {
 		FinishResult finishResult = new FinishResult();
 		GameServer gameServer = singletonEntityRepository.getEntity(GameServer.class);
-		GameValueObject gameValueObject;
-		Game game = gameServer.findGamePlayerPlaying(playerId);
-		VoteAfterStartedGameFinishStrategy voteAfterStartedGameFinishStrategy = (VoteAfterStartedGameFinishStrategy) game
-				.getFinishStrategy();
+		MajiangGame majiangGame = (MajiangGame) gameServer.findGamePlayerPlaying(playerId);
 		if (yes) {
-			gameValueObject = voteAfterStartedGameFinishStrategy.vote(playerId, VoteOption.yes, game);
+			majiangGame.voteToFinish(playerId, VoteOption.yes);
 		} else {
-			gameValueObject = voteAfterStartedGameFinishStrategy.vote(playerId, VoteOption.no, game);
+			majiangGame.voteToFinish(playerId, VoteOption.no);
 		}
-		finishResult.setVoteFinishStrategy(
-				(VoteAfterStartedGameFinishStrategyValueObject) gameValueObject.getFinishStrategy());
 
-		MajiangGameManager majiangGameManager = singletonEntityRepository.getEntity(MajiangGameManager.class);
-		MajiangGameValueObject majiangGameValueObject = majiangGameManager.updateMajiangGameByGame(gameValueObject);
+		MajiangGameValueObject majiangGameValueObject = new MajiangGameValueObject(majiangGame);
 		finishResult.setMajiangGameValueObject(majiangGameValueObject);
 
-		if (gameValueObject.getState().equals(GameState.finished)) {
-			WenzhouMajiangJuResult juResult = majiangGameManager.finishMajiangGame(game.getId());
+		if (majiangGameValueObject.getState().name().equals(FinishedByVote.name)) {
+			WenzhouMajiangJuResult juResult = (WenzhouMajiangJuResult) majiangGame.finishJu();
 			finishResult.setJuResult(juResult);
-		}
-		final GameFinishVote vote = voteAfterStartedGameFinishStrategy.getVote();
-		if (vote != null && vote.getResult() != null) {
-			voteAfterStartedGameFinishStrategy.setVote(null);
 		}
 		return finishResult;
 	}
 
 	@Override
 	public GameValueObject finishGameImmediately(String gameId) throws Exception {
-		MajiangGameManager majiangGameManager = singletonEntityRepository.getEntity(MajiangGameManager.class);
-		majiangGameManager.finishMajiangGame(gameId);
 		GameServer gameServer = singletonEntityRepository.getEntity(GameServer.class);
-		GameValueObject gameValueObject = gameServer.finishGameImmediately(gameId);
-		return gameValueObject;
+		MajiangGame majiangGame = (MajiangGame) gameServer.findGame(gameId);
+		majiangGame.finishJu();
+		gameServer.finishGameImmediately(gameId);
+		return new MajiangGameValueObject(majiangGame);
 	}
 
 }

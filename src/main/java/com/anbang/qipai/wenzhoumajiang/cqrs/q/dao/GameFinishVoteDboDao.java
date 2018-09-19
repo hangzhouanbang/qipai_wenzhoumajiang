@@ -1,7 +1,7 @@
 package com.anbang.qipai.wenzhoumajiang.cqrs.q.dao;
 
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.dbo.GameFinishVoteDbo;
-import com.dml.mpgame.game.finish.vote.GameFinishVoteValueObject;
+import com.dml.mpgame.game.extend.vote.GameFinishVoteValueObject;
 
 public interface GameFinishVoteDboDao {
 

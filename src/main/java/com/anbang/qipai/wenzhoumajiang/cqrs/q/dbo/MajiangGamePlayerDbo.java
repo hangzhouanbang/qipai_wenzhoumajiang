@@ -1,17 +1,17 @@
 package com.anbang.qipai.wenzhoumajiang.cqrs.q.dbo;
 
-import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGamePlayerState;
-import com.dml.mpgame.game.GamePlayerOnlineState;
+import com.dml.mpgame.game.player.GamePlayerOnlineState;
+import com.dml.mpgame.game.player.GamePlayerState;
 
 public class MajiangGamePlayerDbo {
 	private String playerId;
 	private String nickname;
 	private String gender;// 会员性别:男:male,女:female
 	private String headimgurl;
-	private MajiangGamePlayerState state;
+	private GamePlayerState state;// 原来是 joined, readyToStart, playing, panFinished, finished
 	private GamePlayerOnlineState onlineState;
 	private int totalScore;
-	
+
 	public String getGender() {
 		return gender;
 	}
@@ -44,11 +44,11 @@ public class MajiangGamePlayerDbo {
 		this.headimgurl = headimgurl;
 	}
 
-	public MajiangGamePlayerState getState() {
+	public GamePlayerState getState() {
 		return state;
 	}
 
-	public void setState(MajiangGamePlayerState state) {
+	public void setState(GamePlayerState state) {
 		this.state = state;
 	}
 

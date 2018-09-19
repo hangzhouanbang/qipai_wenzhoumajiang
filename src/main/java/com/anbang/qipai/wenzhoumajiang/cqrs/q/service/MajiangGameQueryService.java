@@ -8,19 +8,16 @@ import org.springframework.stereotype.Component;
 
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.FinishResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGameValueObject;
-import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.ReadyForGameResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.WenzhouMajiangJuResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.dao.GameFinishVoteDboDao;
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.dao.JuResultDboDao;
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.dao.MajiangGameDboDao;
-import com.anbang.qipai.wenzhoumajiang.cqrs.q.dao.MajiangGamePlayerMaidiDboDao;
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.dbo.GameFinishVoteDbo;
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.dbo.JuResultDbo;
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.dbo.MajiangGameDbo;
-import com.anbang.qipai.wenzhoumajiang.cqrs.q.dbo.MajiangGamePlayerMaidiDbo;
 import com.anbang.qipai.wenzhoumajiang.plan.bean.PlayerInfo;
 import com.anbang.qipai.wenzhoumajiang.plan.dao.PlayerInfoDao;
-import com.dml.mpgame.game.finish.vote.GameFinishVoteValueObject;
+import com.dml.mpgame.game.extend.vote.GameFinishVoteValueObject;
 
 @Component
 public class MajiangGameQueryService {
@@ -33,9 +30,6 @@ public class MajiangGameQueryService {
 
 	@Autowired
 	private GameFinishVoteDboDao gameFinishVoteDboDao;
-
-	@Autowired
-	private MajiangGamePlayerMaidiDboDao majiangGamePlayerMaidiDboDao;
 
 	@Autowired
 	private JuResultDboDao juResultDboDao;
@@ -54,8 +48,8 @@ public class MajiangGameQueryService {
 	}
 
 	public void backToGame(String playerId, MajiangGameValueObject majiangGameValueObject) {
-		majiangGameDboDao.updatePlayerOnlineState(majiangGameValueObject.getGameId(), playerId,
-				majiangGameValueObject.getPlayerOnlineStateMap().get(playerId));
+		majiangGameDboDao.updatePlayerOnlineState(majiangGameValueObject.getId(), playerId,
+				majiangGameValueObject.findPlayerOnlineState(playerId));
 	}
 
 	public void joinGame(MajiangGameValueObject majiangGame) {
@@ -74,11 +68,11 @@ public class MajiangGameQueryService {
 
 	public void finish(FinishResult finishResult) {
 		MajiangGameValueObject majiangGameValueObject = finishResult.getMajiangGameValueObject();
-		gameFinishVoteDboDao.removeGameFinishVoteDboByGameId(majiangGameValueObject.getGameId());
-		GameFinishVoteValueObject gameFinishVoteValueObject = finishResult.getVoteFinishStrategy().getVote();
+		gameFinishVoteDboDao.removeGameFinishVoteDboByGameId(majiangGameValueObject.getId());
+		GameFinishVoteValueObject gameFinishVoteValueObject = majiangGameValueObject.getVote();
 		GameFinishVoteDbo gameFinishVoteDbo = new GameFinishVoteDbo();
 		gameFinishVoteDbo.setVote(gameFinishVoteValueObject);
-		gameFinishVoteDbo.setGameId(majiangGameValueObject.getGameId());
+		gameFinishVoteDbo.setGameId(majiangGameValueObject.getId());
 		gameFinishVoteDboDao.save(gameFinishVoteDbo);
 
 		Map<String, PlayerInfo> playerInfoMap = new HashMap<>();
@@ -89,15 +83,15 @@ public class MajiangGameQueryService {
 
 		WenzhouMajiangJuResult wenzhouMajiangJuResult = finishResult.getJuResult();
 		if (wenzhouMajiangJuResult != null) {
-			JuResultDbo juResultDbo = new JuResultDbo(majiangGameValueObject.getGameId(), null, wenzhouMajiangJuResult);
+			JuResultDbo juResultDbo = new JuResultDbo(majiangGameValueObject.getId(), null, wenzhouMajiangJuResult);
 			juResultDboDao.save(juResultDbo);
 		}
 	}
 
 	public void voteToFinish(FinishResult finishResult) {
 		MajiangGameValueObject majiangGameValueObject = finishResult.getMajiangGameValueObject();
-		GameFinishVoteValueObject gameFinishVoteValueObject = finishResult.getVoteFinishStrategy().getVote();
-		gameFinishVoteDboDao.update(majiangGameValueObject.getGameId(), gameFinishVoteValueObject);
+		GameFinishVoteValueObject gameFinishVoteValueObject = majiangGameValueObject.getVote();
+		gameFinishVoteDboDao.update(majiangGameValueObject.getId(), gameFinishVoteValueObject);
 
 		Map<String, PlayerInfo> playerInfoMap = new HashMap<>();
 		majiangGameValueObject.allPlayerIds()
@@ -107,7 +101,7 @@ public class MajiangGameQueryService {
 
 		WenzhouMajiangJuResult wenzhouMajiangJuResult = finishResult.getJuResult();
 		if (wenzhouMajiangJuResult != null) {
-			JuResultDbo juResultDbo = new JuResultDbo(majiangGameValueObject.getGameId(), null, wenzhouMajiangJuResult);
+			JuResultDbo juResultDbo = new JuResultDbo(majiangGameValueObject.getId(), null, wenzhouMajiangJuResult);
 			juResultDboDao.save(juResultDbo);
 		}
 	}
@@ -118,22 +112,6 @@ public class MajiangGameQueryService {
 
 	public void removeGameFinishVoteDbo(String gameId) {
 		gameFinishVoteDboDao.removeGameFinishVoteDboByGameId(gameId);
-	}
-
-	public void readyForGame(ReadyForGameResult readyForGameResult) throws Throwable {
-		MajiangGameValueObject majiangGame = readyForGameResult.getMajiangGame();
-		Map<String, PlayerInfo> playerInfoMap = new HashMap<>();
-		majiangGame.allPlayerIds().forEach((playerId) -> playerInfoMap.put(playerId, playerInfoDao.findById(playerId)));
-		MajiangGameDbo majiangGameDbo = new MajiangGameDbo(majiangGame, playerInfoMap);
-		majiangGameDboDao.save(majiangGameDbo);
-		if (majiangGame.getPlayerMaidiStateMap() != null) {
-			MajiangGamePlayerMaidiDbo maidiDbo = new MajiangGamePlayerMaidiDbo(majiangGame);
-			majiangGamePlayerMaidiDboDao.addMajiangGamePlayerMaidiDbo(maidiDbo);
-		}
-	}
-
-	public MajiangGamePlayerMaidiDbo findLastMajiangGamePlayerMaidiDbo(String gameId) {
-		return majiangGamePlayerMaidiDboDao.findLastByGameId(gameId);
 	}
 
 }
