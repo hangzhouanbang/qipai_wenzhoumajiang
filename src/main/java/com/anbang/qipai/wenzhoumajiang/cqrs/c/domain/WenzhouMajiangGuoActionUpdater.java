@@ -28,7 +28,7 @@ public class WenzhouMajiangGuoActionUpdater implements MajiangPlayerGuoActionUpd
 		MajiangPlayer player = currentPan.findPlayerById(guoAction.getActionPlayerId());
 
 		// 首先看一下,我过的是什么? 是我摸牌之后的胡,杠? 还是别人打出牌之后我可以吃碰杠胡
-		PanActionFrame latestPanActionFrame = currentPan.findLatestActionFrame();
+		PanActionFrame latestPanActionFrame = currentPan.findNotGuoLatestActionFrame();
 		MajiangPlayerAction action = latestPanActionFrame.getAction();
 		if (action.getType().equals(MajiangPlayerActionType.mo)) {// 过的是我摸牌之后的胡,杠
 			// 那要我打牌

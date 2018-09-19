@@ -76,7 +76,7 @@ public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 			MajiangPlayer bestHuPlayer = huPlayers.get(0);
 			WenzhouMajiangHu bestHu = (WenzhouMajiangHu) bestHuPlayer.getHu();
 			if (huPlayers.size() == 1) {// 一人胡
-
+				dianpaoPlayerId = bestHu.getDianpaoPlayerId();
 			} else {
 				dianpaoPlayerId = bestHu.getDianpaoPlayerId();
 				if (dianpaoPlayerId == null) {

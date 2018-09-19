@@ -51,6 +51,9 @@ public class WenzhouMajiangPanPlayerHufan {
 				shuangfan = true;
 			}
 		}
+		if (huxing.isBadui()) {
+			ruan = false;
+		}
 		if (sifan) {
 			fan = 8;
 		} else if (shuangfan) {
