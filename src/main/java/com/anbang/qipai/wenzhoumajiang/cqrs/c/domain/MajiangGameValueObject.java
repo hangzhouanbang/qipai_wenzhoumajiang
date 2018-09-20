@@ -35,7 +35,9 @@ public class MajiangGameValueObject extends FixedPlayersMultipanAndVotetofinishG
 		gangsuanfen = majiangGame.isGangsuanfen();
 		playerMaidiStateMap = majiangGame.getPlayerMaidiStateMap();
 		playeTotalScoreMap.putAll(majiangGame.getPlayeTotalScoreMap());
-		juResult = majiangGame.getJu().getJuResult();
+		if (majiangGame.getJu() != null) {
+			juResult = majiangGame.getJu().getJuResult();
+		}
 	}
 
 	public int getPanshu() {
