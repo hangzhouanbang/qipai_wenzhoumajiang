@@ -76,7 +76,7 @@ public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 		if (huPlayers.size() > 0) {// 正常有人胡
 			MajiangPlayer bestHuPlayer = huPlayers.get(0);
 			WenzhouMajiangHu bestHu = (WenzhouMajiangHu) bestHuPlayer.getHu();
-			if (bestHu.getDianpaoPlayerId() != null) {
+			if (bestHu.getDianpaoPlayerId() != null) {// 全求神时算自摸，为了防止死循环将点炮玩家id设为自己
 				dianpaoPlayerId = bestHu.getDianpaoPlayerId();
 			}
 			if (huPlayers.size() == 1) {// 一人胡
