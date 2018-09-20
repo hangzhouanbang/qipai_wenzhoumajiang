@@ -137,6 +137,7 @@ public class WenzhouMajiangDaActionUpdater implements MajiangPlayerDaActionUpdat
 			hufan.calculate(teshushuangfan, lazila);
 			bestHu.setHuxingHu(true);
 			bestHu.setZimo(true);
+			bestHu.setDianpaoPlayerId(daPlayer.getId());
 			bestHu.setHufan(hufan);
 			ShoupaiPaiXing shoupaiPaiXing = new ShoupaiPaiXing();
 			List<ShoupaiDuiziZu> duiziList = new ArrayList<>();
@@ -158,7 +159,7 @@ public class WenzhouMajiangDaActionUpdater implements MajiangPlayerDaActionUpdat
 			List<ShoupaiShunziZu> shunziList = new ArrayList<>();
 			shoupaiPaiXing.setShunziList(shunziList);
 			bestHu.setShoupaiPaiXing(shoupaiPaiXing);
-			daPlayer.addActionCandidate(new MajiangHuAction(xiajiaPlayer.getId(), bestHu));
+			daPlayer.addActionCandidate(new MajiangHuAction(daPlayer.getId(), bestHu));
 		}
 		// 如果所有玩家啥也做不了,那就下家摸牌
 		if (currentPan.allPlayerHasNoActionCandidates()) {
