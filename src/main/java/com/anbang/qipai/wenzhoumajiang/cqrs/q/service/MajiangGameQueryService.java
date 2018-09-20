@@ -64,6 +64,13 @@ public class MajiangGameQueryService {
 		MajiangGameDbo majiangGameDbo = new MajiangGameDbo(majiangGame, playerInfoMap);
 		majiangGameDboDao.save(majiangGameDbo);
 
+		gameFinishVoteDboDao.removeGameFinishVoteDboByGameId(majiangGame.getId());
+		GameFinishVoteValueObject gameFinishVoteValueObject = majiangGame.getVote();
+		GameFinishVoteDbo gameFinishVoteDbo = new GameFinishVoteDbo();
+		gameFinishVoteDbo.setVote(gameFinishVoteValueObject);
+		gameFinishVoteDbo.setGameId(majiangGame.getId());
+		gameFinishVoteDboDao.save(gameFinishVoteDbo);
+
 		WenzhouMajiangJuResult wenzhouMajiangJuResult = (WenzhouMajiangJuResult) majiangGame.getJuResult();
 		if (wenzhouMajiangJuResult != null) {
 			JuResultDbo juResultDbo = new JuResultDbo(majiangGame.getId(), null, wenzhouMajiangJuResult);
