@@ -93,25 +93,20 @@ public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 							bestHu = hu;
 						}
 					} else {
-						WenzhouMajiangHu hu = (WenzhouMajiangHu) xiajiaPlayer.getHu();
-						if (hu != null && bestHu.getHufan().getValue() < hu.getHufan().getValue()) {
-							bestHuPlayer = xiajiaPlayer;
-							bestHu = hu;
-						}
 						break;
 					}
 					xiajiaPlayer = currentPan.findXiajia(xiajiaPlayer);
 				}
 				// 将其他胡的玩家的胡设置为null
+				String bestHuPlayerId = xiajiaPlayer.getId();
 				xiajiaPlayer = currentPan.findXiajia(xiajiaPlayer);
 				while (true) {
-					if (!xiajiaPlayer.getId().equals(dianpaoPlayerId)) {
-						if (!xiajiaPlayer.getId().equals(bestHuPlayer.getId())) {
-							xiajiaPlayer.setHu(null);
-						}
+					if (!xiajiaPlayer.getId().equals(bestHuPlayerId)) {
+						xiajiaPlayer.setHu(null);
 					} else {
 						break;
 					}
+					xiajiaPlayer = currentPan.findXiajia(xiajiaPlayer);
 				}
 			}
 			WenzhouMajiangPanPlayerHufan huPlayerHufan = bestHu.getHufan();
