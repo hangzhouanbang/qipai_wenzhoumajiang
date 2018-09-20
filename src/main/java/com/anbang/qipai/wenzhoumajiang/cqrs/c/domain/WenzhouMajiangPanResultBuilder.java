@@ -6,12 +6,14 @@ import java.util.List;
 import java.util.Map;
 
 import com.dml.majiang.ju.Ju;
+import com.dml.majiang.pai.fenzu.Kezi;
 import com.dml.majiang.pan.Pan;
 import com.dml.majiang.pan.frame.PanValueObject;
 import com.dml.majiang.pan.result.CurrentPanResultBuilder;
 import com.dml.majiang.pan.result.PanResult;
 import com.dml.majiang.player.MajiangPlayer;
 import com.dml.majiang.player.chupaizu.GangchuPaiZu;
+import com.dml.majiang.player.chupaizu.PengchuPaiZu;
 import com.dml.majiang.player.menfeng.ZhuangXiajiaIsDongIfZhuangNotHuPlayersMenFengDeterminer;
 
 public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
@@ -75,13 +77,12 @@ public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 		if (huPlayers.size() > 0) {// 正常有人胡
 			MajiangPlayer bestHuPlayer = huPlayers.get(0);
 			WenzhouMajiangHu bestHu = (WenzhouMajiangHu) bestHuPlayer.getHu();
+			if (bestHu.getDianpaoPlayerId() != null) {
+				dianpaoPlayerId = bestHu.getDianpaoPlayerId();
+			}
 			if (huPlayers.size() == 1) {// 一人胡
-				dianpaoPlayerId = bestHu.getDianpaoPlayerId();
+
 			} else {
-				dianpaoPlayerId = bestHu.getDianpaoPlayerId();
-				if (dianpaoPlayerId == null) {
-					dianpaoPlayerId = bestHuPlayer.getId();
-				}
 				MajiangPlayer dianpaoPlayer = currentPan.findPlayerById(dianpaoPlayerId);
 				MajiangPlayer xiajiaPlayer = currentPan.findXiajia(dianpaoPlayer);
 				// 按点炮者开始遍历出最佳胡
@@ -137,7 +138,10 @@ public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 					WenzhouMajiangGang gang = new WenzhouMajiangGang(player);
 					if (dianpaoPlayerId.equals(playerId) && bestHu.isQianggang()) {// 如果是抢杠胡，删除最后的杠
 						List<GangchuPaiZu> gangchupaiZuList = player.getGangchupaiZuList();
-						gangchupaiZuList.remove(gangchupaiZuList.size() - 1);
+						GangchuPaiZu gangChuPaiZu = gangchupaiZuList.remove(gangchupaiZuList.size() - 1);
+						PengchuPaiZu pengChuPaiZu = new PengchuPaiZu(new Kezi(gangChuPaiZu.getGangzi().getPaiType()),
+								null, player.getId());
+						player.getPengchupaiZuList().add(pengChuPaiZu);
 						gang.setMinggangCount(gang.getMinggangCount() - 1);// 被抢的杠不算杠分
 					}
 					gang.calculate(playerIdList.size(), gangsuanfen);

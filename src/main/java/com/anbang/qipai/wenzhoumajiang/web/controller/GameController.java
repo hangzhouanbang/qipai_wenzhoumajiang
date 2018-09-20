@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.FinishResult;
+import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MaidiState;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGamePlayerMaidiState;
-import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGameState;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGameValueObject;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.ReadyForGameResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.service.GameCmdService;
@@ -31,6 +31,8 @@ import com.anbang.qipai.wenzhoumajiang.web.vo.GameVO;
 import com.anbang.qipai.wenzhoumajiang.web.vo.JuResultVO;
 import com.anbang.qipai.wenzhoumajiang.websocket.GamePlayWsNotifier;
 import com.anbang.qipai.wenzhoumajiang.websocket.QueryScope;
+import com.dml.mpgame.game.Canceled;
+import com.dml.mpgame.game.extend.vote.FinishedByVote;
 
 /**
  * 游戏框架相关
@@ -243,29 +245,15 @@ public class GameController {
 		for (String otherPlayerId : readyForGameResult.getMajiangGame().allPlayerIds()) {
 			if (!otherPlayerId.equals(playerId)) {
 				wsNotifier.notifyToQuery(otherPlayerId, QueryScope.gameInfo.name());
-				if (readyForGameResult.getMajiangGame().getState().equals(MajiangGameState.playing)) {
+				if (readyForGameResult.getMajiangGame().getState().name().equals(MaidiState.name)) {
 					wsNotifier.notifyToQuery(otherPlayerId, QueryScope.maidiState.name());
-					Map<String, MajiangGamePlayerMaidiState> playerMaidiStateMap = readyForGameResult.getMajiangGame()
-							.getPlayerMaidiStateMap();
-					if (playerMaidiStateMap.get(otherPlayerId).equals(MajiangGamePlayerMaidiState.startMaidi)) {
-						wsNotifier.notifyToQuery(otherPlayerId, QueryScope.maidi.name());
-					}
 				}
 			}
 		}
 
 		List<QueryScope> queryScopes = new ArrayList<>();
 		queryScopes.add(QueryScope.gameInfo);
-		if (readyForGameResult.getMajiangGame().getState().equals(MajiangGameState.playing)) {
-			Map<String, MajiangGamePlayerMaidiState> playerMaidiStateMap = readyForGameResult.getMajiangGame()
-					.getPlayerMaidiStateMap();
-			if (playerMaidiStateMap.get(playerId).equals(MajiangGamePlayerMaidiState.startMaidi)) {
-				queryScopes.add(QueryScope.maidi);
-			}
-			if (playerMaidiStateMap.get(playerId).equals(MajiangGamePlayerMaidiState.waitForMaidi)) {
-				queryScopes.add(QueryScope.maidiState);
-			}
-		}
+		queryScopes.add(QueryScope.maidiState);
 		data.put("queryScopes", queryScopes);
 		return vo;
 	}
@@ -293,7 +281,7 @@ public class GameController {
 		}
 		majiangGameQueryService.finish(finishResult);
 		MajiangGameValueObject majiangGameValueObject = finishResult.getMajiangGameValueObject();
-		String gameId = majiangGameValueObject.getGameId();
+		String gameId = majiangGameValueObject.getId();
 		JuResultDbo juResultDbo = majiangPlayQueryService.findJuResultDbo(gameId);
 		// 记录战绩
 		if (juResultDbo != null) {
@@ -302,7 +290,8 @@ public class GameController {
 			wenzhouMajiangResultMsgService.recordJuResult(juResult);
 		}
 
-		if (majiangGameValueObject.getState().equals(MajiangGameState.finished)) {
+		if (majiangGameValueObject.getState().name().equals(FinishedByVote.name)
+				|| majiangGameValueObject.getState().name().equals(Canceled.name)) {
 			gameMsgService.gameFinished(gameId);
 			data.put("queryScope", QueryScope.gameInfo);
 			// 通知其他人来查询
@@ -356,7 +345,7 @@ public class GameController {
 			vo.setMsg(e.getClass().getName());
 			return vo;
 		}
-		String gameId = finishResult.getMajiangGameValueObject().getGameId();
+		String gameId = finishResult.getMajiangGameValueObject().getId();
 		majiangGameQueryService.voteToFinish(finishResult);
 		JuResultDbo juResultDbo = majiangPlayQueryService.findJuResultDbo(gameId);
 		// 记录战绩
@@ -396,23 +385,14 @@ public class GameController {
 	public CommonVO maidiinfo(String gameId) {
 
 		CommonVO vo = new CommonVO();
-		MajiangGamePlayerMaidiDbo majiangGamePlayerMaidiDbo = majiangGameQueryService
-				.findLastMajiangGamePlayerMaidiDbo(gameId);
-		Map<String, MajiangGamePlayerMaidiState> playerMaidiStateMap = majiangGamePlayerMaidiDbo
-				.getPlayerMaidiStateMap();
+		MajiangGamePlayerMaidiDbo majiangGamePlayerMaidiDbo = majiangPlayQueryService
+				.findLastPlayerMaidiDboByGameId(gameId);
+		Map<String, MajiangGamePlayerMaidiState> playerMaidiStateMap = new HashMap<>();
+		if (majiangGamePlayerMaidiDbo != null) {
+			playerMaidiStateMap = majiangGamePlayerMaidiDbo.getPlayerMaidiStateMap();
+		}
 		Map data = new HashMap();
 		data.put("maidiState", playerMaidiStateMap);
-		boolean start = true;
-		for (String pid : playerMaidiStateMap.keySet()) {
-			if (MajiangGamePlayerMaidiState.startDingdi.equals(playerMaidiStateMap.get(pid))
-					|| MajiangGamePlayerMaidiState.startMaidi.equals(playerMaidiStateMap.get(pid))
-					|| MajiangGamePlayerMaidiState.waitForMaidi.equals(playerMaidiStateMap.get(pid))) {
-				start = false;
-			}
-		}
-		if (start) {
-			data.put("queryScope", QueryScope.panForMe);
-		}
 		vo.setData(data);
 		return vo;
 

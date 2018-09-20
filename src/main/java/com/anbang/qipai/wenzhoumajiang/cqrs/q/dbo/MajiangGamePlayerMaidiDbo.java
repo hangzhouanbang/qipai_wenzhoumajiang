@@ -19,7 +19,7 @@ public class MajiangGamePlayerMaidiDbo {
 
 	public MajiangGamePlayerMaidiDbo(MajiangGameValueObject majiangGame) {
 		this.gameId = majiangGame.getId();
-		this.panNo = majiangGame.getCurrentPanNo();
+		this.panNo = majiangGame.getPanNo();
 		this.playerMaidiStateMap = majiangGame.getPlayerMaidiStateMap();
 	}
 

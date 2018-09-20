@@ -72,6 +72,11 @@ public class MajiangPlayQueryService {
 		majiangGame.allPlayerIds().forEach((playerId) -> playerInfoMap.put(playerId, playerInfoDao.findById(playerId)));
 		MajiangGameDbo majiangGameDbo = new MajiangGameDbo(majiangGame, playerInfoMap);
 		majiangGameDboDao.save(majiangGameDbo);
+
+		if (majiangGame.getPlayerMaidiStateMap() != null) {// 开始买底
+			MajiangGamePlayerMaidiDbo maidiDbo = new MajiangGamePlayerMaidiDbo(majiangGame);
+			majiangGamePlayerMaidiDboDao.addMajiangGamePlayerMaidiDbo(maidiDbo);
+		}
 	}
 
 	public void maidi(MaidiResult maidiResult) throws Throwable {
@@ -147,6 +152,10 @@ public class MajiangPlayQueryService {
 
 	public JuResultDbo findJuResultDbo(String gameId) {
 		return juResultDboDao.findByGameId(gameId);
+	}
+
+	public MajiangGamePlayerMaidiDbo findLastPlayerMaidiDboByGameId(String gameId) {
+		return majiangGamePlayerMaidiDboDao.findLastByGameId(gameId);
 	}
 
 }

@@ -1,19 +1,15 @@
 package com.anbang.qipai.wenzhoumajiang.cqrs.c.service.impl;
 
-import java.util.Map;
-
 import org.springframework.stereotype.Component;
 
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.FinishResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGame;
-import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGamePlayerMaidiState;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGameValueObject;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.ReadyForGameResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.WenzhouMajiangJuResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.service.GameCmdService;
 import com.dml.mpgame.game.Game;
 import com.dml.mpgame.game.GameValueObject;
-import com.dml.mpgame.game.Playing;
 import com.dml.mpgame.game.WaitingStart;
 import com.dml.mpgame.game.extend.fpmpv.back.FpmpvBackStrategy;
 import com.dml.mpgame.game.extend.fpmpv.leave.FpmpvLeaveStrategy;
@@ -75,13 +71,6 @@ public class GameCmdServiceImpl extends CmdServiceBase implements GameCmdService
 		MajiangGame majiangGame = (MajiangGame) gameServer.findGamePlayerPlaying(playerId);
 		MajiangGameValueObject majiangGameValueObject = new MajiangGameValueObject(majiangGame);
 		result.setMajiangGame(majiangGameValueObject);
-
-		if (majiangGameValueObject.getState().name().equals(Playing.name)) {
-			Map<String, MajiangGamePlayerMaidiState> playerMaidiStateMap = majiangGame
-					.createJuAndReadyFirstPan(currentTime);
-			majiangGameValueObject.setCurrentPanNo(1);
-			majiangGameValueObject.setPlayerMaidiStateMap(playerMaidiStateMap);
-		}
 		return result;
 
 	}

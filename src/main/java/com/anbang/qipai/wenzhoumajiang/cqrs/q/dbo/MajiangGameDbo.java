@@ -22,7 +22,7 @@ public class MajiangGameDbo {
 	private boolean gangsuanfen;
 	private Map<String, Integer> playerLianZhuangCountMap;
 	private GameState state;// 原来是 waitingStart, playing, waitingNextPan, finished
-	private int currentPanNo;
+	private int panNo;
 	private List<MajiangGamePlayerDbo> players;
 
 	public MajiangGameDbo() {
@@ -41,7 +41,7 @@ public class MajiangGameDbo {
 		shaozhongfa = majiangGame.isShaozhongfa();
 		lazila = majiangGame.isLazila();
 		state = majiangGame.getState();
-		currentPanNo = majiangGame.getCurrentPanNo();
+		panNo = majiangGame.getPanNo();
 		players = new ArrayList<>();
 		Map<String, Integer> playeTotalScoreMap = majiangGame.getPlayeTotalScoreMap();
 		for (GamePlayerValueObject playerValueObject : majiangGame.getPlayers()) {
@@ -175,11 +175,11 @@ public class MajiangGameDbo {
 		this.playerLianZhuangCountMap = playerLianZhuangCountMap;
 	}
 
-	public int getCurrentPanNo() {
-		return currentPanNo;
+	public int getPanNo() {
+		return panNo;
 	}
 
-	public void setCurrentPanNo(int currentPanNo) {
-		this.currentPanNo = currentPanNo;
+	public void setPanNo(int panNo) {
+		this.panNo = panNo;
 	}
 }

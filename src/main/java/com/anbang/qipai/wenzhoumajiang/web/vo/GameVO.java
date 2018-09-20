@@ -4,8 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGameState;
+import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MaidiState;
+import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.VotingWhenMaidi;
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.dbo.MajiangGameDbo;
+import com.dml.mpgame.game.Canceled;
+import com.dml.mpgame.game.Finished;
+import com.dml.mpgame.game.Playing;
+import com.dml.mpgame.game.WaitingStart;
+import com.dml.mpgame.game.extend.fpmpv.VotingWhenWaitingNextPan;
+import com.dml.mpgame.game.extend.multipan.WaitingNextPan;
+import com.dml.mpgame.game.extend.vote.FinishedByVote;
+import com.dml.mpgame.game.extend.vote.VotingWhenPlaying;
 
 public class GameVO {
 	private String id;// 就是gameid
@@ -18,10 +27,10 @@ public class GameVO {
 	private boolean caishenqian;
 	private boolean shaozhongfa;
 	private boolean lazila;
-	private int currentPanNo;
+	private int panNo;
 	private Map<String, Integer> playerLianZhuangCountMap;
 	private List<MajiangGamePlayerVO> playerList;
-	private MajiangGameState state;
+	private String state;
 
 	public GameVO(MajiangGameDbo majiangGameDbo) {
 		id = majiangGameDbo.getId();
@@ -37,8 +46,30 @@ public class GameVO {
 		lazila = majiangGameDbo.isLazila();
 		playerList = new ArrayList<>();
 		majiangGameDbo.getPlayers().forEach((dbo) -> playerList.add(new MajiangGamePlayerVO(dbo)));
-		state = majiangGameDbo.getState();
-		currentPanNo = majiangGameDbo.getCurrentPanNo();
+		panNo = majiangGameDbo.getPanNo();
+		String sn = majiangGameDbo.getState().name();
+		if (sn.equals(Canceled.name)) {
+			state = "finished";
+		} else if (sn.equals(Finished.name)) {
+			state = "finished";
+		} else if (sn.equals(FinishedByVote.name)) {
+			state = "finished";
+		} else if (sn.equals(Playing.name)) {
+			state = "playing";
+		} else if (sn.equals(VotingWhenPlaying.name)) {
+			state = "playing";
+		} else if (sn.equals(VotingWhenWaitingNextPan.name)) {
+			state = "waitingNextPan";
+		} else if (sn.equals(WaitingNextPan.name)) {
+			state = "waitingNextPan";
+		} else if (sn.equals(WaitingStart.name)) {
+			state = "waitingStart";
+		} else if (sn.equals(MaidiState.name)) {
+			state = "maidi";
+		} else if (sn.equals(VotingWhenMaidi.name)) {
+			state = "maidi";
+		} else {
+		}
 	}
 
 	public String getId() {
@@ -121,22 +152,6 @@ public class GameVO {
 		this.lazila = lazila;
 	}
 
-	public List<MajiangGamePlayerVO> getPlayerList() {
-		return playerList;
-	}
-
-	public void setPlayerList(List<MajiangGamePlayerVO> playerList) {
-		this.playerList = playerList;
-	}
-
-	public MajiangGameState getState() {
-		return state;
-	}
-
-	public void setState(MajiangGameState state) {
-		this.state = state;
-	}
-
 	public Map<String, Integer> getPlayerLianZhuangCountMap() {
 		return playerLianZhuangCountMap;
 	}
@@ -145,11 +160,28 @@ public class GameVO {
 		this.playerLianZhuangCountMap = playerLianZhuangCountMap;
 	}
 
-	public int getCurrentPanNo() {
-		return currentPanNo;
+	public List<MajiangGamePlayerVO> getPlayerList() {
+		return playerList;
 	}
 
-	public void setCurrentPanNo(int currentPanNo) {
-		this.currentPanNo = currentPanNo;
+	public void setPlayerList(List<MajiangGamePlayerVO> playerList) {
+		this.playerList = playerList;
 	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public int getPanNo() {
+		return panNo;
+	}
+
+	public void setPanNo(int panNo) {
+		this.panNo = panNo;
+	}
+
 }

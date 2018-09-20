@@ -15,7 +15,6 @@ public class MajiangGameValueObject extends FixedPlayersMultipanAndVotetofinishG
 	private boolean shaozhongfa;
 	private boolean lazila;
 	private boolean gangsuanfen;
-	private int currentPanNo;
 	private Map<String, Integer> playerLianZhuangCountMap = new HashMap<>();
 	private Map<String, MajiangGamePlayerMaidiState> playerMaidiStateMap;
 	private Map<String, Integer> playeTotalScoreMap = new HashMap<>();
@@ -32,7 +31,7 @@ public class MajiangGameValueObject extends FixedPlayersMultipanAndVotetofinishG
 		shaozhongfa = majiangGame.isShaozhongfa();
 		lazila = majiangGame.isLazila();
 		gangsuanfen = majiangGame.isGangsuanfen();
-		currentPanNo = majiangGame.getCurrentPanNo();
+		playerMaidiStateMap = majiangGame.getPlayerMaidiStateMap();
 		playeTotalScoreMap.putAll(majiangGame.getPlayeTotalScoreMap());
 	}
 
@@ -122,14 +121,6 @@ public class MajiangGameValueObject extends FixedPlayersMultipanAndVotetofinishG
 
 	public void setPlayeTotalScoreMap(Map<String, Integer> playeTotalScoreMap) {
 		this.playeTotalScoreMap = playeTotalScoreMap;
-	}
-
-	public int getCurrentPanNo() {
-		return currentPanNo;
-	}
-
-	public void setCurrentPanNo(int currentPanNo) {
-		this.currentPanNo = currentPanNo;
 	}
 
 	public Map<String, Integer> getPlayerLianZhuangCountMap() {

@@ -1,6 +1,24 @@
 package com.anbang.qipai.wenzhoumajiang.web.vo;
 
+import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.PlayerAfterMaidi;
+import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.PlayerMaidi;
+import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.PlayerVotedWhenAfterMaidi;
+import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.PlayerVotedWhenMaidi;
+import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.PlayerVotingWhenAfterMaidi;
+import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.PlayerVotingWhenMaidi;
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.dbo.MajiangGamePlayerDbo;
+import com.dml.mpgame.game.extend.fpmpv.player.PlayerPanFinishedAndVoted;
+import com.dml.mpgame.game.extend.fpmpv.player.PlayerPanFinishedAndVoting;
+import com.dml.mpgame.game.extend.fpmpv.player.PlayerReadyToStartNextPanAndVoted;
+import com.dml.mpgame.game.extend.fpmpv.player.PlayerReadyToStartNextPanAndVoting;
+import com.dml.mpgame.game.extend.multipan.player.PlayerPanFinished;
+import com.dml.mpgame.game.extend.multipan.player.PlayerReadyToStartNextPan;
+import com.dml.mpgame.game.extend.vote.player.PlayerPlayingAndVoted;
+import com.dml.mpgame.game.extend.vote.player.PlayerPlayingAndVoting;
+import com.dml.mpgame.game.player.PlayerFinished;
+import com.dml.mpgame.game.player.PlayerJoined;
+import com.dml.mpgame.game.player.PlayerPlaying;
+import com.dml.mpgame.game.player.PlayerReadyToStart;
 
 public class MajiangGamePlayerVO {
 	private String playerId;
@@ -24,9 +42,47 @@ public class MajiangGamePlayerVO {
 		nickname = dbo.getNickname();
 		gender = dbo.getGender();
 		headimgurl = dbo.getHeadimgurl();
-		state = dbo.getState().name();
 		onlineState = dbo.getOnlineState().name();
 		totalScore = dbo.getTotalScore();
+		String sn = dbo.getState().name();
+		if (sn.equals(PlayerFinished.name)) {
+			state = "finished";
+		} else if (sn.equals(PlayerJoined.name)) {
+			state = "joined";
+		} else if (sn.equals(PlayerPanFinished.name)) {
+			state = "panFinished";
+		} else if (sn.equals(PlayerPlaying.name)) {
+			state = "playing";
+		} else if (sn.equals(PlayerReadyToStart.name)) {
+			state = "readyToStart";
+		} else if (sn.equals(PlayerReadyToStartNextPan.name)) {
+			state = "readyToStart";
+		} else if (sn.equals(PlayerPlayingAndVoted.name)) {
+			state = "playing";
+		} else if (sn.equals(PlayerPlayingAndVoting.name)) {
+			state = "playing";
+		} else if (sn.equals(PlayerPanFinishedAndVoted.name)) {
+			state = "panFinished";
+		} else if (sn.equals(PlayerPanFinishedAndVoting.name)) {
+			state = "panFinished";
+		} else if (sn.equals(PlayerReadyToStartNextPanAndVoted.name)) {
+			state = "readyToStart";
+		} else if (sn.equals(PlayerReadyToStartNextPanAndVoting.name)) {
+			state = "readyToStart";
+		} else if (sn.equals(PlayerMaidi.name)) {
+			state = "maidi";
+		} else if (sn.equals(PlayerAfterMaidi.name)) {
+			state = "maidi";
+		} else if (sn.equals(PlayerVotedWhenMaidi.name)) {
+			state = "maidi";
+		} else if (sn.equals(PlayerVotedWhenAfterMaidi.name)) {
+			state = "maidi";
+		} else if (sn.equals(PlayerVotingWhenMaidi.name)) {
+			state = "maidi";
+		} else if (sn.equals(PlayerVotingWhenAfterMaidi.name)) {
+			state = "maidi";
+		} else {
+		}
 	}
 
 	public String getPlayerId() {
