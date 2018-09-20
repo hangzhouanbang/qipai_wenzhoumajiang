@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MaidiResult;
+import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MaidiState;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangActionResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGameValueObject;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.ReadyForGameResult;
@@ -73,7 +74,7 @@ public class MajiangPlayQueryService {
 		MajiangGameDbo majiangGameDbo = new MajiangGameDbo(majiangGame, playerInfoMap);
 		majiangGameDboDao.save(majiangGameDbo);
 
-		if (majiangGame.getPlayerMaidiStateMap() != null) {// 开始买底
+		if (majiangGame.getState().name().equals(MaidiState.name)) {// 开始买底
 			MajiangGamePlayerMaidiDbo maidiDbo = new MajiangGamePlayerMaidiDbo(majiangGame);
 			majiangGamePlayerMaidiDboDao.addMajiangGamePlayerMaidiDbo(maidiDbo);
 		}
@@ -89,7 +90,6 @@ public class MajiangPlayQueryService {
 		MajiangGamePlayerMaidiDbo maidiDbo = new MajiangGamePlayerMaidiDbo(majiangGame);
 		majiangGamePlayerMaidiDboDao.updateMajiangGamePlayerMaidiDbo(maidiDbo.getGameId(), maidiDbo.getPanNo(),
 				maidiDbo.getPlayerMaidiStateMap());
-
 		if (maidiResult.getFirstActionFrame() != null) {
 			gameLatestPanActionFrameDboDao.save(majiangGame.getId(),
 					maidiResult.getFirstActionFrame().toByteArray(1024 * 8));
@@ -104,7 +104,7 @@ public class MajiangPlayQueryService {
 		majiangGame.allPlayerIds().forEach((pid) -> playerInfoMap.put(pid, playerInfoDao.findById(pid)));
 		MajiangGameDbo majiangGameDbo = new MajiangGameDbo(majiangGame, playerInfoMap);
 		majiangGameDboDao.save(majiangGameDbo);
-		if (majiangGame.getPlayerMaidiStateMap() != null) {
+		if (majiangGame.getState().name().equals(MaidiState.name)) {
 			MajiangGamePlayerMaidiDbo maidiDbo = new MajiangGamePlayerMaidiDbo(majiangGame);
 			majiangGamePlayerMaidiDboDao.addMajiangGamePlayerMaidiDbo(maidiDbo);
 		}
