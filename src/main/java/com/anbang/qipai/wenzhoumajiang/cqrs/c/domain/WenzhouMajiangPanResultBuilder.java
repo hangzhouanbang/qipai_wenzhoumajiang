@@ -14,7 +14,6 @@ import com.dml.majiang.pan.result.PanResult;
 import com.dml.majiang.player.MajiangPlayer;
 import com.dml.majiang.player.chupaizu.GangchuPaiZu;
 import com.dml.majiang.player.chupaizu.PengchuPaiZu;
-import com.dml.majiang.player.menfeng.ZhuangXiajiaIsDongIfZhuangNotHuPlayersMenFengDeterminer;
 
 public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 	private Map<String, MajiangGamePlayerMaidiState> playerMaidiStateMap;
@@ -36,7 +35,7 @@ public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 				playerTotalScoreMap.put(panPlayerResult.getPlayerId(), panPlayerResult.getTotalScore());
 			}
 		}
-		ZhuangXiajiaIsDongIfZhuangNotHuPlayersMenFengDeterminer menfengDeterminer = (ZhuangXiajiaIsDongIfZhuangNotHuPlayersMenFengDeterminer) ju
+		WenzhouMajiangPlayersMenFengDeterminer menfengDeterminer = (WenzhouMajiangPlayersMenFengDeterminer) ju
 				.getPlayersMenFengDeterminerForNextPan();
 		int difen = 1;
 		if (menfengDeterminer.getLianZhuangCount() == 1) {

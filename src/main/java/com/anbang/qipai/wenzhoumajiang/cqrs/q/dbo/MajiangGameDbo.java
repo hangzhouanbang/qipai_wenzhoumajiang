@@ -42,6 +42,7 @@ public class MajiangGameDbo {
 		lazila = majiangGame.isLazila();
 		state = majiangGame.getState();
 		panNo = majiangGame.getPanNo();
+
 		players = new ArrayList<>();
 		Map<String, Integer> playeTotalScoreMap = majiangGame.getPlayeTotalScoreMap();
 		for (GamePlayerValueObject playerValueObject : majiangGame.getPlayers()) {

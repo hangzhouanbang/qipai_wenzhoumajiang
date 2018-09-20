@@ -34,6 +34,7 @@ public class GameCmdServiceImpl extends CmdServiceBase implements GameCmdService
 
 		newGame.setPanshu(panshu);
 		newGame.setRenshu(renshu);
+		newGame.setFixedPlayerCount(renshu);
 		newGame.setJinjie1(jinjie1);
 		newGame.setJinjie2(jinjie2);
 		newGame.setTeshushuangfan(teshushuangfan);
