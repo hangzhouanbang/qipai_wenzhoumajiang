@@ -8,7 +8,6 @@ import java.util.Set;
 
 import com.dml.majiang.ju.Ju;
 import com.dml.majiang.ju.finish.FixedPanNumbersJuFinishiDeterminer;
-import com.dml.majiang.ju.result.JuResult;
 import com.dml.majiang.pai.MajiangPai;
 import com.dml.majiang.pan.Pan;
 import com.dml.majiang.pan.frame.PanActionFrame;
@@ -27,7 +26,6 @@ import com.dml.majiang.player.action.listener.comprehensive.JuezhangStatisticsLi
 import com.dml.majiang.player.action.listener.mo.MoGuipaiCounter;
 import com.dml.majiang.player.action.peng.HuFirstPengActionProcessor;
 import com.dml.majiang.player.menfeng.RandomMustHasDongPlayersMenFengDeterminer;
-import com.dml.majiang.player.menfeng.ZhuangXiajiaIsDongIfZhuangNotHuPlayersMenFengDeterminer;
 import com.dml.majiang.player.shoupaisort.BaibanDangGuipaiBenpaiShoupaiSortComparator;
 import com.dml.majiang.player.zhuang.MenFengDongZhuangDeterminer;
 import com.dml.mpgame.game.Finished;
@@ -84,6 +82,7 @@ public class MajiangGame extends FixedPlayersMultipanAndVotetofinishGame {
 				playerMaidiStateMap.put(playerId, MajiangGamePlayerMaidiState.buding);
 			}
 		}
+		updatePlayerState(playerId, new PlayerAfterMaidi());
 		this.playerMaidiStateMap.putAll(playerMaidiStateMap);
 		boolean start = true;
 		for (String pid : playerIdList) {
@@ -96,6 +95,7 @@ public class MajiangGame extends FixedPlayersMultipanAndVotetofinishGame {
 		if (start) {
 			PanActionFrame firstActionFrame = startPan(playerIdList, System.currentTimeMillis());
 			state = new Playing();
+			updateAllPlayersState(new PlayerPlaying());
 			maidiResult.setFirstActionFrame(firstActionFrame);
 		}
 		MajiangGameValueObject majiangGame = new MajiangGameValueObject(this);
@@ -221,9 +221,9 @@ public class MajiangGame extends FixedPlayersMultipanAndVotetofinishGame {
 		return result;
 	}
 
-	public JuResult finishJu() {
+	@Override
+	public void finish() throws Exception {
 		ju.finish();
-		return ju.getJuResult();
 	}
 
 	@Override
@@ -250,7 +250,7 @@ public class MajiangGame extends FixedPlayersMultipanAndVotetofinishGame {
 		List<String> allPlayerIds = latestFinishedPanResult.allPlayerIds();
 		allPlayerIds.forEach((pid) -> nextPan.addPlayer(pid));
 		ju.setCurrentPan(nextPan);
-		ZhuangXiajiaIsDongIfZhuangNotHuPlayersMenFengDeterminer menFengDeterminer = (ZhuangXiajiaIsDongIfZhuangNotHuPlayersMenFengDeterminer) ju
+		WenzhouMajiangPlayersMenFengDeterminer menFengDeterminer = (WenzhouMajiangPlayersMenFengDeterminer) ju
 				.getPlayersMenFengDeterminerForNextPan();
 		playerLianZhuangCountMap.clear();
 
@@ -333,6 +333,7 @@ public class MajiangGame extends FixedPlayersMultipanAndVotetofinishGame {
 	public void start() throws Exception {
 		state = new MaidiState();
 		updateAllPlayersState(new PlayerMaidi());
+		createJuAndReadyFirstPan(System.currentTimeMillis());
 	}
 
 	public String getGameId() {
