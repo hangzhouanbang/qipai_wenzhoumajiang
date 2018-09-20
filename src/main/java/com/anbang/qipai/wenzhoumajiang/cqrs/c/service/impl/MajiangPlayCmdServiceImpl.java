@@ -28,7 +28,7 @@ public class MajiangPlayCmdServiceImpl extends CmdServiceBase implements Majiang
 		MajiangActionResult majiangActionResult = majiangGame.action(playerId, actionId, actionTime);
 
 		if (majiangActionResult.getJuResult() != null) {// 全部结束
-			gameServer.finishGameImmediately(gameId);
+			gameServer.finishGame(gameId);
 		}
 
 		return majiangActionResult;
