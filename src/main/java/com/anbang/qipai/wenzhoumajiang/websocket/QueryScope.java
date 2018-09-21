@@ -42,6 +42,7 @@ public enum QueryScope {
 		} else if (gameState.name().equals(VotingWhenMaidi.name)) {
 			scopes.add(QueryScope.gameInfo);
 			scopes.add(QueryScope.maidiState);
+			scopes.add(QueryScope.gameFinishVote);
 		} else if (gameState.name().equals(FinishedByVote.name)) {
 			scopes.add(QueryScope.juResult);
 		} else if (gameState.name().equals(WaitingNextPan.name)) {
