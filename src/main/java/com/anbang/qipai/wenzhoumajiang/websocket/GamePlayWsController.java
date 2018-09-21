@@ -12,10 +12,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MaidiState;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGameValueObject;
-import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.PlayerVotingWhenMaidi;
-import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.VotingWhenMaidi;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.service.GameCmdService;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.service.PlayerAuthService;
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.dbo.JuResultDbo;
@@ -25,17 +22,8 @@ import com.anbang.qipai.wenzhoumajiang.cqrs.q.service.MajiangPlayQueryService;
 import com.anbang.qipai.wenzhoumajiang.msg.service.WenzhouMajiangGameMsgService;
 import com.anbang.qipai.wenzhoumajiang.msg.service.WenzhouMajiangResultMsgService;
 import com.anbang.qipai.wenzhoumajiang.web.vo.JuResultVO;
-import com.dml.mpgame.game.Canceled;
-import com.dml.mpgame.game.Finished;
 import com.dml.mpgame.game.GameState;
-import com.dml.mpgame.game.Playing;
-import com.dml.mpgame.game.WaitingStart;
-import com.dml.mpgame.game.extend.fpmpv.VotingWhenWaitingNextPan;
-import com.dml.mpgame.game.extend.multipan.WaitingNextPan;
-import com.dml.mpgame.game.extend.multipan.player.PlayerPanFinished;
-import com.dml.mpgame.game.extend.multipan.player.PlayerReadyToStartNextPan;
 import com.dml.mpgame.game.extend.vote.FinishedByVote;
-import com.dml.mpgame.game.extend.vote.VotingWhenPlaying;
 import com.dml.mpgame.game.player.GamePlayerState;
 import com.google.gson.Gson;
 
@@ -110,13 +98,13 @@ public class GamePlayWsController extends TextWebSocketHandler {
 				gameMsgService.gameFinished(gameId);
 			}
 
+			// 通知其他玩家
 			majiangGameValueObject.allPlayerIds().forEach((playerId) -> {
 				if (!playerId.equals(closedPlayerId)) {
-					wsNotifier.notifyToQuery(playerId, QueryScope.gameInfo.name());
-					wsNotifier.notifyToQuery(playerId, QueryScope.gameFinishVote.name()); // 离开的那人可能投了弃权
-					if (majiangGameValueObject.getState().name().equals(FinishedByVote.name)) {
-						wsNotifier.notifyToQuery(playerId, QueryScope.juResult.name());
-					}
+					QueryScope.scopesForState(majiangGameValueObject.getState(),
+							majiangGameValueObject.findPlayerState(playerId)).forEach((scope) -> {
+								wsNotifier.notifyToQuery(playerId, scope.name());
+							});
 				}
 			});
 		}
@@ -170,43 +158,10 @@ public class GamePlayWsController extends TextWebSocketHandler {
 			GameState gameState = majiangGameDbo.getState();
 			GamePlayerState playerState = majiangGameDbo.findPlayer(playerId).getState();
 
-			if (gameState.name().equals(WaitingStart.name)) {
-				wsNotifier.notifyToQuery(playerId, QueryScope.gameInfo.name());
-			} else if (gameState.name().equals(Canceled.name)) {
-				wsNotifier.notifyToQuery(playerId, QueryScope.gameInfo.name());
-			} else if (gameState.name().equals(MaidiState.name)) {
-				wsNotifier.notifyToQuery(playerId, QueryScope.gameInfo.name());
-				wsNotifier.notifyToQuery(playerId, QueryScope.maidiState.name());
-			} else if (gameState.name().equals(Playing.name)) {
-				wsNotifier.notifyToQuery(playerId, QueryScope.gameInfo.name());
-				wsNotifier.notifyToQuery(playerId, QueryScope.maidiState.name());
-				wsNotifier.notifyToQuery(playerId, QueryScope.panForMe.name());
-			} else if (gameState.name().equals(VotingWhenPlaying.name)) {
-				wsNotifier.notifyToQuery(playerId, QueryScope.gameInfo.name());
-				wsNotifier.notifyToQuery(playerId, QueryScope.maidiState.name());
-				wsNotifier.notifyToQuery(playerId, QueryScope.panForMe.name());
-				wsNotifier.notifyToQuery(playerId, QueryScope.gameFinishVote.name());
-			} else if (gameState.name().equals(VotingWhenMaidi.name)) {
-				wsNotifier.notifyToQuery(playerId, QueryScope.gameInfo.name());
-				wsNotifier.notifyToQuery(playerId, QueryScope.maidiState.name());
-				if (playerState.name().equals(PlayerVotingWhenMaidi.name)) {
-					wsNotifier.notifyToQuery(playerId, QueryScope.maidi.name());
-				}
-			} else if (gameState.name().equals(FinishedByVote.name)) {
-				wsNotifier.notifyToQuery(playerId, QueryScope.juResult.name());
-			} else if (gameState.name().equals(WaitingNextPan.name)) {
-				if (playerState.name().equals(PlayerPanFinished.name)) {
-					wsNotifier.notifyToQuery(playerId, QueryScope.gameInfo.name());
-					wsNotifier.notifyToQuery(playerId, QueryScope.panResult.name());
-				} else if (playerState.name().equals(PlayerReadyToStartNextPan.name)) {
-					wsNotifier.notifyToQuery(playerId, QueryScope.gameInfo.name());
-				}
-			} else if (gameState.name().equals(VotingWhenWaitingNextPan.name)) {
-				wsNotifier.notifyToQuery(playerId, QueryScope.gameInfo.name());
-				wsNotifier.notifyToQuery(playerId, QueryScope.gameFinishVote.name());
-			} else if (gameState.name().equals(Finished.name)) {
-				wsNotifier.notifyToQuery(playerId, QueryScope.juResult.name());
-			}
+			QueryScope.scopesForState(gameState, playerState).forEach((scope) -> {
+				wsNotifier.notifyToQuery(playerId, scope.name());
+			});
+
 		}
 	}
 

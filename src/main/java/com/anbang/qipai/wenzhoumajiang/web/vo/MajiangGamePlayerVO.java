@@ -60,15 +60,15 @@ public class MajiangGamePlayerVO {
 		} else if (sn.equals(PlayerPlayingAndVoted.name)) {
 			state = "playing";
 		} else if (sn.equals(PlayerPlayingAndVoting.name)) {
-			state = "playing";
+			state = PlayerPlayingAndVoting.name;
 		} else if (sn.equals(PlayerPanFinishedAndVoted.name)) {
 			state = "panFinished";
 		} else if (sn.equals(PlayerPanFinishedAndVoting.name)) {
-			state = "panFinished";
+			state = PlayerPanFinishedAndVoting.name;
 		} else if (sn.equals(PlayerReadyToStartNextPanAndVoted.name)) {
 			state = "readyToStart";
 		} else if (sn.equals(PlayerReadyToStartNextPanAndVoting.name)) {
-			state = "readyToStart";
+			state = PlayerReadyToStartNextPanAndVoting.name;
 		} else if (sn.equals(PlayerMaidi.name)) {
 			state = "maidi";
 		} else if (sn.equals(PlayerAfterMaidi.name)) {
@@ -78,9 +78,9 @@ public class MajiangGamePlayerVO {
 		} else if (sn.equals(PlayerVotedWhenAfterMaidi.name)) {
 			state = "maidi";
 		} else if (sn.equals(PlayerVotingWhenMaidi.name)) {
-			state = "maidi";
+			state = PlayerVotingWhenMaidi.name;
 		} else if (sn.equals(PlayerVotingWhenAfterMaidi.name)) {
-			state = "maidi";
+			state = PlayerVotingWhenAfterMaidi.name;
 		} else {
 		}
 	}
