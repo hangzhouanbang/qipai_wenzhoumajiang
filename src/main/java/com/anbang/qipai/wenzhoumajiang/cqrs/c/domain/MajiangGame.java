@@ -14,8 +14,8 @@ import com.dml.majiang.pan.frame.PanActionFrame;
 import com.dml.majiang.pan.guipai.RandomGuipaiDeterminer;
 import com.dml.majiang.pan.publicwaitingplayer.WaitDaPlayerPanPublicWaitingPlayerDeterminer;
 import com.dml.majiang.pan.result.PanResult;
-import com.dml.majiang.player.action.chi.PengganghuFirstListenChiActionProcessor;
-import com.dml.majiang.player.action.gang.HuFirstListenGangActionProcessor;
+import com.dml.majiang.player.action.chi.PengganghuFirstBuChiActionProcessor;
+import com.dml.majiang.player.action.gang.HuFirstBuGangActionProcessor;
 import com.dml.majiang.player.action.guo.DoNothingGuoActionProcessor;
 import com.dml.majiang.player.action.hu.PlayerHuAndClearAllActionHuActionUpdater;
 import com.dml.majiang.player.action.hu.PlayerSetHuHuActionProcessor;
@@ -24,7 +24,7 @@ import com.dml.majiang.player.action.listener.comprehensive.DianpaoDihuOpportuni
 import com.dml.majiang.player.action.listener.comprehensive.GuoPengBuPengStatisticsListener;
 import com.dml.majiang.player.action.listener.comprehensive.JuezhangStatisticsListener;
 import com.dml.majiang.player.action.listener.mo.MoGuipaiCounter;
-import com.dml.majiang.player.action.peng.HuFirstListenPengActionProcessor;
+import com.dml.majiang.player.action.peng.HuFirstBuPengActionProcessor;
 import com.dml.majiang.player.menfeng.RandomMustHasDongPlayersMenFengDeterminer;
 import com.dml.majiang.player.shoupaisort.BaibanDangGuipaiBenpaiShoupaiSortComparator;
 import com.dml.majiang.player.zhuang.MenFengDongZhuangDeterminer;
@@ -141,11 +141,11 @@ public class MajiangGame extends FixedPlayersMultipanAndVotetofinishGame {
 		ju.setMoActionUpdater(new WenzhouMajiangMoActionUpdater());
 		ju.setDaActionProcessor(new WenzhouMajiangDaActionProcessor());
 		ju.setDaActionUpdater(new WenzhouMajiangDaActionUpdater());
-		ju.setChiActionProcessor(new PengganghuFirstListenChiActionProcessor());
+		ju.setChiActionProcessor(new PengganghuFirstBuChiActionProcessor());
 		ju.setChiActionUpdater(new WenzhouMajiangChiActionUpdater());
-		ju.setPengActionProcessor(new HuFirstListenPengActionProcessor());
+		ju.setPengActionProcessor(new HuFirstBuPengActionProcessor());
 		ju.setPengActionUpdater(new WenzhouMajiangPengActionUpdater());
-		ju.setGangActionProcessor(new HuFirstListenGangActionProcessor());
+		ju.setGangActionProcessor(new HuFirstBuGangActionProcessor());
 		ju.setGangActionUpdater(new WenzhouMajiangGangActionUpdater());
 		ju.setGuoActionProcessor(new DoNothingGuoActionProcessor());
 		ju.setGuoActionUpdater(new WenzhouMajiangGuoActionUpdater());
@@ -334,6 +334,11 @@ public class MajiangGame extends FixedPlayersMultipanAndVotetofinishGame {
 		state = new MaidiState();
 		updateAllPlayersState(new PlayerMaidi());
 		createJuAndReadyFirstPan(System.currentTimeMillis());
+	}
+
+	@Override
+	protected MajiangGameValueObject toValueObject() {
+		return new MajiangGameValueObject(this);
 	}
 
 	public String getGameId() {
