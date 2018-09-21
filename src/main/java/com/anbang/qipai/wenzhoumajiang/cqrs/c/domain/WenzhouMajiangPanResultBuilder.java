@@ -231,7 +231,7 @@ public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 								maidiCount += 1;
 							}
 							if (playerMaidiStateMap.get(playerId2).equals(MajiangGamePlayerMaidiState.maidi)
-									|| playerMaidiStateMap.get(playerId1).equals(MajiangGamePlayerMaidiState.dingdi)) {
+									|| playerMaidiStateMap.get(playerId2).equals(MajiangGamePlayerMaidiState.dingdi)) {
 								maidiCount += 1;
 							}
 							int score1 = playerResult1.getScore();
@@ -251,7 +251,7 @@ public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 									maidiCount += 1;
 								}
 								if (playerMaidiStateMap.get(playerId2).equals(MajiangGamePlayerMaidiState.maidi)
-										|| playerMaidiStateMap.get(playerId1)
+										|| playerMaidiStateMap.get(playerId2)
 												.equals(MajiangGamePlayerMaidiState.dingdi)) {
 									maidiCount += 1;
 								}
