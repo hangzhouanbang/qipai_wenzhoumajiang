@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MaidiState;
-import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.PlayerVotingWhenMaidi;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.VotingWhenMaidi;
 import com.dml.mpgame.game.Canceled;
 import com.dml.mpgame.game.Finished;
@@ -20,7 +19,7 @@ import com.dml.mpgame.game.extend.vote.VotingWhenPlaying;
 import com.dml.mpgame.game.player.GamePlayerState;
 
 public enum QueryScope {
-	gameInfo, panForMe, panResult, juResult, gameFinishVote, maidi, maidiState;
+	gameInfo, panForMe, panResult, juResult, gameFinishVote, maidiState;
 
 	public static List<QueryScope> scopesForState(GameState gameState, GamePlayerState playerState) {
 		List<QueryScope> scopes = new ArrayList<>();
@@ -43,9 +42,6 @@ public enum QueryScope {
 		} else if (gameState.name().equals(VotingWhenMaidi.name)) {
 			scopes.add(QueryScope.gameInfo);
 			scopes.add(QueryScope.maidiState);
-			if (playerState.name().equals(PlayerVotingWhenMaidi.name)) {
-				scopes.add(QueryScope.maidi);
-			}
 		} else if (gameState.name().equals(FinishedByVote.name)) {
 			scopes.add(QueryScope.juResult);
 		} else if (gameState.name().equals(WaitingNextPan.name)) {
