@@ -84,34 +84,37 @@ public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 			} else {
 				MajiangPlayer dianpaoPlayer = currentPan.findPlayerById(dianpaoPlayerId);
 				MajiangPlayer xiajiaPlayer = currentPan.findXiajia(dianpaoPlayer);
-				// 按点炮者开始遍历出最佳胡
+				MajiangPlayer betterHuPlayer = null;
+				WenzhouMajiangHu betterHu = null;
+
+				// 按点炮者下家开始遍历出最佳胡
 				while (true) {
-					if (!xiajiaPlayer.getId().equals(dianpaoPlayerId)) {
+					if (!xiajiaPlayer.getId().equals(dianpaoPlayerId) && xiajiaPlayer.getHu() != null) {
+
 						WenzhouMajiangHu hu = (WenzhouMajiangHu) xiajiaPlayer.getHu();
-						if (hu != null && bestHu.getHufan().getValue() < hu.getHufan().getValue()) {
-							bestHuPlayer = xiajiaPlayer;
-							bestHu = hu;
+						if (betterHuPlayer == null || betterHu.getHufan().getValue() < hu.getHufan().getValue()) {
+							betterHuPlayer = xiajiaPlayer;
+							betterHu = hu;
 						}
 					} else {
-						WenzhouMajiangHu hu = (WenzhouMajiangHu) xiajiaPlayer.getHu();
-						if (hu != null && bestHu.getHufan().getValue() < hu.getHufan().getValue()) {
-							bestHuPlayer = xiajiaPlayer;
-							bestHu = hu;
-						}
 						break;
 					}
 					xiajiaPlayer = currentPan.findXiajia(xiajiaPlayer);
 				}
+				if (betterHuPlayer != null) {
+					bestHuPlayer = betterHuPlayer;
+					bestHu = betterHu;
+				}
 				// 将其他胡的玩家的胡设置为null
-				xiajiaPlayer = currentPan.findXiajia(xiajiaPlayer);
+				String bestHuPlayerId = bestHuPlayer.getId();
+				xiajiaPlayer = currentPan.findXiajia(bestHuPlayer);
 				while (true) {
-					if (!xiajiaPlayer.getId().equals(dianpaoPlayerId)) {
-						if (!xiajiaPlayer.getId().equals(bestHuPlayer.getId())) {
-							xiajiaPlayer.setHu(null);
-						}
+					if (!xiajiaPlayer.getId().equals(bestHuPlayerId)) {
+						xiajiaPlayer.setHu(null);
 					} else {
 						break;
 					}
+					xiajiaPlayer = currentPan.findXiajia(xiajiaPlayer);
 				}
 			}
 			WenzhouMajiangPanPlayerHufan huPlayerHufan = bestHu.getHufan();

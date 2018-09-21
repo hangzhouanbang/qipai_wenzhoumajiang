@@ -53,9 +53,57 @@ public class WenzhouMajiangDaActionUpdater implements MajiangPlayerDaActionUpdat
 		guipaiTypeSet.toArray(guipaiType);
 		MajiangPai guipai = guipaiType[0];
 		MajiangPai daPai = daAction.getPai();
+
+		GuoPengBuPengStatisticsListener guoPengBuPengStatisticsListener = ju.getActionStatisticsListenerManager()
+				.findListener(GuoPengBuPengStatisticsListener.class);
+		Set<String> canNotPengPlayers = guoPengBuPengStatisticsListener.getCanNotPengPlayers();
+		int i = 1;
+		while (true) {
+			if (!xiajiaPlayer.getId().equals(daAction.getActionPlayerId())) {
+				// 点炮胡
+				WenzhouMajiangPanResultBuilder wenzhouMajiangJuResultBuilder = (WenzhouMajiangPanResultBuilder) ju
+						.getCurrentPanResultBuilder();
+				boolean teshushuangfan = wenzhouMajiangJuResultBuilder.isTeshushuangfan();
+				boolean shaozhongfa = wenzhouMajiangJuResultBuilder.isShaozhongfa();
+				boolean lazila = wenzhouMajiangJuResultBuilder.isLazila();
+				GouXingPanHu gouXingPanHu = ju.getGouXingPanHu();
+				// 先把这张牌放入计算器
+				xiajiaPlayer.getShoupaiCalculator().addPai(daAction.getPai());
+				WenzhouMajiangHu bestHu = WenzhouMajiangJiesuanCalculator.calculateBestDianpaoHu(couldDihu,
+						gouXingPanHu, xiajiaPlayer, daAction.getPai(), shaozhongfa, teshushuangfan, lazila);
+				// 再把这张牌拿出计算器
+				xiajiaPlayer.getShoupaiCalculator().removePai(daAction.getPai());
+				if (bestHu != null) {
+					bestHu.setDianpao(true);
+					bestHu.setDianpaoPlayerId(daPlayer.getId());
+					xiajiaPlayer.addActionCandidate(new MajiangHuAction(xiajiaPlayer.getId(), bestHu));
+				}
+				// 其他的可以碰杠胡
+				if (daplayerFangruShoupaiList.size() != 0) {// 打牌的人全求神时
+					xiajiaPlayer.tryGangdachuAndGenerateCandidateAction(daAction.getActionPlayerId(),
+							daAction.getPai());
+				}
+				List<MajiangPai> fangruShoupaiList1 = xiajiaPlayer.getFangruShoupaiList();
+				if (fangruShoupaiList1.size() != 2 && daplayerFangruShoupaiList.size() != 0) {// 下家只有两张手牌或者打牌的人全求神时
+					if (!canNotPengPlayers.contains(xiajiaPlayer.getId())) {
+						xiajiaPlayer.tryPengAndGenerateCandidateAction(daAction.getActionPlayerId(), daAction.getPai());
+					}
+				}
+
+				if (i != 1) {
+					xiajiaPlayer.checkAndGenerateGuoCandidateAction();
+				}
+			} else {
+				break;
+			}
+			xiajiaPlayer = currentPan.findXiajia(xiajiaPlayer);
+			xiajiaPlayer.clearActionCandidates();
+			i++;
+		}
+		xiajiaPlayer = currentPan.findXiajia(xiajiaPlayer);
 		// 下家可以吃，代码需要改进
 		List<MajiangPai> fangruShoupaiList = xiajiaPlayer.getFangruShoupaiList();
-		if (fangruShoupaiList.size() != 2 && daplayerFangruShoupaiList.size() != 0) {// 下家只有两张手牌或者打牌的人全求神时
+		if (fangruShoupaiList.size() != 2 && daplayerFangruShoupaiList.size() != 0) {// 下家只有两张手牌或者打牌的人全求神时不能吃
 			ShoupaiCalculator shoupaiCalculator = xiajiaPlayer.getShoupaiCalculator();
 			Shunzi shunzi1 = tryAndMakeShunziWithPai1(shoupaiCalculator, guipai, daPai);
 			if (shunzi1 != null) {
@@ -78,48 +126,7 @@ public class WenzhouMajiangDaActionUpdater implements MajiangPlayerDaActionUpdat
 						new MajiangChiAction(xiajiaPlayer.getId(), daAction.getActionPlayerId(), daPai, shunzi3));
 			}
 		}
-		GuoPengBuPengStatisticsListener guoPengBuPengStatisticsListener = ju.getActionStatisticsListenerManager()
-				.findListener(GuoPengBuPengStatisticsListener.class);
-		Set<String> canNotPengPlayers = guoPengBuPengStatisticsListener.getCanNotPengPlayers();
-		while (true) {
-			if (!xiajiaPlayer.getId().equals(daAction.getActionPlayerId())) {
-				// 其他的可以碰杠胡
-				List<MajiangPai> fangruShoupaiList1 = xiajiaPlayer.getFangruShoupaiList();
-				if (fangruShoupaiList1.size() != 2 && daplayerFangruShoupaiList.size() != 0) {// 下家只有两张手牌或者打牌的人全求神时
-					if (!canNotPengPlayers.contains(xiajiaPlayer.getId())) {
-						xiajiaPlayer.tryPengAndGenerateCandidateAction(daAction.getActionPlayerId(), daAction.getPai());
-					}
-				}
-				if (daplayerFangruShoupaiList.size() != 0) {// 打牌的人全求神时
-					xiajiaPlayer.tryGangdachuAndGenerateCandidateAction(daAction.getActionPlayerId(),
-							daAction.getPai());
-				}
-				// 点炮胡
-				WenzhouMajiangPanResultBuilder wenzhouMajiangJuResultBuilder = (WenzhouMajiangPanResultBuilder) ju
-						.getCurrentPanResultBuilder();
-				boolean teshushuangfan = wenzhouMajiangJuResultBuilder.isTeshushuangfan();
-				boolean shaozhongfa = wenzhouMajiangJuResultBuilder.isShaozhongfa();
-				boolean lazila = wenzhouMajiangJuResultBuilder.isLazila();
-				GouXingPanHu gouXingPanHu = ju.getGouXingPanHu();
-				// 先把这张牌放入计算器
-				xiajiaPlayer.getShoupaiCalculator().addPai(daAction.getPai());
-				WenzhouMajiangHu bestHu = WenzhouMajiangJiesuanCalculator.calculateBestDianpaoHu(couldDihu,
-						gouXingPanHu, xiajiaPlayer, daAction.getPai(), shaozhongfa, teshushuangfan, lazila);
-				// 再把这张牌拿出计算器
-				xiajiaPlayer.getShoupaiCalculator().removePai(daAction.getPai());
-				if (bestHu != null) {
-					bestHu.setDianpao(true);
-					bestHu.setDianpaoPlayerId(daPlayer.getId());
-					xiajiaPlayer.addActionCandidate(new MajiangHuAction(xiajiaPlayer.getId(), bestHu));
-				}
-
-				xiajiaPlayer.checkAndGenerateGuoCandidateAction();
-			} else {
-				break;
-			}
-			xiajiaPlayer = currentPan.findXiajia(xiajiaPlayer);
-			xiajiaPlayer.clearActionCandidates();
-		}
+		xiajiaPlayer.checkAndGenerateGuoCandidateAction();
 
 		if (daplayerFangruShoupaiList.size() == 0) {// 全求神时自动胡
 			// 胡
