@@ -67,7 +67,7 @@ public class ShoupaixingWuguanJiesuancanshu {
 		hunyise = (allXushupaiInSameCategory && player.hasOneOfPaiInSet(paiSet));
 		chichupaiZuCount = player.countChichupaiZu();
 		fangruShoupaiCount = player.getFangruShoupaiList().size();
-		danzhangdiao = fangruShoupaiCount == 1 && chichupaiZuCount == 0;
+		danzhangdiao = (fangruShoupaiCount + caishenShu == 1);
 		hongzhongCount = 0;
 		facaiCount = 0;
 		baibanCount = 0;

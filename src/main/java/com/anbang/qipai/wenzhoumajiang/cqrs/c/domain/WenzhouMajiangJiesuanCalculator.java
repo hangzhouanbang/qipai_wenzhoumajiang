@@ -245,7 +245,7 @@ public class WenzhouMajiangJiesuanCalculator {
 		huxing.setQingyise(shoupaixingWuguanJiesuancanshu.isQingyise());// 清一色
 		huxing.setHunyise(shoupaixingWuguanJiesuancanshu.isHunyise());// 混一色
 		huxing.setBadui(shoupaiPaiXing.getDuiziList().size() == 8);// 八对
-		if (shoupaiPaiXing.getDanpaiList().size() == 1) {
+		if (shoupaixingWuguanJiesuancanshu.isDanzhangdiao()) {
 			huxing.setDanzhangdiao(true);// 单张吊
 			if (shoupaixingWuguanJiesuancanshu.getCaishenShu() == 1) {
 				huxing.setQuanqiushen(true);// 全求神
