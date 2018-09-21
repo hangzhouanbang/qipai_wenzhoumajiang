@@ -2,6 +2,7 @@ package com.anbang.qipai.wenzhoumajiang.cqrs.c.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.dml.majiang.ju.Ju;
@@ -56,7 +57,7 @@ public class WenzhouMajiangDaActionUpdater implements MajiangPlayerDaActionUpdat
 
 		GuoPengBuPengStatisticsListener guoPengBuPengStatisticsListener = ju.getActionStatisticsListenerManager()
 				.findListener(GuoPengBuPengStatisticsListener.class);
-		Set<String> canNotPengPlayers = guoPengBuPengStatisticsListener.getCanNotPengPlayers();
+		Map<String, MajiangPai> canNotPengPlayersPaiMap = guoPengBuPengStatisticsListener.getCanNotPengPlayersPaiMap();
 		int i = 1;
 		while (true) {
 			if (!xiajiaPlayer.getId().equals(daAction.getActionPlayerId())) {
@@ -85,7 +86,8 @@ public class WenzhouMajiangDaActionUpdater implements MajiangPlayerDaActionUpdat
 				}
 				List<MajiangPai> fangruShoupaiList1 = xiajiaPlayer.getFangruShoupaiList();
 				if (fangruShoupaiList1.size() != 2 && daplayerFangruShoupaiList.size() != 0) {// 下家只有两张手牌或者打牌的人全求神时
-					if (!canNotPengPlayers.contains(xiajiaPlayer.getId())) {
+					if (!canNotPengPlayersPaiMap.containsKey(xiajiaPlayer.getId())
+							|| !canNotPengPlayersPaiMap.get(xiajiaPlayer.getId()).equals(daAction.getPai())) {
 						xiajiaPlayer.tryPengAndGenerateCandidateAction(daAction.getActionPlayerId(), daAction.getPai());
 					}
 				}
