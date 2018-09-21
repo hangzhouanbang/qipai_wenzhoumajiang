@@ -18,16 +18,17 @@ public class WenzhouMajiangChiActionUpdater implements MajiangPlayerChiActionUpd
 
 	@Override
 	public void updateActions(MajiangChiAction chiAction, Ju ju) throws Exception {
+		Pan currentPan = ju.getCurrentPan();
+
+		MajiangPlayer player = currentPan.findPlayerById(chiAction.getActionPlayerId());
 		WenzhouMajiangChiPengGangActionStatisticsListener juezhangStatisticsListener = ju
 				.getActionStatisticsListenerManager()
 				.findListener(WenzhouMajiangChiPengGangActionStatisticsListener.class);
-		if (juezhangStatisticsListener.getPlayerActionMap().containsKey(chiAction.getActionPlayerId())) {
+		if (juezhangStatisticsListener.getPlayerActionMap().containsKey(player.getId())) {
+			player.clearActionCandidates();// 玩家已经做了决定，要删除动作
 			throw new PengganghuFirstException();
 		} else {
-			Pan currentPan = ju.getCurrentPan();
 			currentPan.clearAllPlayersActionCandidates();
-
-			MajiangPlayer player = currentPan.findPlayerById(chiAction.getActionPlayerId());
 			if (player.getActionCandidates().isEmpty()) {
 				List<MajiangDaAction> juefengList = new ArrayList<>();
 				List<MajiangDaAction> genfengList = new ArrayList<>();

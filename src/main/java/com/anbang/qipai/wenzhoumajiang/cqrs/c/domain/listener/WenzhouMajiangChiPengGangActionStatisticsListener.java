@@ -55,7 +55,6 @@ public class WenzhouMajiangChiPengGangActionStatisticsListener
 				Set<MajiangPlayerActionType> actionTypesSet = xiajia.collectActionCandidatesType();
 				if (actionTypesSet.contains(MajiangPlayerActionType.hu)) {
 					playerActionMap.put(player.getId(), gangAction);
-					player.clearActionCandidates();// 玩家已经做了决定，要删除动作
 				}
 			} else {
 				break;
@@ -74,7 +73,6 @@ public class WenzhouMajiangChiPengGangActionStatisticsListener
 				Set<MajiangPlayerActionType> actionTypesSet = xiajia.collectActionCandidatesType();
 				if (actionTypesSet.contains(MajiangPlayerActionType.hu)) {
 					playerActionMap.put(player.getId(), pengAction);
-					player.clearActionCandidates();// 玩家已经做了决定，要删除动作
 				}
 			} else {
 				break;
@@ -96,7 +94,6 @@ public class WenzhouMajiangChiPengGangActionStatisticsListener
 						|| actionTypesSet.contains(MajiangPlayerActionType.gang)
 						|| actionTypesSet.contains(MajiangPlayerActionType.hu)) {
 					playerActionMap.put(player.getId(), chiAction);
-					player.clearActionCandidates();// 玩家已经做了决定，要删除动作
 				}
 			} else {
 				break;
