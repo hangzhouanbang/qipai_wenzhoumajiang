@@ -10,6 +10,7 @@ import com.dml.majiang.pai.fenzu.Shunzi;
 import com.dml.majiang.player.chupaizu.ChichuPaiZu;
 import com.dml.majiang.player.chupaizu.GangchuPaiZu;
 import com.dml.majiang.player.chupaizu.PengchuPaiZu;
+import com.dml.majiang.player.shoupai.ShoupaiDanpai;
 import com.dml.majiang.player.shoupai.ShoupaiDuiziZu;
 import com.dml.majiang.player.shoupai.ShoupaiGangziZu;
 import com.dml.majiang.player.shoupai.ShoupaiKeziZu;
@@ -94,6 +95,7 @@ public class WenzhouMajiangPanPlayerResultVO {
 		if (hu) {
 			this.zimo = zimo;
 			ShoupaiPaiXing shoupaiPaiXing = panPlayerResult.getPlayer().getHu().getShoupaiPaiXing();
+
 			List<ShoupaiShunziZu> shunziList = shoupaiPaiXing.getShunziList();
 			for (ShoupaiShunziZu shoupaiShunziZu : shunziList) {
 				List<ResultShoupaiVO> shoupaiList = new ArrayList<>();
@@ -128,6 +130,13 @@ public class WenzhouMajiangPanPlayerResultVO {
 				resultShoupaiZuList.add(shoupaiList);
 				shoupaiList.add(new ResultShoupaiVO(shoupaiDuiziZu.getPai1()));
 				shoupaiList.add(new ResultShoupaiVO(shoupaiDuiziZu.getPai2()));
+			}
+
+			List<ShoupaiDanpai> danpaiList = shoupaiPaiXing.getDanpaiList();
+			for (ShoupaiDanpai shoupaiDanpai : danpaiList) {
+				List<ResultShoupaiVO> shoupaiList = new ArrayList<>();
+				resultShoupaiZuList.add(shoupaiList);
+				shoupaiList.add(new ResultShoupaiVO(shoupaiDanpai.getPai()));
 			}
 
 		} else {
