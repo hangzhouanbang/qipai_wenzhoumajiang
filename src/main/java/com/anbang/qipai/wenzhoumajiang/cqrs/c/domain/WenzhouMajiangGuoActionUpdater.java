@@ -29,7 +29,7 @@ public class WenzhouMajiangGuoActionUpdater implements MajiangPlayerGuoActionUpd
 		currentPan.playerClearActionCandidates(guoAction.getActionPlayerId());
 
 		MajiangPlayer player = currentPan.findPlayerById(guoAction.getActionPlayerId());
-
+		MajiangPai gangmoShoupai = player.getGangmoShoupai();
 		// 首先看一下,我过的是什么? 是我摸牌之后的胡,杠? 还是别人打出牌之后我可以吃碰杠胡
 		PanActionFrame latestPanActionFrame = currentPan.findNotGuoLatestActionFrame();
 		MajiangPlayerAction action = latestPanActionFrame.getAction();
@@ -78,7 +78,29 @@ public class WenzhouMajiangGuoActionUpdater implements MajiangPlayerGuoActionUpd
 
 					}
 				}
+				if (!MajiangPai.baiban.equals(gangmoShoupai)) {
+					if (!guipaiTypeSet.contains(gangmoShoupai) && MajiangPai.isZipai(gangmoShoupai)) {
+						if (juezhangStatisticsListener.ifJuezhang(gangmoShoupai)) {
+							juefengList.add(new MajiangDaAction(player.getId(), gangmoShoupai));
+						} else if (juezhangStatisticsListener.ifMingPai(gangmoShoupai)
+								&& player.getShoupaiCalculator().count(gangmoShoupai) == 0) {
+							genfengList.add(new MajiangDaAction(player.getId(), gangmoShoupai));
+						} else if (player.getShoupaiCalculator().count(gangmoShoupai) == 0) {
+							toufengList.add(new MajiangDaAction(player.getId(), gangmoShoupai));
+						}
+					}
+				} else if (!guipaiTypeSet.contains(gangmoShoupai) && MajiangPai.isZipai(guipaiType)) {
+					if (juezhangStatisticsListener.ifJuezhang(gangmoShoupai)) {
+						juefengList.add(new MajiangDaAction(player.getId(), gangmoShoupai));
+					} else if (juezhangStatisticsListener.ifMingPai(gangmoShoupai)
+							&& player.getShoupaiCalculator().count(gangmoShoupai) == 0) {
+						genfengList.add(new MajiangDaAction(player.getId(), gangmoShoupai));
+					} else if (player.getShoupaiCalculator().count(gangmoShoupai) == 0) {
+						toufengList.add(new MajiangDaAction(player.getId(), gangmoShoupai));
+					}
+				} else {
 
+				}
 				if (!juefengList.isEmpty()) {
 					for (MajiangDaAction daAction : juefengList) {
 						player.addActionCandidate(daAction);

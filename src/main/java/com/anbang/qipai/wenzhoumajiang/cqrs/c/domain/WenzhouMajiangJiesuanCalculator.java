@@ -212,9 +212,6 @@ public class WenzhouMajiangJiesuanCalculator {
 				ruan = true;
 			}
 		}
-		if (zimoHu || qianggangHu) {
-			ruan = false;
-		}
 		hufan.setRuan(ruan);
 		if ((shoupaixingWuguanJiesuancanshu.getCaishenShu() == 2 && caishenDangPai == 0)
 				|| (shoupaixingWuguanJiesuancanshu.getCaishenShu() == 3 && caishenDangPai == 1)) {
