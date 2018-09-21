@@ -1,5 +1,6 @@
 package com.anbang.qipai.wenzhoumajiang.cqrs.c.domain;
 
+import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.listener.WenzhouMajiangChiPengGangActionStatisticsListener;
 import com.dml.majiang.ju.Ju;
 import com.dml.majiang.pai.fenzu.GangType;
 import com.dml.majiang.pan.Pan;
@@ -15,45 +16,52 @@ public class WenzhouMajiangGangActionUpdater implements MajiangPlayerGangActionU
 
 	@Override
 	public void updateActions(MajiangGangAction gangAction, Ju ju) throws Exception {
-		Pan currentPan = ju.getCurrentPan();
-		currentPan.clearAllPlayersActionCandidates();
-		MajiangPlayer player = currentPan.findPlayerById(gangAction.getActionPlayerId());
+		WenzhouMajiangChiPengGangActionStatisticsListener wenzhouMajiangStatisticsListener = ju
+				.getActionStatisticsListenerManager()
+				.findListener(WenzhouMajiangChiPengGangActionStatisticsListener.class);
+		if (wenzhouMajiangStatisticsListener.getPlayerActionMap().containsKey(gangAction.getActionPlayerId())) {
 
-		// 看看是不是有其他玩家可以抢杠胡
-		boolean qiangganghu = false;
-		if (gangAction.getGangType().equals(GangType.kezigangmo)
-				|| gangAction.getGangType().equals(GangType.kezigangshoupai)) {
-			WenzhouMajiangPanResultBuilder wenzhouMajiangJuResultBuilder = (WenzhouMajiangPanResultBuilder) ju
-					.getCurrentPanResultBuilder();
-			boolean teshushuangfan = wenzhouMajiangJuResultBuilder.isTeshushuangfan();
-			boolean shaozhongfa = wenzhouMajiangJuResultBuilder.isShaozhongfa();
-			boolean lazila = wenzhouMajiangJuResultBuilder.isLazila();
-			GouXingPanHu gouXingPanHu = ju.getGouXingPanHu();
-			MajiangPlayer currentPlayer = player;
-			while (true) {
-				MajiangPlayer xiajia = currentPan.findXiajia(currentPlayer);
-				if (xiajia.getId().equals(player.getId())) {
-					break;
-				}
-				WenzhouMajiangHu bestHu = WenzhouMajiangJiesuanCalculator.calculateBestQianggangHu(gangAction.getPai(),
-						gouXingPanHu, xiajia, shaozhongfa, teshushuangfan, lazila);
-				if (bestHu != null) {
-					bestHu.setQianggang(true);
-					bestHu.setDianpaoPlayerId(player.getId());
-					xiajia.addActionCandidate(new MajiangHuAction(xiajia.getId(), bestHu));
-					xiajia.checkAndGenerateGuoCandidateAction();
-					qiangganghu = true;
-					break;
-				}
+		} else {
+			Pan currentPan = ju.getCurrentPan();
+			currentPan.clearAllPlayersActionCandidates();
+			MajiangPlayer player = currentPan.findPlayerById(gangAction.getActionPlayerId());
 
-				currentPlayer = xiajia;
+			// 看看是不是有其他玩家可以抢杠胡
+			boolean qiangganghu = false;
+			if (gangAction.getGangType().equals(GangType.kezigangmo)
+					|| gangAction.getGangType().equals(GangType.kezigangshoupai)) {
+				WenzhouMajiangPanResultBuilder wenzhouMajiangJuResultBuilder = (WenzhouMajiangPanResultBuilder) ju
+						.getCurrentPanResultBuilder();
+				boolean teshushuangfan = wenzhouMajiangJuResultBuilder.isTeshushuangfan();
+				boolean shaozhongfa = wenzhouMajiangJuResultBuilder.isShaozhongfa();
+				boolean lazila = wenzhouMajiangJuResultBuilder.isLazila();
+				GouXingPanHu gouXingPanHu = ju.getGouXingPanHu();
+				MajiangPlayer currentPlayer = player;
+				while (true) {
+					MajiangPlayer xiajia = currentPan.findXiajia(currentPlayer);
+					if (xiajia.getId().equals(player.getId())) {
+						break;
+					}
+					WenzhouMajiangHu bestHu = WenzhouMajiangJiesuanCalculator.calculateBestQianggangHu(
+							gangAction.getPai(), gouXingPanHu, xiajia, shaozhongfa, teshushuangfan, lazila);
+					if (bestHu != null) {
+						bestHu.setQianggang(true);
+						bestHu.setDianpaoPlayerId(player.getId());
+						xiajia.addActionCandidate(new MajiangHuAction(xiajia.getId(), bestHu));
+						xiajia.checkAndGenerateGuoCandidateAction();
+						qiangganghu = true;
+						break;
+					}
+
+					currentPlayer = xiajia;
+				}
 			}
-		}
 
-		// 没有抢杠胡，杠完之后要摸牌
-		if (!qiangganghu) {
-			player.addActionCandidate(new MajiangMoAction(player.getId(),
-					new GanghouBupai(gangAction.getPai(), gangAction.getGangType())));
+			// 没有抢杠胡，杠完之后要摸牌
+			if (!qiangganghu) {
+				player.addActionCandidate(new MajiangMoAction(player.getId(),
+						new GanghouBupai(gangAction.getPai(), gangAction.getGangType())));
+			}
 		}
 	}
 
