@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.listener.WenzhouMajiangChiPengGangActionStatisticsListener;
 import com.dml.majiang.ju.Ju;
 import com.dml.majiang.ju.finish.FixedPanNumbersJuFinishiDeterminer;
 import com.dml.majiang.pai.MajiangPai;
@@ -22,7 +23,6 @@ import com.dml.majiang.player.action.hu.PlayerSetHuHuActionProcessor;
 import com.dml.majiang.player.action.initial.ZhuangMoPaiInitialActionUpdater;
 import com.dml.majiang.player.action.listener.comprehensive.DianpaoDihuOpportunityDetector;
 import com.dml.majiang.player.action.listener.comprehensive.GuoPengBuPengStatisticsListener;
-import com.dml.majiang.player.action.listener.comprehensive.JuezhangStatisticsListener;
 import com.dml.majiang.player.action.listener.mo.MoGuipaiCounter;
 import com.dml.majiang.player.action.peng.HuFirstBuPengActionProcessor;
 import com.dml.majiang.player.menfeng.RandomMustHasDongPlayersMenFengDeterminer;
@@ -152,10 +152,10 @@ public class MajiangGame extends FixedPlayersMultipanAndVotetofinishGame {
 		ju.setHuActionProcessor(new PlayerSetHuHuActionProcessor());
 		ju.setHuActionUpdater(new PlayerHuAndClearAllActionHuActionUpdater());
 
-		ju.addActionStatisticsListener(new JuezhangStatisticsListener());
 		ju.addActionStatisticsListener(new MoGuipaiCounter());
 		ju.addActionStatisticsListener(new DianpaoDihuOpportunityDetector());
 		ju.addActionStatisticsListener(new GuoPengBuPengStatisticsListener());
+		ju.addActionStatisticsListener(new WenzhouMajiangChiPengGangActionStatisticsListener());
 
 		Pan firstPan = new Pan();
 		firstPan.setNo(1);

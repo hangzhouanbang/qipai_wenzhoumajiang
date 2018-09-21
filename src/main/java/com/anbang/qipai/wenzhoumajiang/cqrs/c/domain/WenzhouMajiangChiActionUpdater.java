@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.listener.WenzhouMajiangChiPengGangActionStatisticsListener;
 import com.dml.majiang.ju.Ju;
 import com.dml.majiang.pai.MajiangPai;
 import com.dml.majiang.pan.Pan;
@@ -11,7 +12,6 @@ import com.dml.majiang.player.MajiangPlayer;
 import com.dml.majiang.player.action.chi.MajiangChiAction;
 import com.dml.majiang.player.action.chi.MajiangPlayerChiActionUpdater;
 import com.dml.majiang.player.action.da.MajiangDaAction;
-import com.dml.majiang.player.action.listener.comprehensive.JuezhangStatisticsListener;
 
 public class WenzhouMajiangChiActionUpdater implements MajiangPlayerChiActionUpdater {
 
@@ -31,8 +31,9 @@ public class WenzhouMajiangChiActionUpdater implements MajiangPlayerChiActionUpd
 			 * 跟风：抓牌后，手牌有不成对、暗刻的风牌字牌，且该风牌字牌在已打的牌堆里也有，则该张牌需要优先打出 头风：抓牌后，手牌中单独一张的风牌字牌需要优先打出
 			 */
 			List<MajiangPai> fangruShoupaiList = player.getFangruShoupaiList();
-			JuezhangStatisticsListener juezhangStatisticsListener = ju.getActionStatisticsListenerManager()
-					.findListener(JuezhangStatisticsListener.class);
+			WenzhouMajiangChiPengGangActionStatisticsListener juezhangStatisticsListener = ju
+					.getActionStatisticsListenerManager()
+					.findListener(WenzhouMajiangChiPengGangActionStatisticsListener.class);
 			Set<MajiangPai> guipaiTypeSet = player.getGuipaiTypeSet();
 			MajiangPai[] guipaiTypes = new MajiangPai[guipaiTypeSet.size()];
 			guipaiTypeSet.toArray(guipaiTypes);
