@@ -9,6 +9,7 @@ import com.dml.majiang.ju.Ju;
 import com.dml.majiang.pai.MajiangPai;
 import com.dml.majiang.pan.Pan;
 import com.dml.majiang.player.MajiangPlayer;
+import com.dml.majiang.player.action.HuFirstException;
 import com.dml.majiang.player.action.da.MajiangDaAction;
 import com.dml.majiang.player.action.peng.MajiangPengAction;
 import com.dml.majiang.player.action.peng.MajiangPlayerPengActionUpdater;
@@ -21,7 +22,7 @@ public class WenzhouMajiangPengActionUpdater implements MajiangPlayerPengActionU
 				.getActionStatisticsListenerManager()
 				.findListener(WenzhouMajiangChiPengGangActionStatisticsListener.class);
 		if (juezhangStatisticsListener.getPlayerActionMap().containsKey(pengAction.getActionPlayerId())) {
-
+			throw new HuFirstException();
 		} else {
 			Pan currentPan = ju.getCurrentPan();
 			currentPan.clearAllPlayersActionCandidates();
