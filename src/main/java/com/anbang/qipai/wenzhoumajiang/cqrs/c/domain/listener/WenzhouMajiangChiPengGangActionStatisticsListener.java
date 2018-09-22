@@ -9,9 +9,11 @@ import com.dml.majiang.ju.Ju;
 import com.dml.majiang.pai.MajiangPai;
 import com.dml.majiang.pan.Pan;
 import com.dml.majiang.player.MajiangPlayer;
+import com.dml.majiang.player.action.HuFirstException;
 import com.dml.majiang.player.action.MajiangPlayerAction;
 import com.dml.majiang.player.action.MajiangPlayerActionType;
 import com.dml.majiang.player.action.chi.MajiangChiAction;
+import com.dml.majiang.player.action.chi.PengganghuFirstException;
 import com.dml.majiang.player.action.da.MajiangDaAction;
 import com.dml.majiang.player.action.gang.MajiangGangAction;
 import com.dml.majiang.player.action.listener.chi.MajiangPlayerChiActionStatisticsListener;
@@ -55,6 +57,8 @@ public class WenzhouMajiangChiPengGangActionStatisticsListener
 				Set<MajiangPlayerActionType> actionTypesSet = xiajia.collectActionCandidatesType();
 				if (actionTypesSet.contains(MajiangPlayerActionType.hu)) {
 					playerActionMap.put(player.getId(), gangAction);
+					player.clearActionCandidates();// 玩家已经做了决定，要删除动作
+					throw new HuFirstException();
 				}
 			} else {
 				break;
@@ -73,12 +77,15 @@ public class WenzhouMajiangChiPengGangActionStatisticsListener
 				Set<MajiangPlayerActionType> actionTypesSet = xiajia.collectActionCandidatesType();
 				if (actionTypesSet.contains(MajiangPlayerActionType.hu)) {
 					playerActionMap.put(player.getId(), pengAction);
+					player.clearActionCandidates();// 玩家已经做了决定，要删除动作
+					throw new HuFirstException();
 				}
 			} else {
 				break;
 			}
 			xiajia = currentPan.findXiajia(xiajia);
 		}
+
 		mingpaiCountArray[pengAction.getPai().ordinal()] += 2;
 	}
 
@@ -94,11 +101,21 @@ public class WenzhouMajiangChiPengGangActionStatisticsListener
 						|| actionTypesSet.contains(MajiangPlayerActionType.gang)
 						|| actionTypesSet.contains(MajiangPlayerActionType.hu)) {
 					playerActionMap.put(player.getId(), chiAction);
+					player.clearActionCandidates();// 玩家已经做了决定，要删除动作
+					throw new PengganghuFirstException();
 				}
 			} else {
 				break;
 			}
 			xiajia = currentPan.findXiajia(xiajia);
+		}
+		for (MajiangPlayerAction recordAction : playerActionMap.values()) {
+			if (recordAction.getType().equals(MajiangPlayerActionType.peng)
+					|| recordAction.getType().equals(MajiangPlayerActionType.gang)) {
+				playerActionMap.put(player.getId(), chiAction);
+				player.clearActionCandidates();// 玩家已经做了决定，要删除动作
+				throw new PengganghuFirstException();
+			}
 		}
 	}
 
@@ -107,9 +124,7 @@ public class WenzhouMajiangChiPengGangActionStatisticsListener
 			return null;
 		}
 		for (MajiangPlayerAction action : playerActionMap.values()) {
-			if (action.getType().equals(MajiangPlayerActionType.hu)) {
-				return action;
-			} else if (action.getType().equals(MajiangPlayerActionType.gang)) {
+			if (action.getType().equals(MajiangPlayerActionType.gang)) {
 				return action;
 			} else if (action.getType().equals(MajiangPlayerActionType.peng)) {
 				return action;

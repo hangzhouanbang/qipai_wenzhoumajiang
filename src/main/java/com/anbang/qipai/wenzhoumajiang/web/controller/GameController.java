@@ -190,13 +190,15 @@ public class GameController {
 
 		majiangGameQueryService.backToGame(playerId, majiangGameValueObject);
 
-		// 通知其他玩家
+		// 通知其他人
 		for (String otherPlayerId : majiangGameValueObject.allPlayerIds()) {
 			if (!otherPlayerId.equals(playerId)) {
-				QueryScope.scopesForState(majiangGameValueObject.getState(),
-						majiangGameValueObject.findPlayerState(otherPlayerId)).forEach((scope) -> {
-							wsNotifier.notifyToQuery(otherPlayerId, scope.name());
-						});
+				List<QueryScope> scopes = QueryScope.scopesForState(majiangGameValueObject.getState(),
+						majiangGameValueObject.findPlayerState(otherPlayerId));
+				scopes.remove(QueryScope.panResult);
+				scopes.forEach((scope) -> {
+					wsNotifier.notifyToQuery(otherPlayerId, scope.name());
+				});
 			}
 		}
 

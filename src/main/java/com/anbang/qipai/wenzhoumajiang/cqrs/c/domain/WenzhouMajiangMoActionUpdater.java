@@ -59,8 +59,8 @@ public class WenzhouMajiangMoActionUpdater implements MajiangPlayerMoActionUpdat
 			if (guipaiCount == 3) {
 				WenzhouMajiangPanPlayerHufan hufan = new WenzhouMajiangPanPlayerHufan();
 				WenzhouMajiangPanPlayerHuxing huxing = new WenzhouMajiangPanPlayerHuxing();
+				huxing.setZimohu(true);
 				hufan.setHuxing(huxing);
-				hufan.setRuan(false);
 				hufan.calculate(teshushuangfan, lazila);
 				WenzhouMajiangHu sancaishenHu = new WenzhouMajiangHu(hufan);
 				player.addActionCandidate(new MajiangHuAction(player.getId(), sancaishenHu));
