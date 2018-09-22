@@ -1,6 +1,7 @@
 package com.anbang.qipai.wenzhoumajiang.websocket;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -98,15 +99,17 @@ public class GamePlayWsController extends TextWebSocketHandler {
 				gameMsgService.gameFinished(gameId);
 			}
 
-			// 通知其他玩家
-			majiangGameValueObject.allPlayerIds().forEach((playerId) -> {
-				if (!playerId.equals(closedPlayerId)) {
-					QueryScope.scopesForState(majiangGameValueObject.getState(),
-							majiangGameValueObject.findPlayerState(playerId)).forEach((scope) -> {
-								wsNotifier.notifyToQuery(playerId, scope.name());
-							});
+			// 通知其他人
+			for (String otherPlayerId : majiangGameValueObject.allPlayerIds()) {
+				if (!otherPlayerId.equals(closedPlayerId)) {
+					List<QueryScope> scopes = QueryScope.scopesForState(majiangGameValueObject.getState(),
+							majiangGameValueObject.findPlayerState(otherPlayerId));
+					scopes.remove(QueryScope.panResult);
+					scopes.forEach((scope) -> {
+						wsNotifier.notifyToQuery(otherPlayerId, scope.name());
+					});
 				}
-			});
+			}
 		}
 	}
 
@@ -158,7 +161,8 @@ public class GamePlayWsController extends TextWebSocketHandler {
 			GameState gameState = majiangGameDbo.getState();
 			GamePlayerState playerState = majiangGameDbo.findPlayer(playerId).getState();
 
-			QueryScope.scopesForState(gameState, playerState).forEach((scope) -> {
+			List<QueryScope> scopes = QueryScope.scopesForState(gameState, playerState);
+			scopes.forEach((scope) -> {
 				wsNotifier.notifyToQuery(playerId, scope.name());
 			});
 
