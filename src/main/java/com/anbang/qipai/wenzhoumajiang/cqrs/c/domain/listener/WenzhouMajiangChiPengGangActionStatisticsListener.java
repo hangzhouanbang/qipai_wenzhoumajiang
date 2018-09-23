@@ -114,7 +114,6 @@ public class WenzhouMajiangChiPengGangActionStatisticsListener
 					|| recordAction.getType().equals(MajiangPlayerActionType.gang)) {
 				playerActionMap.put(player.getId(), chiAction);
 				player.clearActionCandidates();// 玩家已经做了决定，要删除动作
-				throw new PengganghuFirstException();
 			}
 		}
 	}
