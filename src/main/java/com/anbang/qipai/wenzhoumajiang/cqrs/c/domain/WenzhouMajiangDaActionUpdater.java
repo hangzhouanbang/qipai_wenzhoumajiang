@@ -48,7 +48,7 @@ public class WenzhouMajiangDaActionUpdater implements MajiangPlayerDaActionUpdat
 		MajiangPai daPai = daAction.getPai();
 		// 下家可以吃，代码需要改进
 		List<MajiangPai> fangruShoupaiList = xiajiaPlayer.getFangruShoupaiList();
-		if (fangruShoupaiList.size() != 2 && daplayerFangruShoupaiList.size() != 0) {// 下家只有两张手牌或者打牌的人全求神时不能吃
+		if (fangruShoupaiList.size() != 2) {// 下家只有两张手牌时不能吃
 			ShoupaiCalculator shoupaiCalculator = xiajiaPlayer.getShoupaiCalculator();
 			Shunzi shunzi1 = tryAndMakeShunziWithPai1(shoupaiCalculator, guipai, daPai);
 			if (shunzi1 != null) {
@@ -78,16 +78,13 @@ public class WenzhouMajiangDaActionUpdater implements MajiangPlayerDaActionUpdat
 			if (!xiajiaPlayer.getId().equals(daAction.getActionPlayerId())) {
 				// 其他的可以碰杠胡
 				List<MajiangPai> fangruShoupaiList1 = xiajiaPlayer.getFangruShoupaiList();
-				if (fangruShoupaiList1.size() != 2 && daplayerFangruShoupaiList.size() != 0) {// 下家只有两张手牌或者打牌的人全求神时
+				if (fangruShoupaiList1.size() != 2) {// 下家只有两张手牌时
 					if (!canNotPengPlayersPaiMap.containsKey(xiajiaPlayer.getId())
 							|| !canNotPengPlayersPaiMap.get(xiajiaPlayer.getId()).equals(daAction.getPai())) {
 						xiajiaPlayer.tryPengAndGenerateCandidateAction(daAction.getActionPlayerId(), daAction.getPai());
 					}
 				}
-				if (daplayerFangruShoupaiList.size() != 0) {// 打牌的人全求神时
-					xiajiaPlayer.tryGangdachuAndGenerateCandidateAction(daAction.getActionPlayerId(),
-							daAction.getPai());
-				}
+				xiajiaPlayer.tryGangdachuAndGenerateCandidateAction(daAction.getActionPlayerId(), daAction.getPai());
 				// 点炮胡
 				WenzhouMajiangPanResultBuilder wenzhouMajiangJuResultBuilder = (WenzhouMajiangPanResultBuilder) ju
 						.getCurrentPanResultBuilder();
