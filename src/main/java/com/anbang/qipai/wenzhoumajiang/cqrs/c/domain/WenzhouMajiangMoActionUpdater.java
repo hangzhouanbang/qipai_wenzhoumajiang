@@ -21,7 +21,7 @@ public class WenzhouMajiangMoActionUpdater implements MajiangPlayerMoActionUpdat
 	public void updateActions(MajiangMoAction moAction, Ju ju) throws Exception {
 		Pan currentPan = ju.getCurrentPan();
 		MajiangPlayer player = currentPan.findPlayerById(moAction.getActionPlayerId());
-		player.clearActionCandidates();
+		currentPan.clearAllPlayersActionCandidates();
 		MajiangPai gangmoShoupai = player.getGangmoShoupai();
 		// 有手牌或刻子可以杠这个摸来的牌
 		player.tryShoupaigangmoAndGenerateCandidateAction();

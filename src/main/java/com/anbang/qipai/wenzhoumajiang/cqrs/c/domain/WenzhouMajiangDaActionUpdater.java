@@ -115,7 +115,7 @@ public class WenzhouMajiangDaActionUpdater implements MajiangPlayerDaActionUpdat
 			xiajiaPlayer.clearActionCandidates();
 		}
 
-		if (daplayerFangruShoupaiList.size() == 0) {// 全求神时自动胡
+		if (daplayerFangruShoupaiList.size() == 0) {// 全求神时必须胡，胡自己打出去的那张牌
 			// 胡
 			WenzhouMajiangPanResultBuilder wenzhouMajiangJuResultBuilder = (WenzhouMajiangPanResultBuilder) ju
 					.getCurrentPanResultBuilder();
