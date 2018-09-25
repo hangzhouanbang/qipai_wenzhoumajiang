@@ -119,30 +119,36 @@ public class WenzhouMajiangGuoActionUpdater implements MajiangPlayerGuoActionUpd
 				player.generateDaActions();
 			}
 		} else if (action.getType().equals(MajiangPlayerActionType.da)) {// 过的是别人打出牌之后我可以吃碰杠胡
-			if (currentPan.allPlayerHasNoActionCandidates()) {// 如果所有玩家啥也干不了
+			if (currentPan.allPlayerHasNoActionCandidates() && !currentPan.anyPlayerHu()) {// 如果所有玩家啥也干不了
 				WenzhouMajiangChiPengGangActionStatisticsListener chiPengGangRecordListener = ju
 						.getActionStatisticsListenerManager()
 						.findListener(WenzhouMajiangChiPengGangActionStatisticsListener.class);
 				MajiangPlayerAction finallyDoneAction = chiPengGangRecordListener.findPlayerFinallyDoneAction();
 				if (finallyDoneAction != null) {// 有其他吃碰杠动作，先执行吃碰杠
 					MajiangPlayer actionPlayer = currentPan.findPlayerById(finallyDoneAction.getActionPlayerId());
-					if (finallyDoneAction instanceof MajiangChiAction) {
-						actionPlayer.addActionCandidate((MajiangChiAction) finallyDoneAction);
-					} else if (finallyDoneAction instanceof MajiangPengAction) {
-						actionPlayer.addActionCandidate((MajiangPengAction) finallyDoneAction);
-					} else if (finallyDoneAction instanceof MajiangGangAction) {
-						actionPlayer.addActionCandidate((MajiangGangAction) finallyDoneAction);
+					if (finallyDoneAction instanceof MajiangPengAction) {// 如果是碰
+						MajiangPengAction doAction = (MajiangPengAction) finallyDoneAction;
+						actionPlayer.addActionCandidate(new MajiangPengAction(doAction.getActionPlayerId(),
+								doAction.getDachupaiPlayerId(), doAction.getPai()));
+					} else if (finallyDoneAction instanceof MajiangGangAction) {// 如果是杠
+						MajiangGangAction doAction = (MajiangGangAction) finallyDoneAction;
+						actionPlayer.addActionCandidate(new MajiangGangAction(doAction.getActionPlayerId(),
+								doAction.getDachupaiPlayerId(), doAction.getPai(), doAction.getGangType()));
+					} else if (finallyDoneAction instanceof MajiangChiAction) {// 如果是吃
+						MajiangChiAction doAction = (MajiangChiAction) finallyDoneAction;
+						actionPlayer.addActionCandidate(new MajiangChiAction(doAction.getActionPlayerId(),
+								doAction.getDachupaiPlayerId(), doAction.getChijinPai(), doAction.getShunzi()));
 					}
-					chiPengGangRecordListener.updateForNextLun();
 				} else {
 					// 打牌那家的下家摸牌
 					MajiangPlayer xiajiaPlayer = currentPan
 							.findXiajia(currentPan.findPlayerById(action.getActionPlayerId()));
 					xiajiaPlayer.addActionCandidate(new MajiangMoAction(xiajiaPlayer.getId(), new LundaoMopai()));
 				}
+				chiPengGangRecordListener.updateForNextLun();// 清空动作缓存
 			}
 		} else if (action.getType().equals(MajiangPlayerActionType.gang)) {// 过的是别人杠牌之后我可以胡
-			if (currentPan.allPlayerHasNoActionCandidates()) {// 如果所有玩家啥也干不了
+			if (currentPan.allPlayerHasNoActionCandidates() && !currentPan.anyPlayerHu()) {// 如果所有玩家啥也干不了
 				// 杠牌那家摸牌
 				MajiangPlayer gangPlayer = currentPan.findPlayerById(action.getActionPlayerId());
 				gangPlayer.addActionCandidate(new MajiangMoAction(gangPlayer.getId(), new LundaoMopai()));

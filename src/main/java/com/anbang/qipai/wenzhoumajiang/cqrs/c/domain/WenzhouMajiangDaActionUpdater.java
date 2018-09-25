@@ -163,6 +163,7 @@ public class WenzhouMajiangDaActionUpdater implements MajiangPlayerDaActionUpdat
 			bestHu.setShoupaiPaiXing(shoupaiPaiXing);
 			daPlayer.addActionCandidate(new MajiangHuAction(daPlayer.getId(), bestHu));
 		}
+		currentPan.disablePlayerActionsByHuPengGangChiPriority();// 吃碰杠胡优先级判断
 		// 如果所有玩家啥也做不了,那就下家摸牌
 		if (currentPan.allPlayerHasNoActionCandidates()) {
 			xiajiaPlayer = currentPan.findXiajia(daPlayer);

@@ -3,17 +3,14 @@ package com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.listener;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import com.dml.majiang.ju.Ju;
 import com.dml.majiang.pai.MajiangPai;
 import com.dml.majiang.pan.Pan;
 import com.dml.majiang.player.MajiangPlayer;
-import com.dml.majiang.player.action.HuFirstException;
 import com.dml.majiang.player.action.MajiangPlayerAction;
 import com.dml.majiang.player.action.MajiangPlayerActionType;
 import com.dml.majiang.player.action.chi.MajiangChiAction;
-import com.dml.majiang.player.action.chi.PengganghuFirstException;
 import com.dml.majiang.player.action.da.MajiangDaAction;
 import com.dml.majiang.player.action.gang.MajiangGangAction;
 import com.dml.majiang.player.action.listener.chi.MajiangPlayerChiActionStatisticsListener;
@@ -51,19 +48,8 @@ public class WenzhouMajiangChiPengGangActionStatisticsListener
 	public void update(MajiangGangAction gangAction, Ju ju) throws Exception {
 		Pan currentPan = ju.getCurrentPan();
 		MajiangPlayer player = currentPan.findPlayerById(gangAction.getActionPlayerId());
-		MajiangPlayer xiajia = currentPan.findXiajia(player);
-		while (true) {
-			if (!xiajia.getId().equals(player.getId())) {
-				Set<MajiangPlayerActionType> actionTypesSet = xiajia.collectActionCandidatesType();
-				if (actionTypesSet.contains(MajiangPlayerActionType.hu)) {
-					playerActionMap.put(player.getId(), gangAction);
-					player.clearActionCandidates();// 玩家已经做了决定，要删除动作
-					throw new HuFirstException();
-				}
-			} else {
-				break;
-			}
-			xiajia = currentPan.findXiajia(xiajia);
+		if (gangAction.isDisabledByHigherPriorityAction()) {// 如果被阻塞
+			playerActionMap.put(player.getId(), gangAction);// 记录下被阻塞的动作
 		}
 	}
 
@@ -71,50 +57,19 @@ public class WenzhouMajiangChiPengGangActionStatisticsListener
 	public void update(MajiangPengAction pengAction, Ju ju) throws Exception {
 		Pan currentPan = ju.getCurrentPan();
 		MajiangPlayer player = currentPan.findPlayerById(pengAction.getActionPlayerId());
-		MajiangPlayer xiajia = currentPan.findXiajia(player);
-		while (true) {
-			if (!xiajia.getId().equals(player.getId())) {
-				Set<MajiangPlayerActionType> actionTypesSet = xiajia.collectActionCandidatesType();
-				if (actionTypesSet.contains(MajiangPlayerActionType.hu)) {
-					playerActionMap.put(player.getId(), pengAction);
-					player.clearActionCandidates();// 玩家已经做了决定，要删除动作
-					throw new HuFirstException();
-				}
-			} else {
-				break;
-			}
-			xiajia = currentPan.findXiajia(xiajia);
+		if (pengAction.isDisabledByHigherPriorityAction()) {// 如果被阻塞
+			playerActionMap.put(player.getId(), pengAction);// 记录下被阻塞的动作
+		} else {
+			mingpaiCountArray[pengAction.getPai().ordinal()] += 2;
 		}
-
-		mingpaiCountArray[pengAction.getPai().ordinal()] += 2;
 	}
 
 	@Override
 	public void update(MajiangChiAction chiAction, Ju ju) throws Exception {
 		Pan currentPan = ju.getCurrentPan();
 		MajiangPlayer player = currentPan.findPlayerById(chiAction.getActionPlayerId());
-		MajiangPlayer xiajia = currentPan.findXiajia(player);
-		while (true) {
-			if (!xiajia.getId().equals(player.getId())) {
-				Set<MajiangPlayerActionType> actionTypesSet = xiajia.collectActionCandidatesType();
-				if (actionTypesSet.contains(MajiangPlayerActionType.peng)
-						|| actionTypesSet.contains(MajiangPlayerActionType.gang)
-						|| actionTypesSet.contains(MajiangPlayerActionType.hu)) {
-					playerActionMap.put(player.getId(), chiAction);
-					player.clearActionCandidates();// 玩家已经做了决定，要删除动作
-					throw new PengganghuFirstException();
-				}
-			} else {
-				break;
-			}
-			xiajia = currentPan.findXiajia(xiajia);
-		}
-		for (MajiangPlayerAction recordAction : playerActionMap.values()) {
-			if (recordAction.getType().equals(MajiangPlayerActionType.peng)
-					|| recordAction.getType().equals(MajiangPlayerActionType.gang)) {
-				playerActionMap.put(player.getId(), chiAction);
-				player.clearActionCandidates();// 玩家已经做了决定，要删除动作
-			}
+		if (chiAction.isDisabledByHigherPriorityAction()) {// 如果被阻塞
+			playerActionMap.put(player.getId(), chiAction);// 记录下被阻塞的动作
 		}
 	}
 
