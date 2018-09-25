@@ -1,6 +1,5 @@
 package com.anbang.qipai.wenzhoumajiang.cqrs.c.domain;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -18,14 +17,7 @@ import com.dml.majiang.player.action.listener.comprehensive.DianpaoDihuOpportuni
 import com.dml.majiang.player.action.listener.comprehensive.GuoPengBuPengStatisticsListener;
 import com.dml.majiang.player.action.mo.LundaoMopai;
 import com.dml.majiang.player.action.mo.MajiangMoAction;
-import com.dml.majiang.player.shoupai.GuipaiDangPai;
 import com.dml.majiang.player.shoupai.ShoupaiCalculator;
-import com.dml.majiang.player.shoupai.ShoupaiDanpai;
-import com.dml.majiang.player.shoupai.ShoupaiDuiziZu;
-import com.dml.majiang.player.shoupai.ShoupaiGangziZu;
-import com.dml.majiang.player.shoupai.ShoupaiKeziZu;
-import com.dml.majiang.player.shoupai.ShoupaiPaiXing;
-import com.dml.majiang.player.shoupai.ShoupaiShunziZu;
 import com.dml.majiang.player.shoupai.gouxing.GouXingPanHu;
 
 /**
@@ -127,40 +119,14 @@ public class WenzhouMajiangDaActionUpdater implements MajiangPlayerDaActionUpdat
 			// 胡
 			WenzhouMajiangPanResultBuilder wenzhouMajiangJuResultBuilder = (WenzhouMajiangPanResultBuilder) ju
 					.getCurrentPanResultBuilder();
+			boolean shaozhongfa = wenzhouMajiangJuResultBuilder.isShaozhongfa();
 			boolean teshushuangfan = wenzhouMajiangJuResultBuilder.isTeshushuangfan();
 			boolean lazila = wenzhouMajiangJuResultBuilder.isLazila();
-			WenzhouMajiangHu bestHu = new WenzhouMajiangHu();
-			WenzhouMajiangPanPlayerHufan hufan = new WenzhouMajiangPanPlayerHufan();
-			WenzhouMajiangPanPlayerHuxing huxing = new WenzhouMajiangPanPlayerHuxing();
-			huxing.setDanzhangdiao(true);
-			huxing.setQuanqiushen(true);
-			huxing.setZimohu(true);
-			hufan.setHuxing(huxing);
-			hufan.calculate(teshushuangfan, lazila);
-			bestHu.setHuxingHu(true);
-			bestHu.setZimo(true);
-			bestHu.setDianpaoPlayerId(daPlayer.getId());
-			bestHu.setHufan(hufan);
-			ShoupaiPaiXing shoupaiPaiXing = new ShoupaiPaiXing();
-			List<ShoupaiDuiziZu> duiziList = new ArrayList<>();
-			ShoupaiDuiziZu duiziZu = new ShoupaiDuiziZu();
-			duiziZu.setDuiziType(daAction.getPai());
-			GuipaiDangPai pai1 = new GuipaiDangPai();
-			pai1.setGuipai(guipai);
-			pai1.setDangpai(daAction.getPai());
-			duiziZu.setPai1(pai1);
-			duiziZu.fillAllBlankPaiWithBenPai();
-			duiziList.add(duiziZu);
-			shoupaiPaiXing.setDuiziList(duiziList);
-			List<ShoupaiDanpai> danpaiList = new ArrayList<>();
-			shoupaiPaiXing.setDanpaiList(danpaiList);
-			List<ShoupaiKeziZu> keziList = new ArrayList<>();
-			shoupaiPaiXing.setKeziList(keziList);
-			List<ShoupaiGangziZu> gangziList = new ArrayList<>();
-			shoupaiPaiXing.setGangziList(gangziList);
-			List<ShoupaiShunziZu> shunziList = new ArrayList<>();
-			shoupaiPaiXing.setShunziList(shunziList);
-			bestHu.setShoupaiPaiXing(shoupaiPaiXing);
+			GouXingPanHu gouXingPanHu = ju.getGouXingPanHu();
+			daPlayer.setGangmoShoupai(daAction.getPai());
+			WenzhouMajiangHu bestHu = WenzhouMajiangJiesuanCalculator.calculateBestZimoHu(false, gouXingPanHu, daPlayer,
+					new MajiangMoAction(daPlayer.getId(), new LundaoMopai()), shaozhongfa, teshushuangfan, lazila);
+			daPlayer.setGangmoShoupai(null);
 			daPlayer.addActionCandidate(new MajiangHuAction(daPlayer.getId(), bestHu));
 		}
 		currentPan.disablePlayerActionsByHuPengGangChiPriority();// 吃碰杠胡优先级判断
