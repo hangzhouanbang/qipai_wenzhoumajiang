@@ -91,14 +91,23 @@ public class MajiangController {
 		return vo;
 	}
 
+	/**
+	 * @param gameId
+	 * @param panNo
+	 *            0代表不知道盘号，那么就取最新的一盘
+	 * @return
+	 */
 	@RequestMapping(value = "/pan_result")
 	@ResponseBody
 	public CommonVO panresult(String gameId, int panNo) {
 		CommonVO vo = new CommonVO();
 		Map data = new HashMap();
 		vo.setData(data);
-		PanResultDbo panResultDbo = majiangPlayQueryService.findPanResultDbo(gameId, panNo);
 		MajiangGameDbo majiangGameDbo = majiangGameQueryService.findMajiangGameDboById(gameId);
+		if (panNo == 0) {
+			panNo = majiangGameDbo.getPanNo();
+		}
+		PanResultDbo panResultDbo = majiangPlayQueryService.findPanResultDbo(gameId, panNo);
 		data.put("panResult", new PanResultVO(panResultDbo, majiangGameDbo));
 		return vo;
 	}
