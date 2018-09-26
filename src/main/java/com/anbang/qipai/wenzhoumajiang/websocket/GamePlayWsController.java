@@ -84,6 +84,10 @@ public class GamePlayWsController extends TextWebSocketHandler {
 	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
 		String closedPlayerId = wsNotifier.findPlayerIdBySessionId(session.getId());
 		wsNotifier.removeSession(session.getId());
+		// 有可能断的只是一个已经废弃了的session，新的session已经建立。这个时候其实不是leave的
+		if (wsNotifier.hasSessionForPlayer(closedPlayerId)) {
+			return;
+		}
 		MajiangGameValueObject majiangGameValueObject = gameCmdService.leaveGame(closedPlayerId);
 		if (majiangGameValueObject != null) {
 			majiangGameQueryService.leaveGame(majiangGameValueObject);

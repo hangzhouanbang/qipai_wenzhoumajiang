@@ -35,7 +35,10 @@ public class GamePlayWsNotifier {
 		if (removedSession != null) {
 			String removedPlayerId = sessionIdPlayerIdMap.remove(id);
 			if (removedPlayerId != null) {
-				playerIdSessionIdMap.remove(removedPlayerId);
+				String currentSessionIdForPlayer = playerIdSessionIdMap.get(removedPlayerId);
+				if (currentSessionIdForPlayer.equals(id)) {
+					playerIdSessionIdMap.remove(removedPlayerId);
+				}
 			}
 		}
 		return removedSession;
@@ -48,6 +51,9 @@ public class GamePlayWsNotifier {
 
 	public void bindPlayer(String sessionId, String playerId) {
 		String sessionAlreadyExistsId = playerIdSessionIdMap.get(playerId);
+		sessionIdPlayerIdMap.put(sessionId, playerId);
+		playerIdSessionIdMap.put(playerId, sessionId);
+		updateSession(sessionId);
 		if (sessionAlreadyExistsId != null) {
 			WebSocketSession sessionAlreadyExists = idSessionMap.get(sessionAlreadyExistsId);
 			if (sessionAlreadyExists != null) {
@@ -58,9 +64,6 @@ public class GamePlayWsNotifier {
 				}
 			}
 		}
-		sessionIdPlayerIdMap.put(sessionId, playerId);
-		playerIdSessionIdMap.put(playerId, sessionId);
-		updateSession(sessionId);
 	}
 
 	public void updateSession(String id) {
@@ -148,6 +151,10 @@ public class GamePlayWsNotifier {
 				}
 			}
 		}
+	}
+
+	public boolean hasSessionForPlayer(String playerId) {
+		return playerIdSessionIdMap.get(playerId) != null;
 	}
 
 }
