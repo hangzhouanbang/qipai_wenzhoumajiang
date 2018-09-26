@@ -19,12 +19,12 @@ public class WenzhouMajiangGangActionUpdater implements MajiangPlayerGangActionU
 	public void updateActions(MajiangGangAction gangAction, Ju ju) throws Exception {
 		Pan currentPan = ju.getCurrentPan();
 		MajiangPlayer player = currentPan.findPlayerById(gangAction.getActionPlayerId());
+		WenzhouMajiangChiPengGangActionStatisticsListener chiPengGangRecordListener = ju
+				.getActionStatisticsListenerManager()
+				.findListener(WenzhouMajiangChiPengGangActionStatisticsListener.class);
 		if (gangAction.isDisabledByHigherPriorityAction()) {// 如果动作被阻塞
 			player.clearActionCandidates();// 玩家已经做了决定，要删除动作
 			if (currentPan.allPlayerHasNoActionCandidates() && !currentPan.anyPlayerHu()) {// 所有玩家行牌结束，并且没人胡
-				WenzhouMajiangChiPengGangActionStatisticsListener chiPengGangRecordListener = ju
-						.getActionStatisticsListenerManager()
-						.findListener(WenzhouMajiangChiPengGangActionStatisticsListener.class);
 				MajiangPlayerAction finallyDoneAction = chiPengGangRecordListener.findPlayerFinallyDoneAction();// 找出最终应该执行的动作
 				if (finallyDoneAction != null) {
 					MajiangPlayer actionPlayer = currentPan.findPlayerById(finallyDoneAction.getActionPlayerId());
@@ -40,6 +40,7 @@ public class WenzhouMajiangGangActionUpdater implements MajiangPlayerGangActionU
 			}
 		} else {
 			currentPan.clearAllPlayersActionCandidates();
+			chiPengGangRecordListener.updateForNextLun();// 清空动作缓存
 			// 看看是不是有其他玩家可以抢杠胡
 			boolean qiangganghu = false;
 			if (gangAction.getGangType().equals(GangType.kezigangmo)

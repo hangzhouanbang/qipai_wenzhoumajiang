@@ -51,6 +51,7 @@ public class WenzhouMajiangChiActionUpdater implements MajiangPlayerChiActionUpd
 			}
 		} else {
 			currentPan.clearAllPlayersActionCandidates();
+			juezhangStatisticsListener.updateForNextLun();// 清空动作缓存
 			List<MajiangDaAction> juefengList = new ArrayList<>();
 			List<MajiangDaAction> genfengList = new ArrayList<>();
 			List<MajiangDaAction> toufengList = new ArrayList<>();
