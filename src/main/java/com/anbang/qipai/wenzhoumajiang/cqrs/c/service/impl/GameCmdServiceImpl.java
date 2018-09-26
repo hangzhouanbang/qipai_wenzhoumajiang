@@ -11,11 +11,12 @@ import com.dml.mpgame.game.Game;
 import com.dml.mpgame.game.GameValueObject;
 import com.dml.mpgame.game.WaitingStart;
 import com.dml.mpgame.game.extend.fpmpv.back.FpmpvBackStrategy;
-import com.dml.mpgame.game.extend.fpmpv.leave.FpmpvLeaveStrategy;
 import com.dml.mpgame.game.extend.vote.FinishedByVote;
 import com.dml.mpgame.game.extend.vote.MostPlayersWinVoteCalculator;
 import com.dml.mpgame.game.extend.vote.VoteOption;
+import com.dml.mpgame.game.extend.vote.leave.VoteWaiverLeaveStrategy;
 import com.dml.mpgame.game.join.FixedNumberOfPlayersGameJoinStrategy;
+import com.dml.mpgame.game.leave.OfflineGameLeaveStrategy;
 import com.dml.mpgame.game.player.PlayerFinished;
 import com.dml.mpgame.game.ready.FixedNumberOfPlayersGameReadyStrategy;
 import com.dml.mpgame.server.GameServer;
@@ -45,7 +46,8 @@ public class GameCmdServiceImpl extends CmdServiceBase implements GameCmdService
 
 		newGame.setJoinStrategy(new FixedNumberOfPlayersGameJoinStrategy(renshu));
 		newGame.setReadyStrategy(new FixedNumberOfPlayersGameReadyStrategy(renshu));
-		newGame.setLeaveStrategy(new FpmpvLeaveStrategy(playerId));
+		newGame.setLeaveStrategyBeforeStart(new OfflineGameLeaveStrategy());
+		newGame.setLeaveStrategyAfterStart(new VoteWaiverLeaveStrategy());
 		newGame.setBackStrategy(new FpmpvBackStrategy());
 		newGame.create(gameId, playerId);
 		gameServer.playerCreateGame(newGame, playerId);
