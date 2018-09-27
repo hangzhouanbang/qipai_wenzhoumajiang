@@ -16,6 +16,7 @@ import com.dml.mpgame.game.extend.vote.MostPlayersWinVoteCalculator;
 import com.dml.mpgame.game.extend.vote.VoteOption;
 import com.dml.mpgame.game.extend.vote.leave.VoteWaiverLeaveStrategy;
 import com.dml.mpgame.game.join.FixedNumberOfPlayersGameJoinStrategy;
+import com.dml.mpgame.game.leave.HostGameLeaveStrategy;
 import com.dml.mpgame.game.leave.OfflineGameLeaveStrategy;
 import com.dml.mpgame.game.player.PlayerFinished;
 import com.dml.mpgame.game.ready.FixedNumberOfPlayersGameReadyStrategy;
@@ -46,8 +47,16 @@ public class GameCmdServiceImpl extends CmdServiceBase implements GameCmdService
 
 		newGame.setJoinStrategy(new FixedNumberOfPlayersGameJoinStrategy(renshu));
 		newGame.setReadyStrategy(new FixedNumberOfPlayersGameReadyStrategy(renshu));
-		newGame.setLeaveStrategyBeforeStart(new OfflineGameLeaveStrategy());
-		newGame.setLeaveStrategyAfterStart(new VoteWaiverLeaveStrategy());
+
+		newGame.setLeaveByOfflineStrategyAfterStart(new VoteWaiverLeaveStrategy());
+		newGame.setLeaveByOfflineStrategyBeforeStart(new OfflineGameLeaveStrategy());
+
+		newGame.setLeaveByHangupStrategyAfterStart(new VoteWaiverLeaveStrategy());
+		newGame.setLeaveByHangupStrategyBeforeStart(new OfflineGameLeaveStrategy());
+
+		newGame.setLeaveByPlayerStrategyAfterStart(new VoteWaiverLeaveStrategy());
+		newGame.setLeaveByPlayerStrategyBeforeStart(new HostGameLeaveStrategy(playerId));
+
 		newGame.setBackStrategy(new FpmpvBackStrategy());
 		newGame.create(gameId, playerId);
 		gameServer.playerCreateGame(newGame, playerId);
@@ -60,7 +69,29 @@ public class GameCmdServiceImpl extends CmdServiceBase implements GameCmdService
 	public MajiangGameValueObject leaveGame(String playerId) throws Exception {
 		GameServer gameServer = singletonEntityRepository.getEntity(GameServer.class);
 		Game game = gameServer.findGamePlayerPlaying(playerId);
-		MajiangGameValueObject majiangGameValueObject = gameServer.leave(playerId);
+		MajiangGameValueObject majiangGameValueObject = gameServer.leaveByPlayer(playerId);
+		if (game.getState().name().equals(FinishedByVote.name)) {// 有可能离开的时候正在投票，由于离开自动投弃权最终导致游戏结束
+			gameServer.finishGame(game.getId());
+		}
+		return majiangGameValueObject;
+	}
+
+	@Override
+	public MajiangGameValueObject leaveGameByOffline(String playerId) throws Exception {
+		GameServer gameServer = singletonEntityRepository.getEntity(GameServer.class);
+		Game game = gameServer.findGamePlayerPlaying(playerId);
+		MajiangGameValueObject majiangGameValueObject = gameServer.leaveByOffline(playerId);
+		if (game.getState().name().equals(FinishedByVote.name)) {// 有可能离开的时候正在投票，由于离开自动投弃权最终导致游戏结束
+			gameServer.finishGame(game.getId());
+		}
+		return majiangGameValueObject;
+	}
+
+	@Override
+	public MajiangGameValueObject leaveGameByHangup(String playerId) throws Exception {
+		GameServer gameServer = singletonEntityRepository.getEntity(GameServer.class);
+		Game game = gameServer.findGamePlayerPlaying(playerId);
+		MajiangGameValueObject majiangGameValueObject = gameServer.leaveByHangup(playerId);
 		if (game.getState().name().equals(FinishedByVote.name)) {// 有可能离开的时候正在投票，由于离开自动投弃权最终导致游戏结束
 			gameServer.finishGame(game.getId());
 		}

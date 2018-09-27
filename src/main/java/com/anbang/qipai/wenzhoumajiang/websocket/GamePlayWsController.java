@@ -88,7 +88,7 @@ public class GamePlayWsController extends TextWebSocketHandler {
 		if (wsNotifier.hasSessionForPlayer(closedPlayerId)) {
 			return;
 		}
-		MajiangGameValueObject majiangGameValueObject = gameCmdService.leaveGame(closedPlayerId);
+		MajiangGameValueObject majiangGameValueObject = gameCmdService.leaveGameByOffline(closedPlayerId);
 		if (majiangGameValueObject != null) {
 			majiangGameQueryService.leaveGame(majiangGameValueObject);
 			gameMsgService.gamePlayerLeave(majiangGameValueObject, closedPlayerId);

@@ -120,6 +120,48 @@ public class GameController {
 	}
 
 	/**
+	 * 挂起（手机按黑的时候调用）
+	 */
+	@RequestMapping(value = "/hangup")
+	@ResponseBody
+	public CommonVO hangup(String token) {
+		CommonVO vo = new CommonVO();
+		String playerId = playerAuthService.getPlayerIdByToken(token);
+		if (playerId == null) {
+			vo.setSuccess(false);
+			vo.setMsg("invalid token");
+			return vo;
+		}
+		MajiangGameValueObject majiangGameValueObject;
+		try {
+			majiangGameValueObject = gameCmdService.leaveGameByHangup(playerId);
+			if (majiangGameValueObject == null) {
+				vo.setSuccess(true);
+				return vo;
+			}
+		} catch (Exception e) {
+			vo.setSuccess(false);
+			vo.setMsg(e.getClass().getName());
+			return vo;
+		}
+		majiangGameQueryService.leaveGame(majiangGameValueObject);
+		// 断开玩家的socket
+		wsNotifier.closeSessionForPlayer(playerId);
+		gameMsgService.gamePlayerLeave(majiangGameValueObject, playerId);
+		// 通知其他玩家
+
+		majiangGameValueObject.allPlayerIds().forEach((otherPlayerId) -> {
+			if (!otherPlayerId.equals(playerId)) {
+				QueryScope.scopesForState(majiangGameValueObject.getState(),
+						majiangGameValueObject.findPlayerState(otherPlayerId)).forEach((scope) -> {
+							wsNotifier.notifyToQuery(otherPlayerId, scope.name());
+						});
+			}
+		});
+		return vo;
+	}
+
+	/**
 	 * 离开游戏(非退出,还会回来的)
 	 */
 	@RequestMapping(value = "/leavegame")
@@ -132,8 +174,6 @@ public class GameController {
 			vo.setMsg("invalid token");
 			return vo;
 		}
-		// 断开玩家的socket
-		wsNotifier.closeSessionForPlayer(playerId);
 		MajiangGameValueObject majiangGameValueObject;
 		try {
 			majiangGameValueObject = gameCmdService.leaveGame(playerId);
@@ -147,6 +187,8 @@ public class GameController {
 			return vo;
 		}
 		majiangGameQueryService.leaveGame(majiangGameValueObject);
+		// 断开玩家的socket
+		wsNotifier.closeSessionForPlayer(playerId);
 		gameMsgService.gamePlayerLeave(majiangGameValueObject, playerId);
 		// 通知其他玩家
 

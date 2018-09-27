@@ -337,7 +337,7 @@ public class MajiangGame extends FixedPlayersMultipanAndVotetofinishGame {
 	}
 
 	@Override
-	protected MajiangGameValueObject toValueObject() {
+	public MajiangGameValueObject toValueObject() {
 		return new MajiangGameValueObject(this);
 	}
 
