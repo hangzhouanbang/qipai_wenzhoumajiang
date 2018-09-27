@@ -19,7 +19,7 @@ import com.dml.majiang.player.action.peng.MajiangPengAction;
 public class WenzhouMajiangChiActionUpdater implements MajiangPlayerChiActionUpdater {
 
 	@Override
-	public void updateActions(MajiangChiAction chiAction, Ju ju) throws Exception {
+	public void updateActions(MajiangChiAction chiAction, Ju ju) {
 		Pan currentPan = ju.getCurrentPan();
 		MajiangPlayer player = currentPan.findPlayerById(chiAction.getActionPlayerId());
 		WenzhouMajiangChiPengGangActionStatisticsListener juezhangStatisticsListener = ju
