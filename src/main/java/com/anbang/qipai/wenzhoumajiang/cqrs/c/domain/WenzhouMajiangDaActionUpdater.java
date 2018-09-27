@@ -124,7 +124,11 @@ public class WenzhouMajiangDaActionUpdater implements MajiangPlayerDaActionUpdat
 			WenzhouMajiangHu bestHu = WenzhouMajiangJiesuanCalculator.calculateBestZimoHu(false, gouXingPanHu, daPlayer,
 					new MajiangMoAction(daPlayer.getId(), new LundaoMopai()), shaozhongfa, teshushuangfan, lazila);
 			daPlayer.setGangmoShoupai(null);
-			daPlayer.addActionCandidate(new MajiangHuAction(daPlayer.getId(), bestHu));
+			if (bestHu != null) {
+				bestHu.setZimo(true);// 全求神算自摸
+				bestHu.setDianpaoPlayerId(daPlayer.getId());
+				daPlayer.addActionCandidate(new MajiangHuAction(daPlayer.getId(), bestHu));
+			}
 		}
 		currentPan.disablePlayerActionsByHuPengGangChiPriority();// 吃碰杠胡优先级判断
 		// 如果所有玩家啥也做不了,那就下家摸牌

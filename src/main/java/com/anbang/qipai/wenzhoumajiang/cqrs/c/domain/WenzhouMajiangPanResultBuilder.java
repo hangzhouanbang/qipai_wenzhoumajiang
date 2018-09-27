@@ -92,7 +92,7 @@ public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 					if (!xiajiaPlayer.getId().equals(dianpaoPlayerId) && xiajiaPlayer.getHu() != null) {
 
 						WenzhouMajiangHu hu = (WenzhouMajiangHu) xiajiaPlayer.getHu();
-						if (betterHuPlayer == null || betterHu.getHufan().getValue() < hu.getHufan().getValue()) {
+						if (betterHu == null || betterHu.getHufan().getValue() < hu.getHufan().getValue()) {
 							betterHuPlayer = xiajiaPlayer;
 							betterHu = hu;
 						}
