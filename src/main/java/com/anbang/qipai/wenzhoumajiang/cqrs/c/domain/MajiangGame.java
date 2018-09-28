@@ -32,6 +32,7 @@ import com.dml.mpgame.game.Finished;
 import com.dml.mpgame.game.Playing;
 import com.dml.mpgame.game.extend.fpmpv.FixedPlayersMultipanAndVotetofinishGame;
 import com.dml.mpgame.game.extend.multipan.WaitingNextPan;
+import com.dml.mpgame.game.extend.vote.VoteNotPassWhenPlaying;
 import com.dml.mpgame.game.player.GamePlayer;
 import com.dml.mpgame.game.player.PlayerPlaying;
 
@@ -81,6 +82,9 @@ public class MajiangGame extends FixedPlayersMultipanAndVotetofinishGame {
 			} else {
 				playerMaidiStateMap.put(playerId, MajiangGamePlayerMaidiState.buding);
 			}
+		}
+		if (state.name().equals(VoteNotPassWhenMaidi.name)) {
+			state = new MaidiState();
 		}
 		updatePlayerState(playerId, new PlayerAfterMaidi());
 		this.playerMaidiStateMap.putAll(playerMaidiStateMap);
@@ -205,7 +209,9 @@ public class MajiangGame extends FixedPlayersMultipanAndVotetofinishGame {
 		PanActionFrame panActionFrame = ju.action(playerId, actionId, actionTime);
 		MajiangActionResult result = new MajiangActionResult();
 		result.setPanActionFrame(panActionFrame);
-
+		if (state.name().equals(VoteNotPassWhenPlaying.name)) {
+			state = new Playing();
+		}
 		checkAndFinishPan();
 
 		if (state.name().equals(WaitingNextPan.name) || state.name().equals(Finished.name)) {// 盘结束了
@@ -323,9 +329,9 @@ public class MajiangGame extends FixedPlayersMultipanAndVotetofinishGame {
 	}
 
 	@Override
-	protected void recoveryStateFromExtendedVoting() throws Exception {
+	protected void updateToVoteNotPassStateFromExtendedVoting() throws Exception {
 		if (state.name().equals(VotingWhenMaidi.name)) {
-			state = new MaidiState();
+			state = new VoteNotPassWhenMaidi();
 		}
 	}
 
