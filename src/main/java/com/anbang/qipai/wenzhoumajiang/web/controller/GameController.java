@@ -192,13 +192,14 @@ public class GameController {
 		wsNotifier.closeSessionForPlayer(playerId);
 		gameMsgService.gamePlayerLeave(majiangGameValueObject, playerId);
 		// 通知其他玩家
-
 		for (String otherPlayerId : majiangGameValueObject.allPlayerIds()) {
 			if (!otherPlayerId.equals(playerId)) {
-				QueryScope.scopesForState(majiangGameValueObject.getState(),
-						majiangGameValueObject.findPlayerState(otherPlayerId)).forEach((scope) -> {
-							wsNotifier.notifyToQuery(otherPlayerId, scope.name());
-						});
+				List<QueryScope> scopes = QueryScope.scopesForState(majiangGameValueObject.getState(),
+						majiangGameValueObject.findPlayerState(otherPlayerId));
+				scopes.remove(QueryScope.panResult);
+				scopes.forEach((scope) -> {
+					wsNotifier.notifyToQuery(otherPlayerId, scope.name());
+				});
 			}
 		}
 		return vo;
@@ -368,10 +369,12 @@ public class GameController {
 		// 通知其他人来查询
 		for (String otherPlayerId : majiangGameValueObject.allPlayerIds()) {
 			if (!otherPlayerId.equals(playerId)) {
-				QueryScope.scopesForState(majiangGameValueObject.getState(),
-						majiangGameValueObject.findPlayerState(otherPlayerId)).forEach((scope) -> {
-							wsNotifier.notifyToQuery(otherPlayerId, scope.name());
-						});
+				List<QueryScope> scopes = QueryScope.scopesForState(majiangGameValueObject.getState(),
+						majiangGameValueObject.findPlayerState(otherPlayerId));
+				scopes.remove(QueryScope.panResult);
+				scopes.forEach((scope) -> {
+					wsNotifier.notifyToQuery(otherPlayerId, scope.name());
+				});
 			}
 		}
 
@@ -414,10 +417,12 @@ public class GameController {
 		// 通知其他人来查询投票情况
 		for (String otherPlayerId : majiangGameValueObject.allPlayerIds()) {
 			if (!otherPlayerId.equals(playerId)) {
-				QueryScope.scopesForState(majiangGameValueObject.getState(),
-						majiangGameValueObject.findPlayerState(otherPlayerId)).forEach((scope) -> {
-							wsNotifier.notifyToQuery(otherPlayerId, scope.name());
-						});
+				List<QueryScope> scopes = QueryScope.scopesForState(majiangGameValueObject.getState(),
+						majiangGameValueObject.findPlayerState(otherPlayerId));
+				scopes.remove(QueryScope.panResult);
+				scopes.forEach((scope) -> {
+					wsNotifier.notifyToQuery(otherPlayerId, scope.name());
+				});
 			}
 		}
 		return vo;
