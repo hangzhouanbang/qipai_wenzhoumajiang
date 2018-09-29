@@ -94,8 +94,9 @@ public class WenzhouMajiangDaActionUpdater implements MajiangPlayerDaActionUpdat
 				GouXingPanHu gouXingPanHu = ju.getGouXingPanHu();
 				// 先把这张牌放入计算器
 				xiajiaPlayer.getShoupaiCalculator().addPai(daAction.getPai());
-				WenzhouMajiangHu bestHu = WenzhouMajiangJiesuanCalculator.calculateBestDianpaoHu(couldDihu,
-						gouXingPanHu, xiajiaPlayer, daAction.getPai(), shaozhongfa, teshushuangfan, lazila);
+				WenzhouMajiangHu bestHu = WenzhouMajiangJiesuanCalculator.calculateBestDianpaoHu(
+						couldDihu && !currentPan.getZhuangPlayerId().equals(xiajiaPlayer.getId()), gouXingPanHu,
+						xiajiaPlayer, daAction.getPai(), shaozhongfa, teshushuangfan, lazila);
 				// 再把这张牌拿出计算器
 				xiajiaPlayer.getShoupaiCalculator().removePai(daAction.getPai());
 				if (bestHu != null) {
