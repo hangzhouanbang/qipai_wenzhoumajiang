@@ -3,10 +3,12 @@ package com.anbang.qipai.wenzhoumajiang.cqrs.c.service.impl;
 import org.springframework.stereotype.Component;
 
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MaidiResult;
+import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MaidiState;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangActionResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGame;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGameValueObject;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.ReadyToNextPanResult;
+import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.exception.GameNotMaiDi;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.service.MajiangPlayCmdService;
 import com.dml.majiang.pan.frame.PanActionFrame;
 import com.dml.mpgame.game.Playing;
@@ -61,6 +63,9 @@ public class MajiangPlayCmdServiceImpl extends CmdServiceBase implements Majiang
 			throw new PlayerNotInGameException();
 		}
 		MajiangGame majiangGame = (MajiangGame) gameServer.findGame(gameId);
+		if (!majiangGame.getState().name().equals(MaidiState.name)) {
+			throw new GameNotMaiDi();
+		}
 		MaidiResult maidiResult = majiangGame.maidi(playerId, state);
 		return maidiResult;
 	}
