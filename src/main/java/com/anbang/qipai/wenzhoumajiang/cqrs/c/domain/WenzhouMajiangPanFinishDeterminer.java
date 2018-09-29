@@ -38,13 +38,14 @@ public class WenzhouMajiangPanFinishDeterminer implements CurrentPanFinishiDeter
 				MajiangPlayer betterHuPlayer = null;
 				WenzhouMajiangHu betterHu = null;
 
-				// 按点炮者下家开始遍历出最佳胡
+				// 按点炮者下家开始遍历出最佳胡，软牌硬牌没有优先级
 				while (true) {
 					if (!xiajiaPlayer.getId().equals(dianpaoPlayerId)) {
 						MajiangPlayer huPlayer = huPlayerMap.get(xiajiaPlayer.getId());
 						if (huPlayer != null) {// 已经点了"胡"
 							WenzhouMajiangHu majiangHu = (WenzhouMajiangHu) huPlayer.getHu();
-							if (betterHu == null || betterHu.getHufan().getValue() < majiangHu.getHufan().getValue()) {
+							if (betterHu == null || (majiangHu.getHufan().getValue() > 2
+									&& betterHu.getHufan().getValue() < majiangHu.getHufan().getValue())) {
 								betterHuPlayer = xiajiaPlayer;
 								betterHu = majiangHu;
 							}
@@ -53,8 +54,8 @@ public class WenzhouMajiangPanFinishDeterminer implements CurrentPanFinishiDeter
 								if (action.getType().equals(MajiangPlayerActionType.hu)) {
 									MajiangHuAction huAction = (MajiangHuAction) action;
 									WenzhouMajiangHu majiangHu = (WenzhouMajiangHu) huAction.getHu();
-									if (betterHu == null
-											|| betterHu.getHufan().getValue() < majiangHu.getHufan().getValue()) {
+									if (betterHu == null || (majiangHu.getHufan().getValue() > 2
+											&& betterHu.getHufan().getValue() < majiangHu.getHufan().getValue())) {
 										betterHuPlayer = xiajiaPlayer;
 										betterHu = majiangHu;
 									}

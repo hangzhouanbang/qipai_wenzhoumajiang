@@ -76,8 +76,7 @@ public enum QueryScope {
 		} else if (gameState.name().equals(VoteNotPassWhenWaitingNextPan.name)) {
 			scopes.add(QueryScope.gameFinishVote);
 			scopes.add(QueryScope.gameInfo);
-			if (playerState.name().equals(PlayerPanFinishedAndVoting.name)
-					|| playerState.name().equals(PlayerPanFinishedAndVoted.name)) {
+			if (playerState.name().equals(PlayerPanFinished.name)) {
 				scopes.add(QueryScope.panResult);
 			}
 		} else if (gameState.name().equals(Finished.name)) {

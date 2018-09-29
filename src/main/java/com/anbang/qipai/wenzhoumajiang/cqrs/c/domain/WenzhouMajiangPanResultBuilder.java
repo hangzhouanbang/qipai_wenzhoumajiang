@@ -87,12 +87,13 @@ public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 				MajiangPlayer betterHuPlayer = null;
 				WenzhouMajiangHu betterHu = null;
 
-				// 按点炮者下家开始遍历出最佳胡
+				// 按点炮者下家开始遍历出最佳胡，软牌硬牌没有优先级
 				while (true) {
 					if (!xiajiaPlayer.getId().equals(dianpaoPlayerId) && xiajiaPlayer.getHu() != null) {
 
 						WenzhouMajiangHu hu = (WenzhouMajiangHu) xiajiaPlayer.getHu();
-						if (betterHu == null || betterHu.getHufan().getValue() < hu.getHufan().getValue()) {
+						if (betterHu == null || (hu.getHufan().getValue() > 2
+								&& betterHu.getHufan().getValue() < hu.getHufan().getValue())) {
 							betterHuPlayer = xiajiaPlayer;
 							betterHu = hu;
 						}
