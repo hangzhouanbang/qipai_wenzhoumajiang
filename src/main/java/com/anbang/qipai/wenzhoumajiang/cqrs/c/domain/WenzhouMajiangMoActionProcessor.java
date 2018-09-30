@@ -11,7 +11,7 @@ public class WenzhouMajiangMoActionProcessor implements MajiangPlayerMoActionPro
 	public void process(MajiangMoAction action, Ju ju) throws Exception {
 		Pan currentPan = ju.getCurrentPan();
 		currentPan.playerMoPai(action.getActionPlayerId());
-		currentPan.setActivePaiCursor(null);
+		// currentPan.setActivePaiCursor(null);
 	}
 
 }
