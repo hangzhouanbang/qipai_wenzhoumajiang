@@ -49,6 +49,8 @@ public class MajiangGameQueryService {
 	public void backToGame(String playerId, MajiangGameValueObject majiangGameValueObject) {
 		majiangGameDboDao.updatePlayerOnlineState(majiangGameValueObject.getId(), playerId,
 				majiangGameValueObject.findPlayerOnlineState(playerId));
+		GameFinishVoteValueObject gameFinishVoteValueObject = majiangGameValueObject.getVote();
+		gameFinishVoteDboDao.update(majiangGameValueObject.getId(), gameFinishVoteValueObject);
 	}
 
 	public void joinGame(MajiangGameValueObject majiangGame) {
