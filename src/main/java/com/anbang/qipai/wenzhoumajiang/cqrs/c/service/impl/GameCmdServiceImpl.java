@@ -103,7 +103,7 @@ public class GameCmdServiceImpl extends CmdServiceBase implements GameCmdService
 
 		ReadyForGameResult result = new ReadyForGameResult();
 		GameServer gameServer = singletonEntityRepository.getEntity(GameServer.class);
-		MajiangGameValueObject majiangGameValueObject = gameServer.ready(playerId);
+		MajiangGameValueObject majiangGameValueObject = gameServer.ready(playerId, currentTime);
 		result.setMajiangGame(majiangGameValueObject);
 		return result;
 
