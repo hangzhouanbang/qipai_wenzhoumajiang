@@ -8,6 +8,7 @@ import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangActionResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGame;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGameValueObject;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.ReadyToNextPanResult;
+import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.VoteNotPassWhenMaidi;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.exception.GameNotMaiDi;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.service.MajiangPlayCmdService;
 import com.dml.majiang.pan.frame.PanActionFrame;
@@ -63,7 +64,8 @@ public class MajiangPlayCmdServiceImpl extends CmdServiceBase implements Majiang
 			throw new PlayerNotInGameException();
 		}
 		MajiangGame majiangGame = (MajiangGame) gameServer.findGame(gameId);
-		if (!majiangGame.getState().name().equals(MaidiState.name)) {
+		if (!majiangGame.getState().name().equals(MaidiState.name)
+				|| !majiangGame.getState().name().equals(VoteNotPassWhenMaidi.name)) {
 			throw new GameNotMaiDi();
 		}
 		MaidiResult maidiResult = majiangGame.maidi(playerId, state);
