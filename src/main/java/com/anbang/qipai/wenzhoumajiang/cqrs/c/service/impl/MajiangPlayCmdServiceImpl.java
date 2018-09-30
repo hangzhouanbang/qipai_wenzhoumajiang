@@ -64,8 +64,8 @@ public class MajiangPlayCmdServiceImpl extends CmdServiceBase implements Majiang
 			throw new PlayerNotInGameException();
 		}
 		MajiangGame majiangGame = (MajiangGame) gameServer.findGame(gameId);
-		if (!majiangGame.getState().name().equals(MaidiState.name)
-				|| !majiangGame.getState().name().equals(VoteNotPassWhenMaidi.name)) {
+		if (!(majiangGame.getState().name().equals(MaidiState.name)
+				|| majiangGame.getState().name().equals(VoteNotPassWhenMaidi.name))) {
 			throw new GameNotMaiDi();
 		}
 		MaidiResult maidiResult = majiangGame.maidi(playerId, state);
