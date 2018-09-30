@@ -5,15 +5,18 @@ import java.util.List;
 import java.util.Map;
 
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MaidiState;
+import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.VoteNotPassWhenMaidi;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.VotingWhenMaidi;
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.dbo.MajiangGameDbo;
 import com.dml.mpgame.game.Canceled;
 import com.dml.mpgame.game.Finished;
 import com.dml.mpgame.game.Playing;
 import com.dml.mpgame.game.WaitingStart;
+import com.dml.mpgame.game.extend.fpmpv.VoteNotPassWhenWaitingNextPan;
 import com.dml.mpgame.game.extend.fpmpv.VotingWhenWaitingNextPan;
 import com.dml.mpgame.game.extend.multipan.WaitingNextPan;
 import com.dml.mpgame.game.extend.vote.FinishedByVote;
+import com.dml.mpgame.game.extend.vote.VoteNotPassWhenPlaying;
 import com.dml.mpgame.game.extend.vote.VotingWhenPlaying;
 
 public class GameVO {
@@ -58,7 +61,11 @@ public class GameVO {
 			state = "playing";
 		} else if (sn.equals(VotingWhenPlaying.name)) {
 			state = "playing";
+		} else if (sn.equals(VoteNotPassWhenPlaying.name)) {
+			state = "playing";
 		} else if (sn.equals(VotingWhenWaitingNextPan.name)) {
+			state = "waitingNextPan";
+		} else if (sn.equals(VoteNotPassWhenWaitingNextPan.name)) {
 			state = "waitingNextPan";
 		} else if (sn.equals(WaitingNextPan.name)) {
 			state = "waitingNextPan";
@@ -67,6 +74,8 @@ public class GameVO {
 		} else if (sn.equals(MaidiState.name)) {
 			state = "maidi";
 		} else if (sn.equals(VotingWhenMaidi.name)) {
+			state = "maidi";
+		} else if (sn.equals(VoteNotPassWhenMaidi.name)) {
 			state = "maidi";
 		} else {
 		}
