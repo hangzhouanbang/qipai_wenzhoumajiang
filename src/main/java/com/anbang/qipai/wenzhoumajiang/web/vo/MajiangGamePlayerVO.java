@@ -60,27 +60,27 @@ public class MajiangGamePlayerVO {
 		} else if (sn.equals(PlayerPlayingAndVoted.name)) {
 			state = "playing";
 		} else if (sn.equals(PlayerPlayingAndVoting.name)) {
-			state = PlayerPlayingAndVoting.name;
+			state = sn;
 		} else if (sn.equals(PlayerPanFinishedAndVoted.name)) {
-			state = "panFinished";
+			state = sn;
 		} else if (sn.equals(PlayerPanFinishedAndVoting.name)) {
-			state = PlayerPanFinishedAndVoting.name;
+			state = sn;
 		} else if (sn.equals(PlayerReadyToStartNextPanAndVoted.name)) {
-			state = "readyToStart";
+			state = sn;
 		} else if (sn.equals(PlayerReadyToStartNextPanAndVoting.name)) {
-			state = PlayerReadyToStartNextPanAndVoting.name;
+			state = sn;
 		} else if (sn.equals(PlayerMaidi.name)) {
 			state = "maidi";
 		} else if (sn.equals(PlayerAfterMaidi.name)) {
 			state = "maidi";
 		} else if (sn.equals(PlayerVotedWhenMaidi.name)) {
-			state = "maidi";
+			state = sn;
 		} else if (sn.equals(PlayerVotedWhenAfterMaidi.name)) {
-			state = "maidi";
+			state = sn;
 		} else if (sn.equals(PlayerVotingWhenMaidi.name)) {
-			state = PlayerVotingWhenMaidi.name;
+			state = sn;
 		} else if (sn.equals(PlayerVotingWhenAfterMaidi.name)) {
-			state = PlayerVotingWhenAfterMaidi.name;
+			state = sn;
 		} else {
 		}
 	}
