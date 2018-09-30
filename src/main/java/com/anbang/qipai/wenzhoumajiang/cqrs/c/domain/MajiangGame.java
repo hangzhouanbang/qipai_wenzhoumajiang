@@ -299,7 +299,7 @@ public class MajiangGame extends FixedPlayersMultipanAndVotetofinishGame {
 
 	@Override
 	protected void updateToExtendedVotingState() {
-		if (state.name().equals(MaidiState.name)) {
+		if (state.name().equals(MaidiState.name) || state.name().equals(VoteNotPassWhenMaidi.name)) {
 			state = new VotingWhenMaidi();
 		}
 	}
