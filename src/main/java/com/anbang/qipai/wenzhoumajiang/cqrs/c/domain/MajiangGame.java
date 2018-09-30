@@ -97,7 +97,7 @@ public class MajiangGame extends FixedPlayersMultipanAndVotetofinishGame {
 			}
 		}
 		if (start) {
-			PanActionFrame firstActionFrame = startPan(playerIdList, System.currentTimeMillis());
+			PanActionFrame firstActionFrame = startPan(playerIdList);
 			state = new Playing();
 			updateAllPlayersState(new PlayerPlaying());
 			maidiResult.setFirstActionFrame(firstActionFrame);
@@ -178,7 +178,7 @@ public class MajiangGame extends FixedPlayersMultipanAndVotetofinishGame {
 		this.playerMaidiStateMap.putAll(playerMaidiStateMap);
 	}
 
-	public PanActionFrame startPan(List<String> playerIdList, long currentTime) throws Exception {
+	public PanActionFrame startPan(List<String> playerIdList) throws Exception {
 		// 开始填充可用的牌
 		ju.fillAvaliablePai();
 
@@ -271,7 +271,7 @@ public class MajiangGame extends FixedPlayersMultipanAndVotetofinishGame {
 		if (lianZhuangCount > 1) {// 连庄
 			newMaidiStateMap = playerMaidiStateMap;
 			wenzhouMajiangPanResultBuilder.setPlayerMaidiStateMap(newMaidiStateMap);
-			startPan(allPlayerIds, System.currentTimeMillis());
+			startPan(allPlayerIds);
 			state = new Playing();
 			updateAllPlayersState(new PlayerPlaying());
 		} else {// 重新买底
@@ -336,10 +336,10 @@ public class MajiangGame extends FixedPlayersMultipanAndVotetofinishGame {
 	}
 
 	@Override
-	public void start() throws Exception {
+	public void start(long currentTime) throws Exception {
 		state = new MaidiState();
 		updateAllPlayersState(new PlayerMaidi());
-		createJuAndReadyFirstPan(System.currentTimeMillis());
+		createJuAndReadyFirstPan(currentTime);
 	}
 
 	@Override
