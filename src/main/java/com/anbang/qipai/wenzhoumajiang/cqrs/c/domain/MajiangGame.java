@@ -315,7 +315,7 @@ public class MajiangGame extends FixedPlayersMultipanAndVotetofinishGame {
 
 	@Override
 	protected void recoveryPlayersStateFromExtendedVoting() throws Exception {
-		if (state.name().equals(VotingWhenMaidi.name)) {
+		if (state.name().equals(VoteNotPassWhenMaidi.name)) {
 			for (GamePlayer player : idPlayerMap.values()) {
 				if (player.getState().name().equals(PlayerVotingWhenMaidi.name)
 						|| player.getState().name().equals(PlayerVotedWhenMaidi.name)) {
