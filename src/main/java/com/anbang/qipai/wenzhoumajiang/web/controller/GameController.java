@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGamePlayerMaidiState;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGameValueObject;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.ReadyForGameResult;
+import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.VoteNotPassWhenMaidi;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.service.GameCmdService;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.service.PlayerAuthService;
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.dbo.GameFinishVoteDbo;
@@ -157,7 +158,8 @@ public class GameController {
 						majiangGameValueObject.findPlayerState(otherPlayerId));
 				scopes.remove(QueryScope.panResult);
 				if (majiangGameValueObject.getState().name().equals(VoteNotPassWhenPlaying.name)
-						|| majiangGameValueObject.getState().name().equals(VoteNotPassWhenWaitingNextPan.name)) {
+						|| majiangGameValueObject.getState().name().equals(VoteNotPassWhenWaitingNextPan.name)
+						|| majiangGameValueObject.getState().name().equals(VoteNotPassWhenMaidi.name)) {
 					scopes.remove(QueryScope.gameFinishVote);
 				}
 				scopes.forEach((scope) -> {
@@ -204,7 +206,8 @@ public class GameController {
 						majiangGameValueObject.findPlayerState(otherPlayerId));
 				scopes.remove(QueryScope.panResult);
 				if (majiangGameValueObject.getState().name().equals(VoteNotPassWhenPlaying.name)
-						|| majiangGameValueObject.getState().name().equals(VoteNotPassWhenWaitingNextPan.name)) {
+						|| majiangGameValueObject.getState().name().equals(VoteNotPassWhenWaitingNextPan.name)
+						|| majiangGameValueObject.getState().name().equals(VoteNotPassWhenMaidi.name)) {
 					scopes.remove(QueryScope.gameFinishVote);
 				}
 				scopes.forEach((scope) -> {
@@ -250,7 +253,11 @@ public class GameController {
 				List<QueryScope> scopes = QueryScope.scopesForState(majiangGameValueObject.getState(),
 						majiangGameValueObject.findPlayerState(otherPlayerId));
 				scopes.remove(QueryScope.panResult);
-				scopes.remove(QueryScope.gameFinishVote);
+				if (majiangGameValueObject.getState().name().equals(VoteNotPassWhenPlaying.name)
+						|| majiangGameValueObject.getState().name().equals(VoteNotPassWhenWaitingNextPan.name)
+						|| majiangGameValueObject.getState().name().equals(VoteNotPassWhenMaidi.name)) {
+					scopes.remove(QueryScope.gameFinishVote);
+				}
 				scopes.forEach((scope) -> {
 					wsNotifier.notifyToQuery(otherPlayerId, scope.name());
 				});
