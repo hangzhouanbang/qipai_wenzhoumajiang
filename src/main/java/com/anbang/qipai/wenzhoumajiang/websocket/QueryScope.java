@@ -13,8 +13,6 @@ import com.dml.mpgame.game.Playing;
 import com.dml.mpgame.game.WaitingStart;
 import com.dml.mpgame.game.extend.fpmpv.VoteNotPassWhenWaitingNextPan;
 import com.dml.mpgame.game.extend.fpmpv.VotingWhenWaitingNextPan;
-import com.dml.mpgame.game.extend.fpmpv.player.PlayerPanFinishedAndVoted;
-import com.dml.mpgame.game.extend.fpmpv.player.PlayerPanFinishedAndVoting;
 import com.dml.mpgame.game.extend.multipan.WaitingNextPan;
 import com.dml.mpgame.game.extend.multipan.player.PlayerPanFinished;
 import com.dml.mpgame.game.extend.multipan.player.PlayerReadyToStartNextPan;
@@ -69,10 +67,6 @@ public enum QueryScope {
 		} else if (gameState.name().equals(VotingWhenWaitingNextPan.name)) {
 			scopes.add(gameInfo);
 			scopes.add(gameFinishVote);
-			if (playerState.name().equals(PlayerPanFinishedAndVoting.name)
-					|| playerState.name().equals(PlayerPanFinishedAndVoted.name)) {
-				scopes.add(QueryScope.panResult);
-			}
 		} else if (gameState.name().equals(VoteNotPassWhenWaitingNextPan.name)) {
 			scopes.add(QueryScope.gameFinishVote);
 			scopes.add(QueryScope.gameInfo);
