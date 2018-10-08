@@ -65,7 +65,6 @@ public class WenzhouMajiangGangActionUpdater implements MajiangPlayerGangActionU
 						xiajia.addActionCandidate(new MajiangHuAction(xiajia.getId(), bestHu));
 						xiajia.checkAndGenerateGuoCandidateAction();
 						qiangganghu = true;
-						break;
 					}
 
 					currentPlayer = xiajia;
