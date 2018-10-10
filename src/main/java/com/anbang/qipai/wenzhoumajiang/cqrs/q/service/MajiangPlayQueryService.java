@@ -104,7 +104,8 @@ public class MajiangPlayQueryService {
 		majiangGame.allPlayerIds().forEach((pid) -> playerInfoMap.put(pid, playerInfoDao.findById(pid)));
 		MajiangGameDbo majiangGameDbo = new MajiangGameDbo(majiangGame, playerInfoMap);
 		majiangGameDboDao.save(majiangGameDbo);
-		if (majiangGame.getState().name().equals(MaidiState.name)) {
+		if (majiangGame.getState().name().equals(MaidiState.name)
+				|| majiangGame.getState().name().equals(Playing.name)) {
 			MajiangGamePlayerMaidiDbo maidiDbo = new MajiangGamePlayerMaidiDbo(majiangGame);
 			majiangGamePlayerMaidiDboDao.addMajiangGamePlayerMaidiDbo(maidiDbo);
 		}
