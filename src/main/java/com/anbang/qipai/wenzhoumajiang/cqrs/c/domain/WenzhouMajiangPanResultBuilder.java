@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.listener.WenzhouMajiangChiPengGangActionStatisticsListener;
 import com.dml.majiang.ju.Ju;
 import com.dml.majiang.pai.fenzu.Kezi;
 import com.dml.majiang.pan.Pan;
@@ -14,6 +15,7 @@ import com.dml.majiang.pan.result.PanResult;
 import com.dml.majiang.player.MajiangPlayer;
 import com.dml.majiang.player.chupaizu.GangchuPaiZu;
 import com.dml.majiang.player.chupaizu.PengchuPaiZu;
+import com.dml.majiang.position.MajiangPosition;
 
 public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 	private Map<String, MajiangGamePlayerMaidiState> playerMaidiStateMap;
@@ -37,6 +39,9 @@ public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 		}
 		WenzhouMajiangPlayersMenFengDeterminer menfengDeterminer = (WenzhouMajiangPlayersMenFengDeterminer) ju
 				.getPlayersMenFengDeterminerForNextPan();
+		WenzhouMajiangChiPengGangActionStatisticsListener wenzhouMajiangListener = ju
+				.getActionStatisticsListenerManager()
+				.findListener(WenzhouMajiangChiPengGangActionStatisticsListener.class);
 		int difen = 1;
 		if (menfengDeterminer.getLianZhuangCount() == 1) {
 			if (jinjie1 || jinjie2) {
@@ -118,6 +123,7 @@ public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 					xiajiaPlayer = currentPan.findXiajia(xiajiaPlayer);
 				}
 			}
+
 			WenzhouMajiangPanPlayerHufan huPlayerHufan = bestHu.getHufan();
 			int paixingbeishu = huPlayerHufan.getValue();
 			for (String playerId : playerIdList) {
@@ -273,6 +279,24 @@ public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 						}
 					} else {// 不胡之间
 
+					}
+				}
+			}
+			if (playerResultList.size() >= 3 && MajiangPosition.dong.equals(bestHuPlayer.getMenFeng())
+					&& wenzhouMajiangListener.getTongpeiCount() >= 3) {// 3、 4人游戏,如果庄家胡,北风家通赔
+				int detal = 0;// 北风家需要替其他玩家赔的分数
+				MajiangPlayer shangjia = currentPan.findShangjia(bestHuPlayer);
+				for (WenzhouMajiangPanPlayerResult playerResult : playerResultList) {
+					if (!shangjia.getId().equals(playerResult.getPlayerId())
+							&& !bestHuPlayer.getId().equals(playerResult.getPlayerId())) {
+						detal += playerResult.getScore();
+						playerResult.setScore(0);
+					}
+				}
+				for (WenzhouMajiangPanPlayerResult playerResult : playerResultList) {
+					if (shangjia.getId().equals(playerResult.getPlayerId())) {
+						playerResult.setScore(playerResult.getScore() + detal);
+						playerResult.setTongpei(true);
 					}
 				}
 			}

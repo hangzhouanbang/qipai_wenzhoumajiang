@@ -57,6 +57,8 @@ public class WenzhouMajiangPanPlayerResultVO {
 	 */
 	private int score;
 
+	private boolean tongpei;// 通赔
+
 	public WenzhouMajiangPanPlayerResultVO(MajiangGamePlayerDbo gamePlayerDbo, String zhuangPlayerId, boolean zimo,
 			String dianpaoPlayerId, WenzhouMajiangPanPlayerResultDbo panPlayerResult) {
 		playerId = gamePlayerDbo.getPlayerId();
@@ -67,6 +69,7 @@ public class WenzhouMajiangPanPlayerResultVO {
 		}
 		hu = panPlayerResult.getPlayer().getHu() != null;
 		publicPaiList = new ArrayList<>(panPlayerResult.getPlayer().getPublicPaiList());
+		tongpei = panPlayerResult.getPlayerResult().isTongpei();
 		huxing = new WenzhouMajiangPanPlayerHuxingVO(panPlayerResult.getPlayerResult().getHufan().getHuxing());
 		if (hu) {
 			hufanVo = new WenzhouMajiangPanPlayerHufanVO(panPlayerResult.getPlayerResult().getHufan());
@@ -315,4 +318,13 @@ public class WenzhouMajiangPanPlayerResultVO {
 	public void setHufanVo(WenzhouMajiangPanPlayerHufanVO hufanVo) {
 		this.hufanVo = hufanVo;
 	}
+
+	public boolean isTongpei() {
+		return tongpei;
+	}
+
+	public void setTongpei(boolean tongpei) {
+		this.tongpei = tongpei;
+	}
+
 }

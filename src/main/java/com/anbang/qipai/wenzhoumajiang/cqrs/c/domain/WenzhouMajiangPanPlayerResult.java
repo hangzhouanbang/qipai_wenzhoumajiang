@@ -14,6 +14,16 @@ public class WenzhouMajiangPanPlayerResult extends PanPlayerResult {
 
 	private int totalScore;
 
+	private boolean tongpei;
+
+	public boolean isTongpei() {
+		return tongpei;
+	}
+
+	public void setTongpei(boolean tongpei) {
+		this.tongpei = tongpei;
+	}
+
 	public WenzhouMajiangPanPlayerHufan getHufan() {
 		return hufan;
 	}

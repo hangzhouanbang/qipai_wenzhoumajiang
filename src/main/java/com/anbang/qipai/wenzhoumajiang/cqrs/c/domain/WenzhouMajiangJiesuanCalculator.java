@@ -167,11 +167,13 @@ public class WenzhouMajiangJiesuanCalculator {
 			if (duiziZu.getDuiziType().equals(guipaiType) && duiziZu.yuanPaiFenZu()) {
 				caishenDuiziZu += 1;
 			}
-			if (pai1.getYuanPaiType().equals(guipaiType) && !pai1.dangBenPai()) {
+			if ((pai1.getYuanPaiType().equals(guipaiType) && (!pai1.dangBenPai())// 当财神和白班做对子时，财神算白板
+					|| (pai2.getYuanPaiType().equals(MajiangPai.baiban) && !guipaiType.equals(MajiangPai.baiban)))) {
 				caishenDangPai += 1;
 				ruan = true;
 			}
-			if (pai2.getYuanPaiType().equals(guipaiType) && !pai2.dangBenPai()) {
+			if ((pai2.getYuanPaiType().equals(guipaiType) && (!pai2.dangBenPai())// 当财神和白班做对子时，财神算白板
+					|| (pai1.getYuanPaiType().equals(MajiangPai.baiban) && !guipaiType.equals(MajiangPai.baiban)))) {
 				caishenDangPai += 1;
 				ruan = true;
 			}

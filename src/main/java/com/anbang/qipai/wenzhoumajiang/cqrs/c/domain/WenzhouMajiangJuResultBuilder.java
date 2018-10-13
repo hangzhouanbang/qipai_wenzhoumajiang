@@ -31,7 +31,7 @@ public class WenzhouMajiangJuResultBuilder implements JuResultBuilder {
 					}
 					juPlayerResult.increaseCaishenCount(
 							wenzhouMajiangPanResult.playerGuipaiCount(panPlayerResult.getPlayerId()));
-					if (panPlayerResult.getHufan().getValue() == 2) {
+					if (panPlayerResult.getHufan().getValue() == 4) {
 						juPlayerResult.increaseShuangfanCount();
 					}
 					juPlayerResult.tryAndUpdateMaxScore(panPlayerResult.getScore());

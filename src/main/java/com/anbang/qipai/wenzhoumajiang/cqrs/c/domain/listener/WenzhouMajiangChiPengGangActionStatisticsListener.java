@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.dml.majiang.ju.Ju;
 import com.dml.majiang.pai.MajiangPai;
+import com.dml.majiang.pai.fenzu.GangType;
 import com.dml.majiang.pan.Pan;
 import com.dml.majiang.player.MajiangPlayer;
 import com.dml.majiang.player.action.MajiangPlayerAction;
@@ -18,6 +19,7 @@ import com.dml.majiang.player.action.listener.da.MajiangPlayerDaActionStatistics
 import com.dml.majiang.player.action.listener.gang.MajiangPlayerGangActionStatisticsListener;
 import com.dml.majiang.player.action.listener.peng.MajiangPlayerPengActionStatisticsListener;
 import com.dml.majiang.player.action.peng.MajiangPengAction;
+import com.dml.majiang.position.MajiangPosition;
 
 /**
  * 温州麻将统计器，包括绝张统计、吃碰杠同时出现时记录动作
@@ -33,10 +35,13 @@ public class WenzhouMajiangChiPengGangActionStatisticsListener
 
 	private int[] mingpaiCountArray = new int[MajiangPai.values().length];
 
+	private int tongpeiCount = 0;
+
 	@Override
 	public void updateForNextPan() {
 		playerActionMap = new HashMap<>();
 		Arrays.fill(mingpaiCountArray, 0);
+		tongpeiCount = 0;
 	}
 
 	// 清空当前轮动作
@@ -50,6 +55,18 @@ public class WenzhouMajiangChiPengGangActionStatisticsListener
 		MajiangPlayer player = currentPan.findPlayerById(gangAction.getActionPlayerId());
 		if (gangAction.isDisabledByHigherPriorityAction()) {// 如果被阻塞
 			playerActionMap.put(player.getId(), gangAction);// 记录下被阻塞的动作
+		} else {
+			if (gangAction.getGangType().equals(GangType.gangdachu)) {// 杠别人打出的牌
+				MajiangPlayer dachupaiPlayer = currentPan.findPlayerById(gangAction.getDachupaiPlayerId());
+				MajiangPlayer zhuangPlayer = currentPan.findPlayerByMenFeng(MajiangPosition.dong);
+				MajiangPlayer shangjia = currentPan.findShangjia(zhuangPlayer);
+				MajiangPlayer xiajia = currentPan.findXiajia(zhuangPlayer);
+				// 如果上家杠庄家或者下家,通赔计数加2
+				if (shangjia.getId().equals(player.getId()) && (zhuangPlayer.getId().equals(dachupaiPlayer.getId())
+						|| xiajia.getId().equals(dachupaiPlayer.getId()))) {
+					tongpeiCount += 2;
+				}
+			}
 		}
 	}
 
@@ -61,6 +78,15 @@ public class WenzhouMajiangChiPengGangActionStatisticsListener
 			playerActionMap.put(player.getId(), pengAction);// 记录下被阻塞的动作
 		} else {
 			mingpaiCountArray[pengAction.getPai().ordinal()] += 2;
+			MajiangPlayer dachupaiPlayer = currentPan.findPlayerById(pengAction.getDachupaiPlayerId());
+			MajiangPlayer zhuangPlayer = currentPan.findPlayerByMenFeng(MajiangPosition.dong);
+			MajiangPlayer shangjia = currentPan.findShangjia(zhuangPlayer);
+			MajiangPlayer xiajia = currentPan.findXiajia(zhuangPlayer);
+			// 如果上家碰庄家或者下家,通赔计数加1
+			if (shangjia.getId().equals(player.getId()) && (zhuangPlayer.getId().equals(dachupaiPlayer.getId())
+					|| xiajia.getId().equals(dachupaiPlayer.getId()))) {
+				tongpeiCount += 1;
+			}
 		}
 	}
 
@@ -118,6 +144,14 @@ public class WenzhouMajiangChiPengGangActionStatisticsListener
 
 	public void setMingpaiCountArray(int[] mingpaiCountArray) {
 		this.mingpaiCountArray = mingpaiCountArray;
+	}
+
+	public int getTongpeiCount() {
+		return tongpeiCount;
+	}
+
+	public void setTongpeiCount(int tongpeiCount) {
+		this.tongpeiCount = tongpeiCount;
 	}
 
 }
