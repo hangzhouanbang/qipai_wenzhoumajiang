@@ -58,20 +58,20 @@ public class WenzhouMajiangGuoActionUpdater implements MajiangPlayerGuoActionUpd
 						if (!guipaiTypeSet.contains(pai) && MajiangPai.isZipai(pai)) {
 							if (juezhangStatisticsListener.ifJuezhang(pai)) {
 								juefengList.add(new MajiangDaAction(player.getId(), pai));
-							} else if (juezhangStatisticsListener.ifMingPai(pai)
+							} else if (!gangmoShoupai.equals(pai) && juezhangStatisticsListener.ifMingPai(pai)
 									&& player.getShoupaiCalculator().count(pai) == 1) {
 								genfengList.add(new MajiangDaAction(player.getId(), pai));
-							} else if (player.getShoupaiCalculator().count(pai) == 1) {
+							} else if (!gangmoShoupai.equals(pai) && player.getShoupaiCalculator().count(pai) == 1) {
 								toufengList.add(new MajiangDaAction(player.getId(), pai));
 							}
 						}
 					} else if (!guipaiTypeSet.contains(pai) && MajiangPai.isZipai(guipaiType)) {
 						if (juezhangStatisticsListener.ifJuezhang(pai)) {
 							juefengList.add(new MajiangDaAction(player.getId(), pai));
-						} else if (juezhangStatisticsListener.ifMingPai(pai)
+						} else if (!gangmoShoupai.equals(pai) && juezhangStatisticsListener.ifMingPai(pai)
 								&& player.getShoupaiCalculator().count(pai) == 1) {
 							genfengList.add(new MajiangDaAction(player.getId(), pai));
-						} else if (player.getShoupaiCalculator().count(pai) == 1) {
+						} else if (!gangmoShoupai.equals(pai) && player.getShoupaiCalculator().count(pai) == 1) {
 							toufengList.add(new MajiangDaAction(player.getId(), pai));
 						}
 					} else {
