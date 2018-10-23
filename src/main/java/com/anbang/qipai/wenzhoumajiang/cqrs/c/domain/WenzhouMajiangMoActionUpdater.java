@@ -63,6 +63,7 @@ public class WenzhouMajiangMoActionUpdater implements MajiangPlayerMoActionUpdat
 				hufan.setHuxing(huxing);
 				hufan.calculate(teshushuangfan, lazila);
 				WenzhouMajiangHu sancaishenHu = new WenzhouMajiangHu(hufan);
+				sancaishenHu.setZimo(true);
 				player.addActionCandidate(new MajiangHuAction(player.getId(), sancaishenHu));
 			}
 		}

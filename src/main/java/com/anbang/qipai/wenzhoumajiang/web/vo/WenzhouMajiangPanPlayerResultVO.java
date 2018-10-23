@@ -99,14 +99,20 @@ public class WenzhouMajiangPanPlayerResultVO {
 			this.zimo = zimo;
 			ShoupaiPaiXing shoupaiPaiXing = panPlayerResult.getPlayer().getHu().getShoupaiPaiXing();
 			if (shoupaiPaiXing == null) {// 三财神胡没有牌型
-				List<MajiangPai> shoupaiList = panPlayerResult.getPlayer().getFangruShoupaiList();
-				shoupaiList.add(panPlayerResult.getPlayer().getGangmoShoupai().getPai());
 				caishenList = new ArrayList<>(panPlayerResult.getPlayer().getFangruGuipaiList());
+				List<MajiangPai> shoupaiList = panPlayerResult.getPlayer().getFangruShoupaiList();
 				List<ResultShoupaiVO> list = new ArrayList<>();
 				resultShoupaiZuList.add(list);
 				for (MajiangPai pai : shoupaiList) {
 					list.add(new ResultShoupaiVO(pai));
 				}
+				MajiangPai gangmoShoupai = panPlayerResult.getPlayer().getGangmoShoupai().getPai();
+				ResultShoupaiVO lastPai = new ResultShoupaiVO(gangmoShoupai);
+				lastPai.setHupai(true);
+				if (caishenList.contains(gangmoShoupai)) {
+					lastPai.setCaishen(true);
+				}
+				list.add(lastPai);
 			} else {
 				List<ShoupaiShunziZu> shunziList = shoupaiPaiXing.getShunziList();
 				for (ShoupaiShunziZu shoupaiShunziZu : shunziList) {
