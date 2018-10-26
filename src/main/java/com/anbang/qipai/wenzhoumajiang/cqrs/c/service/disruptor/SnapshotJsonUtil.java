@@ -29,7 +29,7 @@ public class SnapshotJsonUtil {
 	}
 
 	public void save(String fileBasePath, String fileName, Object data) throws IOException {
-		File file = new File(fileBasePath + fileName + ".json");
+		File file = new File(fileBasePath + "/" + fileName + ".json");
 		if (!file.getParentFile().exists()) {
 			file.getParentFile().mkdirs();
 		}
