@@ -13,6 +13,7 @@ import com.dml.mpgame.game.WaitingStart;
 import com.dml.mpgame.game.extend.fpmpv.back.FpmpvBackStrategy;
 import com.dml.mpgame.game.extend.vote.FinishedByVote;
 import com.dml.mpgame.game.extend.vote.MostPlayersWinVoteCalculator;
+import com.dml.mpgame.game.extend.vote.OnlineVotePlayersFilter;
 import com.dml.mpgame.game.extend.vote.VoteOption;
 import com.dml.mpgame.game.extend.vote.leave.VoteWaiverLeaveStrategy;
 import com.dml.mpgame.game.join.FixedNumberOfPlayersGameJoinStrategy;
@@ -44,6 +45,8 @@ public class GameCmdServiceImpl extends CmdServiceBase implements GameCmdService
 		newGame.setShaozhongfa(shaozhongfa);
 		newGame.setLazila(lazila);
 		newGame.setGangsuanfen(gangsuanfen);
+
+		newGame.setVotePlayersFilter(new OnlineVotePlayersFilter());
 
 		newGame.setJoinStrategy(new FixedNumberOfPlayersGameJoinStrategy(renshu));
 		newGame.setReadyStrategy(new FixedNumberOfPlayersGameReadyStrategy(renshu));
