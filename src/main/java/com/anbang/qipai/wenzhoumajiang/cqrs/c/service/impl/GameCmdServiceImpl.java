@@ -139,6 +139,7 @@ public class GameCmdServiceImpl extends CmdServiceBase implements GameCmdService
 			// 是主机的话直接解散，不是的话自己走人
 			if (majiangGame.getCreatePlayerId().equals(playerId)) {
 				majiangGame.cancel();
+				gameServer.finishGame(majiangGame.getId());
 			} else {
 				majiangGame.quit(playerId);
 			}

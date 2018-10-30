@@ -37,7 +37,6 @@ import com.dml.mpgame.game.player.GamePlayer;
 import com.dml.mpgame.game.player.PlayerPlaying;
 
 public class MajiangGame extends FixedPlayersMultipanAndVotetofinishGame {
-	private String gameId;
 	private int panshu;
 	private int renshu;
 	private boolean jinjie1;
@@ -345,14 +344,6 @@ public class MajiangGame extends FixedPlayersMultipanAndVotetofinishGame {
 	@Override
 	public MajiangGameValueObject toValueObject() {
 		return new MajiangGameValueObject(this);
-	}
-
-	public String getGameId() {
-		return gameId;
-	}
-
-	public void setGameId(String gameId) {
-		this.gameId = gameId;
 	}
 
 	public int getPanshu() {

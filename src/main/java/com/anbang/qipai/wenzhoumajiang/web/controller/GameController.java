@@ -428,9 +428,11 @@ public class GameController {
 			MajiangGameDbo majiangGameDbo = majiangGameQueryService.findMajiangGameDboById(gameId);
 			JuResultVO juResult = new JuResultVO(juResultDbo, majiangGameDbo);
 			wenzhouMajiangResultMsgService.recordJuResult(juResult);
+		}
+		if (majiangGameValueObject.getState().name().equals(FinishedByVote.name)
+				|| majiangGameValueObject.getState().name().equals(Canceled.name)) {
 			gameMsgService.gameFinished(gameId);
 		}
-
 		data.put("queryScope", QueryScope.gameFinishVote);
 		// 通知其他人来查询投票情况
 		for (String otherPlayerId : majiangGameValueObject.allPlayerIds()) {
