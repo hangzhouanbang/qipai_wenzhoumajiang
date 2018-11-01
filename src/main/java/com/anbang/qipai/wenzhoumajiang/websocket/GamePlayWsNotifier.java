@@ -76,39 +76,43 @@ public class GamePlayWsNotifier {
 
 	public void notifyToQuery(String playerId, String scope) {
 		executorService.submit(() -> {
-			System.out.println("发送worker开始执行" + "=" + playerId + "=" + "=" + scope + "=");
 			CommonMO mo = new CommonMO();
-			System.out.println("通知发送开始1");
 			mo.setMsg("query");
-			System.out.println("通知发送开始2");
 			Map data = new HashMap();
-			System.out.println("通知发送开始3");
 			data.put("scope", scope);
-			System.out.println("通知发送开始4");
 			mo.setData(data);
-			System.out.println("通知发送开始5");
 			String payLoad = gson.toJson(mo);
-			System.out.println("通知发送开始6");
 			String sessionId = playerIdSessionIdMap.get(playerId);
 			if (sessionId == null) {
-				// TODO 测试代码
-				System.out.println("玩家" + playerId + "没有被绑定");
 				return;
 			}
 			WebSocketSession session = idSessionMap.get(sessionId);
-			System.out.println("通知发送开始7");
 			if (session != null) {
-				// TODO 测试代码
-				System.out.println("通知发送开始8");
-				System.out.println("通知发送开始{" + session.isOpen() + "}：<" + playerId + "> " + payLoad + " ("
-						+ System.currentTimeMillis() + ")");
 				sendMessage(session, payLoad);
-				System.out.println("通知发送结束{" + session.isOpen() + "}：<" + playerId + "> " + payLoad + " ("
-						+ System.currentTimeMillis() + ")");
 			} else {
-				// TODO 测试代码
-				System.out.println("通知发送失败（session is null）：<" + playerId + "> " + payLoad + " ("
-						+ System.currentTimeMillis() + ")");
+
+			}
+		});
+	}
+
+	public void notifyToListenWisecrack(String playerId, String ordinal, String speakerId) {
+		executorService.submit(() -> {
+			CommonMO mo = new CommonMO();
+			mo.setMsg("wisecrack");
+			Map data = new HashMap();
+			data.put("ordinal", ordinal);
+			data.put("speakerId", speakerId);
+			mo.setData(data);
+			String payLoad = gson.toJson(mo);
+			String sessionId = playerIdSessionIdMap.get(playerId);
+			if (sessionId == null) {
+				return;
+			}
+			WebSocketSession session = idSessionMap.get(sessionId);
+			if (session != null) {
+				sendMessage(session, payLoad);
+			} else {
+
 			}
 		});
 	}

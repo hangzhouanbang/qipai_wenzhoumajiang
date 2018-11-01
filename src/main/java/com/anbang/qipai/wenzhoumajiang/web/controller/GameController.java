@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -20,6 +23,7 @@ import com.anbang.qipai.wenzhoumajiang.cqrs.c.service.PlayerAuthService;
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.dbo.GameFinishVoteDbo;
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.dbo.JuResultDbo;
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.dbo.MajiangGameDbo;
+import com.anbang.qipai.wenzhoumajiang.cqrs.q.dbo.MajiangGamePlayerDbo;
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.dbo.MajiangGamePlayerMaidiDbo;
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.service.MajiangGameQueryService;
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.service.MajiangPlayQueryService;
@@ -36,6 +40,7 @@ import com.dml.mpgame.game.GameNotFoundException;
 import com.dml.mpgame.game.extend.fpmpv.VoteNotPassWhenWaitingNextPan;
 import com.dml.mpgame.game.extend.vote.FinishedByVote;
 import com.dml.mpgame.game.extend.vote.VoteNotPassWhenPlaying;
+import com.google.gson.Gson;
 
 /**
  * 游戏框架相关
@@ -67,6 +72,11 @@ public class GameController {
 
 	@Autowired
 	private WenzhouMajiangResultMsgService wenzhouMajiangResultMsgService;
+
+	@Autowired
+	private HttpClient httpClient;
+
+	private Gson gson = new Gson();
 
 	/**
 	 * 新一局游戏
@@ -480,4 +490,45 @@ public class GameController {
 
 	}
 
+	@RequestMapping(value = "/wisecrack")
+	@ResponseBody
+	public CommonVO wisecrack(String token, String gameId, String ordinal) {
+		CommonVO vo = new CommonVO();
+		String playerId = playerAuthService.getPlayerIdByToken(token);
+		if (playerId == null) {
+			vo.setSuccess(false);
+			vo.setMsg("invalid token");
+			return vo;
+		}
+		// Request req = httpClient.newRequest("http://47.96.20.47:82" +
+		// "/gold/withdraw");
+		Request req = httpClient.newRequest("http://192.168.0.134:82" + "/gold/withdraw");
+		req.param("memberId", playerId);
+		req.param("amount", "10");
+		req.param("textSummary", "wisecrack");
+		try {
+			ContentResponse res = req.send();
+			String resJson = new String(res.getContent());
+			CommonVO resVo = gson.fromJson(resJson, CommonVO.class);
+			if (resVo.isSuccess()) {
+				MajiangGameDbo majiangGameDbo = majiangGameQueryService.findMajiangGameDboById(gameId);
+				// 通知其他人
+				for (MajiangGamePlayerDbo otherPlayer : majiangGameDbo.getPlayers()) {
+					if (!otherPlayer.getPlayerId().equals(playerId)) {
+						wsNotifier.notifyToListenWisecrack(otherPlayer.getPlayerId(), ordinal, playerId);
+					}
+				}
+				return vo;
+			} else {
+				vo.setSuccess(false);
+				vo.setMsg(resVo.getMsg());
+				return vo;
+			}
+		} catch (Exception e) {
+			vo.setSuccess(false);
+			vo.setMsg("SysException");
+			return vo;
+		}
+
+	}
 }
