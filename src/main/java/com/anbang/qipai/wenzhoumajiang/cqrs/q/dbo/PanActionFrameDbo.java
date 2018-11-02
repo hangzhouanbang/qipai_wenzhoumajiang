@@ -8,6 +8,16 @@ public class PanActionFrameDbo {
 	private int actionNo;
 	private byte[] frameData;
 
+	public PanActionFrameDbo() {
+
+	}
+
+	public PanActionFrameDbo(String gameId, int panNo, int actionNo) {
+		this.gameId = gameId;
+		this.panNo = panNo;
+		this.actionNo = actionNo;
+	}
+
 	public String getId() {
 		return id;
 	}

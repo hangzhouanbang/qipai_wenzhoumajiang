@@ -20,9 +20,9 @@ import com.anbang.qipai.wenzhoumajiang.cqrs.q.dbo.JuResultDbo;
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.dbo.MajiangGameDbo;
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.service.MajiangGameQueryService;
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.service.MajiangPlayQueryService;
+import com.anbang.qipai.wenzhoumajiang.msg.msjobj.MajiangHistoricalJuResult;
 import com.anbang.qipai.wenzhoumajiang.msg.service.WenzhouMajiangGameMsgService;
 import com.anbang.qipai.wenzhoumajiang.msg.service.WenzhouMajiangResultMsgService;
-import com.anbang.qipai.wenzhoumajiang.web.vo.JuResultVO;
 import com.dml.mpgame.game.GameState;
 import com.dml.mpgame.game.extend.vote.FinishedByVote;
 import com.dml.mpgame.game.player.GamePlayerState;
@@ -92,17 +92,15 @@ public class GamePlayWsController extends TextWebSocketHandler {
 		if (majiangGameValueObject != null) {
 			majiangGameQueryService.leaveGame(majiangGameValueObject);
 			gameMsgService.gamePlayerLeave(majiangGameValueObject, closedPlayerId);
-			// 通知其他玩家
 
 			String gameId = majiangGameValueObject.getId();
 			if (majiangGameValueObject.getState().name().equals(FinishedByVote.name)) {
 				JuResultDbo juResultDbo = majiangPlayQueryService.findJuResultDbo(gameId);
 				MajiangGameDbo majiangGameDbo = majiangGameQueryService.findMajiangGameDboById(gameId);
-				JuResultVO juResult = new JuResultVO(juResultDbo, majiangGameDbo);
+				MajiangHistoricalJuResult juResult = new MajiangHistoricalJuResult(juResultDbo, majiangGameDbo);
 				wenzhouMajiangResultMsgService.recordJuResult(juResult);
 				gameMsgService.gameFinished(gameId);
 			}
-
 			// 通知其他人
 			for (String otherPlayerId : majiangGameValueObject.allPlayerIds()) {
 				if (!otherPlayerId.equals(closedPlayerId)) {

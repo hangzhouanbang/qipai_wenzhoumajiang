@@ -6,9 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -27,20 +24,24 @@ import com.anbang.qipai.wenzhoumajiang.cqrs.q.dbo.MajiangGamePlayerDbo;
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.dbo.MajiangGamePlayerMaidiDbo;
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.service.MajiangGameQueryService;
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.service.MajiangPlayQueryService;
+import com.anbang.qipai.wenzhoumajiang.msg.msjobj.MajiangHistoricalJuResult;
+import com.anbang.qipai.wenzhoumajiang.msg.service.MemberGoldsMsgService;
 import com.anbang.qipai.wenzhoumajiang.msg.service.WenzhouMajiangGameMsgService;
 import com.anbang.qipai.wenzhoumajiang.msg.service.WenzhouMajiangResultMsgService;
+import com.anbang.qipai.wenzhoumajiang.plan.bean.MemberGoldBalance;
+import com.anbang.qipai.wenzhoumajiang.plan.service.MemberGoldBalanceService;
 import com.anbang.qipai.wenzhoumajiang.web.vo.CommonVO;
 import com.anbang.qipai.wenzhoumajiang.web.vo.GameVO;
-import com.anbang.qipai.wenzhoumajiang.web.vo.JuResultVO;
+import com.anbang.qipai.wenzhoumajiang.web.vo.PanActionFrameVO;
 import com.anbang.qipai.wenzhoumajiang.websocket.GamePlayWsNotifier;
 import com.anbang.qipai.wenzhoumajiang.websocket.QueryScope;
+import com.dml.majiang.pan.frame.PanActionFrame;
 import com.dml.mpgame.game.Canceled;
 import com.dml.mpgame.game.Finished;
 import com.dml.mpgame.game.GameNotFoundException;
 import com.dml.mpgame.game.extend.fpmpv.VoteNotPassWhenWaitingNextPan;
 import com.dml.mpgame.game.extend.vote.FinishedByVote;
 import com.dml.mpgame.game.extend.vote.VoteNotPassWhenPlaying;
-import com.google.gson.Gson;
 
 /**
  * 游戏框架相关
@@ -74,9 +75,10 @@ public class GameController {
 	private WenzhouMajiangResultMsgService wenzhouMajiangResultMsgService;
 
 	@Autowired
-	private HttpClient httpClient;
+	private MemberGoldBalanceService memberGoldBalanceService;
 
-	private Gson gson = new Gson();
+	@Autowired
+	private MemberGoldsMsgService memberGoldsMsgService;
 
 	/**
 	 * 新一局游戏
@@ -377,7 +379,7 @@ public class GameController {
 		// 记录战绩
 		if (juResultDbo != null) {
 			MajiangGameDbo majiangGameDbo = majiangGameQueryService.findMajiangGameDboById(gameId);
-			JuResultVO juResult = new JuResultVO(juResultDbo, majiangGameDbo);
+			MajiangHistoricalJuResult juResult = new MajiangHistoricalJuResult(juResultDbo, majiangGameDbo);
 			wenzhouMajiangResultMsgService.recordJuResult(juResult);
 		}
 
@@ -436,7 +438,7 @@ public class GameController {
 		// 记录战绩
 		if (juResultDbo != null) {
 			MajiangGameDbo majiangGameDbo = majiangGameQueryService.findMajiangGameDboById(gameId);
-			JuResultVO juResult = new JuResultVO(juResultDbo, majiangGameDbo);
+			MajiangHistoricalJuResult juResult = new MajiangHistoricalJuResult(juResultDbo, majiangGameDbo);
 			wenzhouMajiangResultMsgService.recordJuResult(juResult);
 		}
 		if (majiangGameValueObject.getState().name().equals(FinishedByVote.name)
@@ -500,35 +502,48 @@ public class GameController {
 			vo.setMsg("invalid token");
 			return vo;
 		}
-		// Request req = httpClient.newRequest("http://47.96.20.47:82" +
-		// "/gold/withdraw");
-		Request req = httpClient.newRequest("http://192.168.0.134:82" + "/gold/withdraw");
-		req.param("memberId", playerId);
-		req.param("amount", "10");
-		req.param("textSummary", "wisecrack");
-		try {
-			ContentResponse res = req.send();
-			String resJson = new String(res.getContent());
-			CommonVO resVo = gson.fromJson(resJson, CommonVO.class);
-			if (resVo.isSuccess()) {
-				MajiangGameDbo majiangGameDbo = majiangGameQueryService.findMajiangGameDboById(gameId);
-				// 通知其他人
-				for (MajiangGamePlayerDbo otherPlayer : majiangGameDbo.getPlayers()) {
-					if (!otherPlayer.getPlayerId().equals(playerId)) {
-						wsNotifier.notifyToListenWisecrack(otherPlayer.getPlayerId(), ordinal, playerId);
-					}
+		MajiangGameDbo majiangGameDbo = majiangGameQueryService.findMajiangGameDboById(gameId);
+		if (!ordinal.contains("qiaopihuafy")) {
+			// 通知其他人
+			for (MajiangGamePlayerDbo otherPlayer : majiangGameDbo.getPlayers()) {
+				if (!otherPlayer.getPlayerId().equals(playerId)) {
+					wsNotifier.notifyToListenWisecrack(otherPlayer.getPlayerId(), ordinal, playerId);
 				}
-				return vo;
-			} else {
-				vo.setSuccess(false);
-				vo.setMsg(resVo.getMsg());
-				return vo;
 			}
-		} catch (Exception e) {
-			vo.setSuccess(false);
-			vo.setMsg("SysException");
+			vo.setSuccess(true);
 			return vo;
 		}
+		MemberGoldBalance account = memberGoldBalanceService.findByMemberId(playerId);
+		if (account.getBalanceAfter() > 10) {
+			memberGoldsMsgService.withdraw(playerId, 10, "wisecrack");
+			// 通知其他人
+			for (MajiangGamePlayerDbo otherPlayer : majiangGameDbo.getPlayers()) {
+				if (!otherPlayer.getPlayerId().equals(playerId)) {
+					wsNotifier.notifyToListenWisecrack(otherPlayer.getPlayerId(), ordinal, playerId);
+				}
+			}
+			vo.setSuccess(true);
+			return vo;
+		}
+		vo.setSuccess(false);
+		vo.setMsg("InsufficientBalanceException");
+		return vo;
+	}
 
+	@RequestMapping(value = "/playback")
+	@ResponseBody
+	public CommonVO playback(String gameId, int panNo, int actionNo) {
+		CommonVO vo = new CommonVO();
+		Map data = new HashMap();
+		vo.setData(data);
+		PanActionFrame panActionFrame = majiangPlayQueryService.findPanActionFrameDboForBackPlay(gameId, panNo,
+				actionNo);
+		if (panActionFrame == null) {
+			data.put("queryResult", true);
+		} else {
+			data.put("queryResult", false);
+		}
+		data.put("panActionFrame", new PanActionFrameVO(panActionFrame));
+		return vo;
 	}
 }
