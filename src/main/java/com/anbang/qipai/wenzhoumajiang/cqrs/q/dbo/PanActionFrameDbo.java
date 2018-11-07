@@ -1,12 +1,14 @@
 package com.anbang.qipai.wenzhoumajiang.cqrs.q.dbo;
 
+import com.dml.majiang.pan.frame.PanActionFrame;
+
 public class PanActionFrameDbo {
 
 	private String id;
 	private String gameId;
 	private int panNo;
 	private int actionNo;
-	private byte[] frameData;
+	private PanActionFrame panActionFrame;
 
 	public PanActionFrameDbo() {
 
@@ -50,12 +52,12 @@ public class PanActionFrameDbo {
 		this.actionNo = actionNo;
 	}
 
-	public byte[] getFrameData() {
-		return frameData;
+	public PanActionFrame getPanActionFrame() {
+		return panActionFrame;
 	}
 
-	public void setFrameData(byte[] frameData) {
-		this.frameData = frameData;
+	public void setPanActionFrame(PanActionFrame panActionFrame) {
+		this.panActionFrame = panActionFrame;
 	}
 
 }

@@ -47,4 +47,12 @@ public class MongodbMajiangGamePlayerMaidiDboDao implements MajiangGamePlayerMai
 		mongoTemplate.updateFirst(query, update, MajiangGamePlayerMaidiDbo.class);
 	}
 
+	@Override
+	public MajiangGamePlayerMaidiDbo findByGameIdAndPanNo(String gameId, int panNo) {
+		Query query = new Query();
+		query.addCriteria(Criteria.where("gameId").is(gameId));
+		query.addCriteria(Criteria.where("panNo").is(panNo));
+		return mongoTemplate.findOne(query, MajiangGamePlayerMaidiDbo.class);
+	}
+
 }

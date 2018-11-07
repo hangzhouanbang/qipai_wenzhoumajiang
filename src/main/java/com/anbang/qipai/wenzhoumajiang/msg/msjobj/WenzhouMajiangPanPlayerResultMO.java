@@ -4,23 +4,23 @@ import com.anbang.qipai.wenzhoumajiang.cqrs.q.dbo.MajiangGamePlayerDbo;
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.dbo.WenzhouMajiangPanPlayerResultDbo;
 
 public class WenzhouMajiangPanPlayerResultMO {
-	private String id;// 玩家id
+	private String playerId;// 玩家id
 	private String nickname;// 玩家昵称
 	private int score;// 一盘总分
 
 	public WenzhouMajiangPanPlayerResultMO(MajiangGamePlayerDbo gamePlayerDbo,
 			WenzhouMajiangPanPlayerResultDbo panPlayerResult) {
-		id = gamePlayerDbo.getPlayerId();
+		playerId = gamePlayerDbo.getPlayerId();
 		nickname = gamePlayerDbo.getNickname();
 		score = panPlayerResult.getPlayerResult().getScore();
 	}
 
-	public String getId() {
-		return id;
+	public String getPlayerId() {
+		return playerId;
 	}
 
-	public void setId(String id) {
-		this.id = id;
+	public void setPlayerId(String playerId) {
+		this.playerId = playerId;
 	}
 
 	public String getNickname() {

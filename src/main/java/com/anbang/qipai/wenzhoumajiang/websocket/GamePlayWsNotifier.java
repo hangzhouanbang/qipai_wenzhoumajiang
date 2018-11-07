@@ -117,6 +117,27 @@ public class GamePlayWsNotifier {
 		});
 	}
 
+	public void notifyToListenSpeak(String playerId, String speakerId) {
+		executorService.submit(() -> {
+			CommonMO mo = new CommonMO();
+			mo.setMsg("speaking");
+			Map data = new HashMap();
+			data.put("speakerId", speakerId);
+			mo.setData(data);
+			String payLoad = gson.toJson(mo);
+			String sessionId = playerIdSessionIdMap.get(playerId);
+			if (sessionId == null) {
+				return;
+			}
+			WebSocketSession session = idSessionMap.get(sessionId);
+			if (session != null) {
+				sendMessage(session, payLoad);
+			} else {
+
+			}
+		});
+	}
+
 	private void sendMessage(WebSocketSession session, String message) {
 		synchronized (session) {
 			try {

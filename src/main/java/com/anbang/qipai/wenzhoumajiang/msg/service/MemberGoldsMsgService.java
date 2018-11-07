@@ -4,11 +4,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.messaging.support.MessageBuilder;
 
 import com.anbang.qipai.wenzhoumajiang.msg.channel.MemberGoldsSource;
 import com.anbang.qipai.wenzhoumajiang.msg.msjobj.CommonMO;
 
+@EnableBinding(MemberGoldsSource.class)
 public class MemberGoldsMsgService {
 	@Autowired
 	private MemberGoldsSource memberGoldsSource;
