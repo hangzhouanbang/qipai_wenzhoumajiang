@@ -24,9 +24,9 @@ public class ProcessCoreCommandEventHandler implements EventHandler<CommandEvent
 	private CoreSnapshotFactory coreSnapshotFactory;
 	private SnapshotJsonUtil snapshotJsonUtil;
 
-	private String snapshotFileBasePath = "./snapshot";
+	private String snapshotFileBasePath;
 
-	private String jFileBasePath = ".";
+	private String jFileBasePath;
 
 	private JournalFile jFile;
 

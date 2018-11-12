@@ -19,4 +19,9 @@ public class PlayerInfoService {
 	public void save(PlayerInfo playerInfo) {
 		playerInfoDao.save(playerInfo);
 	}
+
+	public void updateVip(String playerId, boolean vip) {
+		playerInfoDao.updateVip(playerId, vip);
+	}
+
 }
