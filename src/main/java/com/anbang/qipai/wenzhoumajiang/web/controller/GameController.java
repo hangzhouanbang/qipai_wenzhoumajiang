@@ -46,6 +46,7 @@ import com.dml.mpgame.game.GameNotFoundException;
 import com.dml.mpgame.game.extend.fpmpv.VoteNotPassWhenWaitingNextPan;
 import com.dml.mpgame.game.extend.vote.FinishedByVote;
 import com.dml.mpgame.game.extend.vote.VoteNotPassWhenPlaying;
+import com.dml.mpgame.game.player.GamePlayerOnlineState;
 
 /**
  * 游戏框架相关
@@ -406,12 +407,15 @@ public class GameController {
 		// 通知其他人来查询
 		for (String otherPlayerId : majiangGameValueObject.allPlayerIds()) {
 			if (!otherPlayerId.equals(playerId)) {
-				List<QueryScope> scopes = QueryScope.scopesForState(majiangGameValueObject.getState(),
-						majiangGameValueObject.findPlayerState(otherPlayerId));
-				scopes.remove(QueryScope.panResult);
-				scopes.forEach((scope) -> {
-					wsNotifier.notifyToQuery(otherPlayerId, scope.name());
-				});
+				GamePlayerOnlineState onlineState = majiangGameValueObject.findPlayerOnlineState(otherPlayerId);
+				if (onlineState.equals(GamePlayerOnlineState.online)) {
+					List<QueryScope> scopes = QueryScope.scopesForState(majiangGameValueObject.getState(),
+							majiangGameValueObject.findPlayerState(otherPlayerId));
+					scopes.remove(QueryScope.panResult);
+					scopes.forEach((scope) -> {
+						wsNotifier.notifyToQuery(otherPlayerId, scope.name());
+					});
+				}
 			}
 		}
 
@@ -456,12 +460,15 @@ public class GameController {
 		// 通知其他人来查询投票情况
 		for (String otherPlayerId : majiangGameValueObject.allPlayerIds()) {
 			if (!otherPlayerId.equals(playerId)) {
-				List<QueryScope> scopes = QueryScope.scopesForState(majiangGameValueObject.getState(),
-						majiangGameValueObject.findPlayerState(otherPlayerId));
-				scopes.remove(QueryScope.panResult);
-				scopes.forEach((scope) -> {
-					wsNotifier.notifyToQuery(otherPlayerId, scope.name());
-				});
+				GamePlayerOnlineState onlineState = majiangGameValueObject.findPlayerOnlineState(otherPlayerId);
+				if (onlineState.equals(GamePlayerOnlineState.online)) {
+					List<QueryScope> scopes = QueryScope.scopesForState(majiangGameValueObject.getState(),
+							majiangGameValueObject.findPlayerState(otherPlayerId));
+					scopes.remove(QueryScope.panResult);
+					scopes.forEach((scope) -> {
+						wsNotifier.notifyToQuery(otherPlayerId, scope.name());
+					});
+				}
 			}
 		}
 		return vo;

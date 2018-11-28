@@ -122,9 +122,9 @@ public class MajiangPlayQueryService {
 			majiangGamePlayerMaidiDboDao.addMajiangGamePlayerMaidiDbo(maidiDbo);
 		}
 		if (readyToNextPanResult.getFirstActionFrame() != null) {
-
 			gameLatestPanActionFrameDboDao.save(majiangGame.getId(),
 					readyToNextPanResult.getFirstActionFrame().toByteArray(1024 * 8));
+
 			// 记录一条Frame，回放的时候要做
 			String gameId = majiangGame.getId();
 			int panNo = readyToNextPanResult.getFirstActionFrame().getPanAfterAction().getNo();
