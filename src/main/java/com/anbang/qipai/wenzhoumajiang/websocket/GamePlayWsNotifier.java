@@ -2,6 +2,7 @@ package com.anbang.qipai.wenzhoumajiang.websocket;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -74,23 +75,25 @@ public class GamePlayWsNotifier {
 		return sessionIdPlayerIdMap.get(sessionId);
 	}
 
-	public void notifyToQuery(String playerId, String scope) {
+	public void notifyToQuery(String playerId, List<QueryScope> scopes) {
 		executorService.submit(() -> {
-			CommonMO mo = new CommonMO();
-			mo.setMsg("query");
-			Map data = new HashMap();
-			data.put("scope", scope);
-			mo.setData(data);
-			String payLoad = gson.toJson(mo);
-			String sessionId = playerIdSessionIdMap.get(playerId);
-			if (sessionId == null) {
-				return;
-			}
-			WebSocketSession session = idSessionMap.get(sessionId);
-			if (session != null) {
-				sendMessage(session, payLoad);
-			} else {
+			for (QueryScope scope : scopes) {
+				CommonMO mo = new CommonMO();
+				mo.setMsg("query");
+				Map data = new HashMap();
+				data.put("scope", scope.name());
+				mo.setData(data);
+				String payLoad = gson.toJson(mo);
+				String sessionId = playerIdSessionIdMap.get(playerId);
+				if (sessionId == null) {
+					return;
+				}
+				WebSocketSession session = idSessionMap.get(sessionId);
+				if (session != null) {
+					sendMessage(session, payLoad);
+				} else {
 
+				}
 			}
 		});
 	}
@@ -117,11 +120,12 @@ public class GamePlayWsNotifier {
 		});
 	}
 
-	public void notifyToListenSpeak(String playerId, String speakerId) {
+	public void notifyToListenSpeak(String playerId, String wordId, String speakerId) {
 		executorService.submit(() -> {
 			CommonMO mo = new CommonMO();
 			mo.setMsg("speaking");
 			Map data = new HashMap();
+			data.put("wordId", wordId);
 			data.put("speakerId", speakerId);
 			mo.setData(data);
 			String payLoad = gson.toJson(mo);

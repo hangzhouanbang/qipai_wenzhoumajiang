@@ -107,9 +107,7 @@ public class GamePlayWsController extends TextWebSocketHandler {
 					List<QueryScope> scopes = QueryScope.scopesForState(majiangGameValueObject.getState(),
 							majiangGameValueObject.findPlayerState(otherPlayerId));
 					scopes.remove(QueryScope.panResult);
-					scopes.forEach((scope) -> {
-						wsNotifier.notifyToQuery(otherPlayerId, scope.name());
-					});
+					wsNotifier.notifyToQuery(otherPlayerId, scopes);
 				}
 			}
 		}
@@ -164,9 +162,7 @@ public class GamePlayWsController extends TextWebSocketHandler {
 			GamePlayerState playerState = majiangGameDbo.findPlayer(playerId).getState();
 
 			List<QueryScope> scopes = QueryScope.scopesForState(gameState, playerState);
-			scopes.forEach((scope) -> {
-				wsNotifier.notifyToQuery(playerId, scope.name());
-			});
+			wsNotifier.notifyToQuery(playerId, scopes);
 
 		}
 	}
