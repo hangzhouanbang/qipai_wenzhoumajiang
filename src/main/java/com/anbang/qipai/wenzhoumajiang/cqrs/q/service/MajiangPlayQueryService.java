@@ -31,6 +31,7 @@ import com.anbang.qipai.wenzhoumajiang.plan.dao.PlayerInfoDao;
 import com.dml.majiang.pan.frame.LiangangangPanActionFramePlayerViewFilter;
 import com.dml.majiang.pan.frame.PanActionFrame;
 import com.dml.mpgame.game.Playing;
+import com.dml.mpgame.game.extend.vote.VoteNotPassWhenPlaying;
 import com.dml.mpgame.game.extend.vote.VotingWhenPlaying;
 
 @Component
@@ -62,7 +63,8 @@ public class MajiangPlayQueryService {
 	public PanActionFrame findAndFilterCurrentPanValueObjectForPlayer(String gameId, String playerId) throws Exception {
 		MajiangGameDbo majiangGameDbo = majiangGameDboDao.findById(gameId);
 		if (!(majiangGameDbo.getState().name().equals(Playing.name)
-				|| majiangGameDbo.getState().name().equals(VotingWhenPlaying.name))) {
+				|| majiangGameDbo.getState().name().equals(VotingWhenPlaying.name)
+				|| majiangGameDbo.getState().name().equals(VoteNotPassWhenPlaying.name))) {
 			throw new Exception("game not playing");
 		}
 

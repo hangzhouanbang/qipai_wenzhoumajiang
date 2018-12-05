@@ -168,7 +168,21 @@ public class GameController {
 		majiangGameQueryService.leaveGame(majiangGameValueObject);
 		// 断开玩家的socket
 		wsNotifier.closeSessionForPlayer(playerId);
-		gameMsgService.gamePlayerLeave(majiangGameValueObject, playerId);
+		String gameId = majiangGameValueObject.getId();
+		JuResultDbo juResultDbo = majiangPlayQueryService.findJuResultDbo(gameId);
+		// 记录战绩
+		if (juResultDbo != null) {
+			MajiangGameDbo majiangGameDbo = majiangGameQueryService.findMajiangGameDboById(gameId);
+			MajiangHistoricalJuResult juResult = new MajiangHistoricalJuResult(juResultDbo, majiangGameDbo);
+			wenzhouMajiangResultMsgService.recordJuResult(juResult);
+		}
+		if (majiangGameValueObject.getState().name().equals(FinishedByVote.name)
+				|| majiangGameValueObject.getState().name().equals(Canceled.name)) {
+			gameMsgService.gameFinished(gameId);
+		} else {
+			gameMsgService.gamePlayerLeave(majiangGameValueObject, playerId);
+
+		}
 		// 通知其他玩家
 		for (String otherPlayerId : majiangGameValueObject.allPlayerIds()) {
 			if (!otherPlayerId.equals(playerId)) {
@@ -214,7 +228,21 @@ public class GameController {
 		majiangGameQueryService.leaveGame(majiangGameValueObject);
 		// 断开玩家的socket
 		wsNotifier.closeSessionForPlayer(playerId);
-		gameMsgService.gamePlayerLeave(majiangGameValueObject, playerId);
+		String gameId = majiangGameValueObject.getId();
+		JuResultDbo juResultDbo = majiangPlayQueryService.findJuResultDbo(gameId);
+		// 记录战绩
+		if (juResultDbo != null) {
+			MajiangGameDbo majiangGameDbo = majiangGameQueryService.findMajiangGameDboById(gameId);
+			MajiangHistoricalJuResult juResult = new MajiangHistoricalJuResult(juResultDbo, majiangGameDbo);
+			wenzhouMajiangResultMsgService.recordJuResult(juResult);
+		}
+		if (majiangGameValueObject.getState().name().equals(FinishedByVote.name)
+				|| majiangGameValueObject.getState().name().equals(Canceled.name)) {
+			gameMsgService.gameFinished(gameId);
+		} else {
+			gameMsgService.gamePlayerLeave(majiangGameValueObject, playerId);
+
+		}
 		// 通知其他玩家
 		for (String otherPlayerId : majiangGameValueObject.allPlayerIds()) {
 			if (!otherPlayerId.equals(playerId)) {
