@@ -66,6 +66,19 @@ public class WenzhouMajiangChiPengGangActionStatisticsListener
 						|| xiajia.getId().equals(dachupaiPlayer.getId()))) {
 					tongpeiCount += 2;
 				}
+			} else if (gangAction.getGangType().equals(GangType.kezigangshoupai)) {
+				String dachupaiPlayerId = gangAction.getDachupaiPlayerId();
+				if (dachupaiPlayerId != null) {
+					MajiangPlayer dachupaiPlayer = currentPan.findPlayerById(gangAction.getDachupaiPlayerId());
+					MajiangPlayer zhuangPlayer = currentPan.findPlayerByMenFeng(MajiangPosition.dong);
+					MajiangPlayer shangjia = currentPan.findShangjia(zhuangPlayer);
+					MajiangPlayer xiajia = currentPan.findXiajia(zhuangPlayer);
+					// 如果上家杠庄家或者下家,通赔计数加2
+					if (shangjia.getId().equals(player.getId()) && (zhuangPlayer.getId().equals(dachupaiPlayer.getId())
+							|| xiajia.getId().equals(dachupaiPlayer.getId()))) {
+						tongpeiCount += 2;
+					}
+				}
 			}
 		}
 	}
