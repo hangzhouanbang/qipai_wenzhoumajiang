@@ -16,7 +16,10 @@ public class MajiangHistoricalJuResult {
 	private int panshu;
 	private long finishTime;
 
-	public MajiangHistoricalJuResult(JuResultDbo juResultDbo, MajiangGameDbo majiangGameDbo) {
+    public MajiangHistoricalJuResult() {
+    }
+
+    public MajiangHistoricalJuResult(JuResultDbo juResultDbo, MajiangGameDbo majiangGameDbo) {
 		gameId = juResultDbo.getGameId();
 		WenzhouMajiangJuResult wenzhouMajiangJuResult = juResultDbo.getJuResult();
 		dayingjiaId = wenzhouMajiangJuResult.getDayingjiaId();
