@@ -19,6 +19,8 @@ public class PanResultVO {
 
 	private int paiCount;
 
+	private PanActionFrameVO panActionFrame;
+
 	public PanResultVO(PanResultDbo dbo, MajiangGameDbo majiangGameDbo) {
 		List<WenzhouMajiangPanPlayerResultDbo> list = dbo.getPlayerResultList();
 		if (list != null) {
@@ -31,6 +33,31 @@ public class PanResultVO {
 		panNo = dbo.getPanNo();
 		finishTime = dbo.getFinishTime();
 		paiCount = dbo.getPanActionFrame().getPanAfterAction().getAvaliablePaiList().getPaiCount();
+		panActionFrame = new PanActionFrameVO(dbo.getPanActionFrame());
+	}
+
+	public PanActionFrameVO getPanActionFrame() {
+		return panActionFrame;
+	}
+
+	public void setPanActionFrame(PanActionFrameVO panActionFrame) {
+		this.panActionFrame = panActionFrame;
+	}
+
+	public void setPlayerResultList(List<WenzhouMajiangPanPlayerResultVO> playerResultList) {
+		this.playerResultList = playerResultList;
+	}
+
+	public void setHu(boolean hu) {
+		this.hu = hu;
+	}
+
+	public void setPanNo(int panNo) {
+		this.panNo = panNo;
+	}
+
+	public void setFinishTime(long finishTime) {
+		this.finishTime = finishTime;
 	}
 
 	public List<WenzhouMajiangPanPlayerResultVO> getPlayerResultList() {
