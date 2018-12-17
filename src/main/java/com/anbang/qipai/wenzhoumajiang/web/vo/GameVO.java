@@ -56,7 +56,7 @@ public class GameVO {
 		} else if (sn.equals(Finished.name)) {
 			state = "finished";
 		} else if (sn.equals(FinishedByVote.name)) {
-			state = "finished";
+			state = "finishedbyvote";
 		} else if (sn.equals(Playing.name)) {
 			state = "playing";
 		} else if (sn.equals(VotingWhenPlaying.name)) {
