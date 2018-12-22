@@ -116,11 +116,12 @@ public class DisruptorGameCmdService extends DisruptorCmdServiceBase implements 
 	}
 
 	@Override
-	public MajiangGameValueObject finish(String playerId) throws Exception {
-		CommonCommand cmd = new CommonCommand(GameCmdServiceImpl.class.getName(), "finish", playerId);
+	public MajiangGameValueObject finish(String playerId, Long currentTime) throws Exception {
+		CommonCommand cmd = new CommonCommand(GameCmdServiceImpl.class.getName(), "finish", playerId, currentTime);
 		DeferredResult<MajiangGameValueObject> result = publishEvent(disruptorFactory.getCoreCmdDisruptor(), cmd,
 				() -> {
-					MajiangGameValueObject majiangGameValueObject = gameCmdServiceImpl.finish(cmd.getParameter());
+					MajiangGameValueObject majiangGameValueObject = gameCmdServiceImpl.finish(cmd.getParameter(),
+							cmd.getParameter());
 					return majiangGameValueObject;
 				});
 		try {
@@ -183,6 +184,23 @@ public class DisruptorGameCmdService extends DisruptorCmdServiceBase implements 
 				() -> {
 					MajiangGameValueObject majiangGameValueObject = gameCmdServiceImpl
 							.leaveGameByHangup(cmd.getParameter());
+					return majiangGameValueObject;
+				});
+		try {
+			return result.getResult();
+		} catch (Exception e) {
+			throw e;
+		}
+	}
+
+	@Override
+	public MajiangGameValueObject voteToFinishByTimeOver(String playerId, Long currentTime) throws Exception {
+		CommonCommand cmd = new CommonCommand(GameCmdServiceImpl.class.getName(), "voteToFinishByTimeOver", playerId,
+				currentTime);
+		DeferredResult<MajiangGameValueObject> result = publishEvent(disruptorFactory.getCoreCmdDisruptor(), cmd,
+				() -> {
+					MajiangGameValueObject majiangGameValueObject = gameCmdServiceImpl
+							.voteToFinishByTimeOver(cmd.getParameter(), cmd.getParameter());
 					return majiangGameValueObject;
 				});
 		try {

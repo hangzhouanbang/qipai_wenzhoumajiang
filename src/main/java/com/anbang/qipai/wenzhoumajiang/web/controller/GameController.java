@@ -35,6 +35,7 @@ import com.anbang.qipai.wenzhoumajiang.plan.bean.PlayerInfo;
 import com.anbang.qipai.wenzhoumajiang.plan.service.MemberGoldBalanceService;
 import com.anbang.qipai.wenzhoumajiang.plan.service.PlayerInfoService;
 import com.anbang.qipai.wenzhoumajiang.web.vo.CommonVO;
+import com.anbang.qipai.wenzhoumajiang.web.vo.GameFinishVoteVO;
 import com.anbang.qipai.wenzhoumajiang.web.vo.GameVO;
 import com.anbang.qipai.wenzhoumajiang.web.vo.PanActionFrameVO;
 import com.anbang.qipai.wenzhoumajiang.web.vo.PanResultVO;
@@ -394,7 +395,7 @@ public class GameController {
 
 		MajiangGameValueObject majiangGameValueObject;
 		try {
-			majiangGameValueObject = gameCmdService.finish(playerId);
+			majiangGameValueObject = gameCmdService.finish(playerId, System.currentTimeMillis());
 		} catch (Exception e) {
 			vo.setSuccess(false);
 			vo.setMsg(e.getClass().getName());
@@ -490,6 +491,61 @@ public class GameController {
 
 	}
 
+	/**
+	 * 投票倒计时结束弃权
+	 */
+	@RequestMapping(value = "/timeover_to_waiver")
+	@ResponseBody
+	public CommonVO timeoverToWaiver(String token) {
+		CommonVO vo = new CommonVO();
+		Map data = new HashMap();
+		vo.setData(data);
+		String playerId = playerAuthService.getPlayerIdByToken(token);
+		if (playerId == null) {
+			vo.setSuccess(false);
+			vo.setMsg("invalid token");
+			return vo;
+		}
+
+		MajiangGameValueObject majiangGameValueObject;
+		try {
+			majiangGameValueObject = gameCmdService.voteToFinishByTimeOver(playerId, System.currentTimeMillis());
+		} catch (Exception e) {
+			vo.setSuccess(false);
+			vo.setMsg(e.getClass().getName());
+			return vo;
+		}
+		String gameId = majiangGameValueObject.getId();
+		majiangGameQueryService.voteToFinish(majiangGameValueObject);
+		JuResultDbo juResultDbo = majiangPlayQueryService.findJuResultDbo(gameId);
+		// 记录战绩
+		if (juResultDbo != null) {
+			MajiangGameDbo majiangGameDbo = majiangGameQueryService.findMajiangGameDboById(gameId);
+			MajiangHistoricalJuResult juResult = new MajiangHistoricalJuResult(juResultDbo, majiangGameDbo);
+			wenzhouMajiangResultMsgService.recordJuResult(juResult);
+		}
+		if (majiangGameValueObject.getState().name().equals(FinishedByVote.name)
+				|| majiangGameValueObject.getState().name().equals(Canceled.name)) {
+			gameMsgService.gameFinished(gameId);
+		}
+
+		data.put("queryScope", QueryScope.gameFinishVote);
+		// 通知其他人来查询投票情况
+		for (String otherPlayerId : majiangGameValueObject.allPlayerIds()) {
+			if (!otherPlayerId.equals(playerId)) {
+				GamePlayerOnlineState onlineState = majiangGameValueObject.findPlayerOnlineState(otherPlayerId);
+				if (onlineState.equals(GamePlayerOnlineState.online)) {
+					List<QueryScope> scopes = QueryScope.scopesForState(majiangGameValueObject.getState(),
+							majiangGameValueObject.findPlayerState(otherPlayerId));
+					scopes.remove(QueryScope.panResult);
+					wsNotifier.notifyToQuery(otherPlayerId, scopes);
+				}
+			}
+		}
+		return vo;
+
+	}
+
 	@RequestMapping(value = "/finish_vote_info")
 	@ResponseBody
 	public CommonVO finishvoteinfo(String gameId) {
@@ -497,7 +553,7 @@ public class GameController {
 		CommonVO vo = new CommonVO();
 		GameFinishVoteDbo gameFinishVoteDbo = majiangGameQueryService.findGameFinishVoteDbo(gameId);
 		Map data = new HashMap();
-		data.put("vote", gameFinishVoteDbo.getVote());
+		data.put("vote", new GameFinishVoteVO(gameFinishVoteDbo.getVote()));
 		vo.setData(data);
 		return vo;
 

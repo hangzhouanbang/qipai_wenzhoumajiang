@@ -131,7 +131,7 @@ public class GameCmdServiceImpl extends CmdServiceBase implements GameCmdService
 	}
 
 	@Override
-	public MajiangGameValueObject finish(String playerId) throws Exception {
+	public MajiangGameValueObject finish(String playerId, Long currentTime) throws Exception {
 		GameServer gameServer = singletonEntityRepository.getEntity(GameServer.class);
 		MajiangGame majiangGame = (MajiangGame) gameServer.findGamePlayerPlaying(playerId);
 		// 在准备阶段不会发起投票
@@ -144,7 +144,7 @@ public class GameCmdServiceImpl extends CmdServiceBase implements GameCmdService
 				majiangGame.quit(playerId);
 			}
 		} else {
-			majiangGame.launchVoteToFinish(playerId, new MostPlayersWinVoteCalculator());
+			majiangGame.launchVoteToFinish(playerId, new MostPlayersWinVoteCalculator(), currentTime, 15000);
 			majiangGame.voteToFinish(playerId, VoteOption.yes);
 		}
 
@@ -178,6 +178,18 @@ public class GameCmdServiceImpl extends CmdServiceBase implements GameCmdService
 		majiangGame.setState(new Finished());
 		majiangGame.updateAllPlayersState(new PlayerFinished());
 		gameServer.finishGame(gameId);
+		return new MajiangGameValueObject(majiangGame);
+	}
+
+	@Override
+	public MajiangGameValueObject voteToFinishByTimeOver(String playerId, Long currentTime) throws Exception {
+		GameServer gameServer = singletonEntityRepository.getEntity(GameServer.class);
+		MajiangGame majiangGame = (MajiangGame) gameServer.findGamePlayerPlaying(playerId);
+		majiangGame.voteToFinishByTimeOver(currentTime);
+
+		if (majiangGame.getState().name().equals(FinishedByVote.name)) {
+			gameServer.finishGame(majiangGame.getId());
+		}
 		return new MajiangGameValueObject(majiangGame);
 	}
 
