@@ -10,12 +10,11 @@ import com.dml.mpgame.game.Finished;
 import com.dml.mpgame.game.Game;
 import com.dml.mpgame.game.GameValueObject;
 import com.dml.mpgame.game.WaitingStart;
-import com.dml.mpgame.game.extend.fpmpv.back.FpmpvBackStrategy;
+import com.dml.mpgame.game.extend.fpmpv.back.OnlineGameBackStrategy;
 import com.dml.mpgame.game.extend.vote.FinishedByVote;
 import com.dml.mpgame.game.extend.vote.MostPlayersWinVoteCalculator;
 import com.dml.mpgame.game.extend.vote.OnlineVotePlayersFilter;
 import com.dml.mpgame.game.extend.vote.VoteOption;
-import com.dml.mpgame.game.extend.vote.leave.VoteWaiverLeaveStrategy;
 import com.dml.mpgame.game.join.FixedNumberOfPlayersGameJoinStrategy;
 import com.dml.mpgame.game.leave.HostGameLeaveStrategy;
 import com.dml.mpgame.game.leave.OfflineGameLeaveStrategy;
@@ -51,16 +50,16 @@ public class GameCmdServiceImpl extends CmdServiceBase implements GameCmdService
 		newGame.setJoinStrategy(new FixedNumberOfPlayersGameJoinStrategy(renshu));
 		newGame.setReadyStrategy(new FixedNumberOfPlayersGameReadyStrategy(renshu));
 
-		newGame.setLeaveByOfflineStrategyAfterStart(new VoteWaiverLeaveStrategy());
+		newGame.setLeaveByOfflineStrategyAfterStart(new OfflineGameLeaveStrategy());
 		newGame.setLeaveByOfflineStrategyBeforeStart(new OfflineGameLeaveStrategy());
 
-		newGame.setLeaveByHangupStrategyAfterStart(new VoteWaiverLeaveStrategy());
+		newGame.setLeaveByHangupStrategyAfterStart(new OfflineGameLeaveStrategy());
 		newGame.setLeaveByHangupStrategyBeforeStart(new OfflineGameLeaveStrategy());
 
-		newGame.setLeaveByPlayerStrategyAfterStart(new VoteWaiverLeaveStrategy());
+		newGame.setLeaveByPlayerStrategyAfterStart(new OfflineGameLeaveStrategy());
 		newGame.setLeaveByPlayerStrategyBeforeStart(new HostGameLeaveStrategy(playerId));
 
-		newGame.setBackStrategy(new FpmpvBackStrategy());
+		newGame.setBackStrategy(new OnlineGameBackStrategy());
 		newGame.create(gameId, playerId);
 		gameServer.playerCreateGame(newGame, playerId);
 

@@ -31,7 +31,8 @@ public class GameFinishVoteVO {
 		result = vote.getResult();
 		startTime = vote.getStartTime();
 		long endTime = vote.getEndTime();
-		remainTime = System.currentTimeMillis() > endTime ? 0 : endTime - (System.currentTimeMillis() - startTime);
+		long currentTime = System.currentTimeMillis();
+		remainTime = currentTime > endTime ? 0 : endTime - currentTime;
 	}
 
 	public String getSponsorId() {
