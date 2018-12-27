@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -61,6 +63,8 @@ public class MajiangController {
 
 	@Autowired
 	private WenzhouMajiangGameMsgService gameMsgService;
+
+	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	/**
 	 * 当前盘我应该看到的所有信息
@@ -185,6 +189,8 @@ public class MajiangController {
 	@RequestMapping(value = "/action")
 	@ResponseBody
 	public CommonVO action(String token, int id) {
+		long startTime = System.currentTimeMillis();
+		logger.info("startTime:" + startTime);
 		CommonVO vo = new CommonVO();
 		Map data = new HashMap();
 		List<String> queryScopes = new ArrayList<>();
@@ -194,6 +200,12 @@ public class MajiangController {
 		if (playerId == null) {
 			vo.setSuccess(false);
 			vo.setMsg("invalid token");
+			logger.info("playerId:" + playerId);
+			logger.info("id:" + id);
+			logger.info("success:" + vo.isSuccess() + ",msg:" + vo.getMsg());
+			long endTime = System.currentTimeMillis();
+			logger.info("endTime:" + endTime);
+			logger.info("use:" + (endTime - startTime) + "ms");
 			return vo;
 		}
 
@@ -203,6 +215,12 @@ public class MajiangController {
 		} catch (Exception e) {
 			vo.setSuccess(false);
 			vo.setMsg(e.getClass().getName());
+			logger.info("playerId:" + playerId);
+			logger.info("id:" + id);
+			logger.info("success:" + vo.isSuccess() + ",msg:" + vo.getMsg());
+			long endTime = System.currentTimeMillis();
+			logger.info("endTime:" + endTime);
+			logger.info("use:" + (endTime - startTime) + "ms");
 			return vo;
 		}
 		try {
@@ -210,6 +228,13 @@ public class MajiangController {
 		} catch (Throwable e) {
 			vo.setSuccess(false);
 			vo.setMsg(e.getMessage());
+			logger.info("gameId:" + majiangActionResult.getMajiangGame().getId());
+			logger.info("playerId:" + playerId);
+			logger.info("id:" + id);
+			logger.info("success:" + vo.isSuccess() + ",msg:" + vo.getMsg());
+			long endTime = System.currentTimeMillis();
+			logger.info("endTime:" + endTime);
+			logger.info("use:" + (endTime - startTime) + "ms");
 			return vo;
 		}
 
@@ -245,7 +270,13 @@ public class MajiangController {
 								majiangActionResult.getMajiangGame().findPlayerState(otherPlayerId)));
 			}
 		}
-
+		logger.info("gameId:" + majiangActionResult.getMajiangGame().getId());
+		logger.info("playerId:" + playerId);
+		logger.info("id:" + id);
+		logger.info("success:" + vo.isSuccess() + ",msg:" + vo.getMsg());
+		long endTime = System.currentTimeMillis();
+		logger.info("endTime:" + endTime);
+		logger.info("use:" + (endTime - startTime) + "ms");
 		return vo;
 	}
 
