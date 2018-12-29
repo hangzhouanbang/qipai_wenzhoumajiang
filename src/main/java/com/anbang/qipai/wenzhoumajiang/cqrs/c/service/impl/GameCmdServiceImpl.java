@@ -143,7 +143,7 @@ public class GameCmdServiceImpl extends CmdServiceBase implements GameCmdService
 				majiangGame.quit(playerId);
 			}
 		} else {
-			majiangGame.launchVoteToFinish(playerId, new MostPlayersWinVoteCalculator(), currentTime, 15000);
+			majiangGame.launchVoteToFinish(playerId, new MostPlayersWinVoteCalculator(), currentTime, 99000);
 			majiangGame.voteToFinish(playerId, VoteOption.yes);
 		}
 
