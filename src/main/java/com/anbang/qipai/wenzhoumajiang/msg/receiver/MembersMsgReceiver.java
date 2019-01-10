@@ -29,6 +29,9 @@ public class MembersMsgReceiver {
 		if ("memberOrder delive".equals(msg) || "recharge vip".equals(msg) || "update member vip".equals(msg)) {
 			playerInfoService.updateVip(playerInfo.getId(), playerInfo.isVip());
 		}
+		if ("update member info".equals(msg)) {
+			playerInfoService.updateMemberBaseInfo(playerInfo);
+		}
 	}
 
 }

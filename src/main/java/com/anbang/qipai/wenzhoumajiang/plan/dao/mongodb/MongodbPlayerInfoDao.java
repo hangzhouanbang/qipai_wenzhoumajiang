@@ -38,4 +38,11 @@ public class MongodbPlayerInfoDao implements PlayerInfoDao {
 		mongoTemplate.updateFirst(query, update, PlayerInfo.class);
 	}
 
+	@Override
+	public void updateMemberBaseInfo(String memberId, String nickname, String headimgurl, String gender) {
+		mongoTemplate.updateFirst(new Query(Criteria.where("id").is(memberId)),
+				new Update().set("nickname", nickname).set("headimgurl", headimgurl).set("gender", gender),
+				PlayerInfo.class);
+	}
+
 }

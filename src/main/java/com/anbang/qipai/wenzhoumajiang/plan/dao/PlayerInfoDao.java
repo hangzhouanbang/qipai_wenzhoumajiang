@@ -9,4 +9,6 @@ public interface PlayerInfoDao {
 	void save(PlayerInfo playerInfo);
 
 	void updateVip(String playerId, boolean vip);
+
+	void updateMemberBaseInfo(String memberId, String nickname, String headimgurl, String gender);
 }
