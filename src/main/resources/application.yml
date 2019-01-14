@@ -1,7 +1,7 @@
 spring:
   data:
     mongodb:
-      uri: mongodb://localhost:27017/qipai_wenzhoumajiang
+      #uri: mongodb://localhost:27017/qipai_wenzhoumajiang
   cloud:
     stream:
       kafka:
@@ -33,6 +33,16 @@ spring:
                 batch:
                   size: 16384
           memberGoldsAccounting:
+            producer:
+              configuration:
+                request:
+                  timeout:
+                    ms: 30000
+                linger:
+                  ms: 5
+                batch:
+                  size: 16384
+          wisecrack:
             producer:
               configuration:
                 request:
@@ -78,7 +88,12 @@ spring:
           consumer:
             concurrency: 1
             partitioned: false
-          contentType: application/json    
+          contentType: application/json
+        wisecrack:
+          destination: wisecrack
+          contentType: application/json
+          producer:
+            partitionCount: 1
       
 server:
   port: 2003
