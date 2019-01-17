@@ -73,14 +73,26 @@ public class WenzhouMajiangDaActionUpdater implements MajiangPlayerDaActionUpdat
 		}
 		GuoPengBuPengStatisticsListener guoPengBuPengStatisticsListener = ju.getActionStatisticsListenerManager()
 				.findListener(GuoPengBuPengStatisticsListener.class);
-		Map<String, MajiangPai> canNotPengPlayersPaiMap = guoPengBuPengStatisticsListener.getCanNotPengPlayersPaiMap();
+		Map<String, List<MajiangPai>> canNotPengPlayersPaiMap = guoPengBuPengStatisticsListener
+				.getCanNotPengPlayersPaiMap();
 		while (true) {
 			if (!xiajiaPlayer.getId().equals(daAction.getActionPlayerId())) {
 				// 其他的可以碰杠胡
 				List<MajiangPai> fangruShoupaiList1 = xiajiaPlayer.getFangruShoupaiList();
 				if (fangruShoupaiList1.size() != 2) {// 下家只有两张手牌时
-					if (!canNotPengPlayersPaiMap.containsKey(xiajiaPlayer.getId())
-							|| !canNotPengPlayersPaiMap.get(xiajiaPlayer.getId()).equals(daAction.getPai())) {
+					boolean canPeng = true;// 可以碰
+					if (canNotPengPlayersPaiMap.containsKey(xiajiaPlayer.getId())) {
+						List<MajiangPai> canNotPengPaiList = canNotPengPlayersPaiMap.get(xiajiaPlayer.getId());
+						if (canNotPengPaiList != null && !canNotPengPaiList.isEmpty()) {
+							for (MajiangPai pai : canNotPengPaiList) {
+								if (pai.equals(daAction.getPai())) {
+									canPeng = false;
+									break;
+								}
+							}
+						}
+					}
+					if (canPeng) {
 						xiajiaPlayer.tryPengAndGenerateCandidateAction(daAction.getActionPlayerId(), daAction.getPai());
 					}
 				}
