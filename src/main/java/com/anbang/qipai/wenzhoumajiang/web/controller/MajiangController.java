@@ -190,7 +190,6 @@ public class MajiangController {
 	@ResponseBody
 	public CommonVO action(String token, int id) {
 		long startTime = System.currentTimeMillis();
-		logger.info("startTime:" + startTime);
 		CommonVO vo = new CommonVO();
 		Map data = new HashMap();
 		List<String> queryScopes = new ArrayList<>();
@@ -200,12 +199,10 @@ public class MajiangController {
 		if (playerId == null) {
 			vo.setSuccess(false);
 			vo.setMsg("invalid token");
-			logger.info("playerId:" + playerId);
-			logger.info("id:" + id);
-			logger.info("success:" + vo.isSuccess() + ",msg:" + vo.getMsg());
 			long endTime = System.currentTimeMillis();
-			logger.info("endTime:" + endTime);
-			logger.info("use:" + (endTime - startTime) + "ms");
+			logger.info("action," + "startTime:" + startTime + "," + "playerId:" + playerId + "," + "id:" + id + ","
+					+ "success:" + vo.isSuccess() + ",msg:" + vo.getMsg() + "," + "endTime:" + endTime + "," + "use:"
+					+ (endTime - startTime) + "ms");
 			return vo;
 		}
 
@@ -215,12 +212,10 @@ public class MajiangController {
 		} catch (Exception e) {
 			vo.setSuccess(false);
 			vo.setMsg(e.getClass().getName());
-			logger.info("playerId:" + playerId);
-			logger.info("id:" + id);
-			logger.info("success:" + vo.isSuccess() + ",msg:" + vo.getMsg());
 			long endTime = System.currentTimeMillis();
-			logger.info("endTime:" + endTime);
-			logger.info("use:" + (endTime - startTime) + "ms");
+			logger.info("action," + "startTime:" + startTime + "," + "playerId:" + playerId + "," + "id:" + id + ","
+					+ "success:" + vo.isSuccess() + ",msg:" + vo.getMsg() + "," + "endTime:" + endTime + "," + "use:"
+					+ (endTime - startTime) + "ms");
 			return vo;
 		}
 		try {
@@ -228,13 +223,11 @@ public class MajiangController {
 		} catch (Throwable e) {
 			vo.setSuccess(false);
 			vo.setMsg(e.getMessage());
-			logger.info("gameId:" + majiangActionResult.getMajiangGame().getId());
-			logger.info("playerId:" + playerId);
-			logger.info("id:" + id);
-			logger.info("success:" + vo.isSuccess() + ",msg:" + vo.getMsg());
 			long endTime = System.currentTimeMillis();
-			logger.info("endTime:" + endTime);
-			logger.info("use:" + (endTime - startTime) + "ms");
+			logger.info("action," + "startTime:" + startTime + "," + "gameId:"
+					+ majiangActionResult.getMajiangGame().getId() + "," + "playerId:" + playerId + "," + "id:" + id
+					+ "," + "success:" + vo.isSuccess() + ",msg:" + vo.getMsg() + "," + "endTime:" + endTime + ","
+					+ "use:" + (endTime - startTime) + "ms");
 			return vo;
 		}
 
@@ -270,13 +263,11 @@ public class MajiangController {
 								majiangActionResult.getMajiangGame().findPlayerState(otherPlayerId)));
 			}
 		}
-		logger.info("gameId:" + majiangActionResult.getMajiangGame().getId());
-		logger.info("playerId:" + playerId);
-		logger.info("id:" + id);
-		logger.info("success:" + vo.isSuccess() + ",msg:" + vo.getMsg());
 		long endTime = System.currentTimeMillis();
-		logger.info("endTime:" + endTime);
-		logger.info("use:" + (endTime - startTime) + "ms");
+		logger.info(
+				"action," + "startTime:" + startTime + "," + "gameId:" + majiangActionResult.getMajiangGame().getId()
+						+ "," + "playerId:" + playerId + "," + "id:" + id + "," + "success:" + vo.isSuccess() + ",msg:"
+						+ vo.getMsg() + "," + "endTime:" + endTime + "," + "use:" + (endTime - startTime) + "ms");
 		return vo;
 	}
 
