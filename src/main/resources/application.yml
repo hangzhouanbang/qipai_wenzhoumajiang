@@ -1,7 +1,7 @@
 spring:
   data:
     mongodb:
-      uri: mongodb://localhost:27017/qipai_wenzhoumajiang
+      #uri: mongodb://localhost:27017/qipai_wenzhoumajiang
 
   cloud:
     stream:
@@ -98,6 +98,10 @@ spring:
       
 server:
   port: 2003
+  tomcat:
+    access-log-enabled: true
+    access-log-pattern: '%a %h %A %p %U %t %H %m %r %s %b %D'
+    basedir: ./
   compression:
     enabled: true
     mime-types: application/json,application/xml,text/html,text/xml,text/plain
