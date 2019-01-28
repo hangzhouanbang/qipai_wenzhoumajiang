@@ -10,6 +10,10 @@ public interface GameCmdService {
 			Boolean jinjie1, Boolean jinjie2, Boolean teshushuangfan, Boolean caishenqian, Boolean shaozhongfa,
 			Boolean lazila, Boolean gangsuanfen);
 
+	MajiangGameValueObject newMajiangGameForXiuxianchang(String gameId, String playerId, Integer panshu, Integer renshu,
+			Boolean jinjie1, Boolean jinjie2, Boolean teshushuangfan, Boolean caishenqian, Boolean shaozhongfa,
+			Boolean lazila, Boolean gangsuanfen);
+
 	MajiangGameValueObject leaveGame(String playerId) throws Exception;
 
 	ReadyForGameResult readyForGame(String playerId, Long currentTime) throws Exception;
