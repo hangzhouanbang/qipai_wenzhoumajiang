@@ -115,17 +115,16 @@ public class GameController {
 	}
 
 	/**
-	 * 新一局游戏
+	 * 新一局游戏,游戏未开始时离开就是退出
 	 */
-	@RequestMapping(value = "/newgame_xiuxianchang")
+	@RequestMapping(value = "/newgame_leave_quit")
 	@ResponseBody
-	public CommonVO newgameForXiuxianchang(String playerId, int panshu, int renshu, boolean jinjie1, boolean jinjie2,
+	public CommonVO newgame_leave_quit(String playerId, int panshu, int renshu, boolean jinjie1, boolean jinjie2,
 			boolean teshushuangfan, boolean caishenqian, boolean shaozhongfa, boolean lazila, boolean gangsuanfen) {
 		CommonVO vo = new CommonVO();
 		String newGameId = UUID.randomUUID().toString();
-		MajiangGameValueObject majiangGameValueObject = gameCmdService.newMajiangGameForXiuxianchang(newGameId,
-				playerId, panshu, renshu, jinjie1, jinjie2, teshushuangfan, caishenqian, shaozhongfa, lazila,
-				gangsuanfen);
+		MajiangGameValueObject majiangGameValueObject = gameCmdService.newMajiangGameLeaveAndQuit(newGameId, playerId,
+				panshu, renshu, jinjie1, jinjie2, teshushuangfan, caishenqian, shaozhongfa, lazila, gangsuanfen);
 		majiangGameQueryService.newMajiangGame(majiangGameValueObject);
 		String token = playerAuthService.newSessionForPlayer(playerId);
 		Map data = new HashMap();
