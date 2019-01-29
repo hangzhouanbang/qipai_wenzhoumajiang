@@ -20,6 +20,7 @@ import com.dml.mpgame.game.leave.HostGameLeaveStrategy;
 import com.dml.mpgame.game.leave.OfflineAndNotReadyGameLeaveStrategy;
 import com.dml.mpgame.game.leave.OfflineGameLeaveStrategy;
 import com.dml.mpgame.game.leave.PlayerGameLeaveStrategy;
+import com.dml.mpgame.game.leave.PlayerLeaveCancelGameGameLeaveStrategy;
 import com.dml.mpgame.game.player.PlayerFinished;
 import com.dml.mpgame.game.ready.FixedNumberOfPlayersGameReadyStrategy;
 import com.dml.mpgame.server.GameServer;
@@ -100,7 +101,7 @@ public class GameCmdServiceImpl extends CmdServiceBase implements GameCmdService
 		newGame.setLeaveByHangupStrategyAfterStart(new OfflineGameLeaveStrategy());
 		newGame.setLeaveByHangupStrategyBeforeStart(new PlayerGameLeaveStrategy());
 
-		newGame.setLeaveByPlayerStrategyAfterStart(new OfflineGameLeaveStrategy());
+		newGame.setLeaveByPlayerStrategyAfterStart(new PlayerLeaveCancelGameGameLeaveStrategy());
 		newGame.setLeaveByPlayerStrategyBeforeStart(new PlayerGameLeaveStrategy());
 
 		newGame.setBackStrategy(new OnlineGameBackStrategy());

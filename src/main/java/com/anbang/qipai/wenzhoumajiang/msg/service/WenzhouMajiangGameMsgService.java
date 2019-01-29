@@ -37,6 +37,17 @@ public class WenzhouMajiangGameMsgService {
 		}
 	}
 
+	public void gameCanceled(String gameId, String playerId) {
+		CommonMO mo = new CommonMO();
+		mo.setMsg("ju canceled");
+		Map data = new HashMap();
+		data.put("gameId", gameId);
+		data.put("playerId", playerId);
+		data.put("leaveTime", System.currentTimeMillis());
+		mo.setData(data);
+		wenzhouMajiangGameSource.wenzhouMajiangGame().send(MessageBuilder.withPayload(mo).build());
+	}
+
 	public void gameFinished(String gameId) {
 		CommonMO mo = new CommonMO();
 		mo.setMsg("ju finished");
