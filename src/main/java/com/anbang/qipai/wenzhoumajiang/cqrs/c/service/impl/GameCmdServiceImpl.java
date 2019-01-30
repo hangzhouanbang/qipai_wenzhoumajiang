@@ -117,7 +117,7 @@ public class GameCmdServiceImpl extends CmdServiceBase implements GameCmdService
 		GameServer gameServer = singletonEntityRepository.getEntity(GameServer.class);
 		Game game = gameServer.findGamePlayerPlaying(playerId);
 		MajiangGameValueObject majiangGameValueObject = gameServer.leaveByPlayer(playerId);
-		if (game.getState().name().equals(FinishedByVote.name)) {// 有可能离开的时候正在投票，由于离开自动投弃权最终导致游戏结束
+		if (game.getState().name().equals(FinishedByVote.name) || game.getState().name().equals(Finished.name)) {// 有可能离开的时候正在投票，由于离开自动投弃权最终导致游戏结束
 			gameServer.finishGame(game.getId());
 		}
 		return majiangGameValueObject;

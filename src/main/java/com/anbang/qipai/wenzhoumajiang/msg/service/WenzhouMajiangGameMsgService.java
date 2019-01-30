@@ -37,6 +37,9 @@ public class WenzhouMajiangGameMsgService {
 		}
 	}
 
+	/**
+	 * 游戏非正常结束
+	 */
 	public void gameCanceled(String gameId, String playerId) {
 		CommonMO mo = new CommonMO();
 		mo.setMsg("ju canceled");
