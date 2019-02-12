@@ -21,7 +21,7 @@ import com.dml.majiang.player.action.guo.DoNothingGuoActionProcessor;
 import com.dml.majiang.player.action.hu.PlayerHuAndClearAllActionHuActionUpdater;
 import com.dml.majiang.player.action.hu.PlayerSetHuHuActionProcessor;
 import com.dml.majiang.player.action.initial.ZhuangMoPaiInitialActionUpdater;
-import com.dml.majiang.player.action.listener.comprehensive.DianpaoDihuOpportunityDetector;
+import com.dml.majiang.player.action.listener.comprehensive.TianHuAndDihuOpportunityDetector;
 import com.dml.majiang.player.action.listener.comprehensive.GuoPengBuPengStatisticsListener;
 import com.dml.majiang.player.action.listener.mo.MoGuipaiCounter;
 import com.dml.majiang.player.action.peng.HuFirstBuPengActionProcessor;
@@ -156,7 +156,7 @@ public class MajiangGame extends FixedPlayersMultipanAndVotetofinishGame {
 		ju.setHuActionUpdater(new PlayerHuAndClearAllActionHuActionUpdater());
 
 		ju.addActionStatisticsListener(new MoGuipaiCounter());
-		ju.addActionStatisticsListener(new DianpaoDihuOpportunityDetector());
+		ju.addActionStatisticsListener(new TianHuAndDihuOpportunityDetector());
 		ju.addActionStatisticsListener(new GuoPengBuPengStatisticsListener());
 		ju.addActionStatisticsListener(new WenzhouMajiangChiPengGangActionStatisticsListener());
 
