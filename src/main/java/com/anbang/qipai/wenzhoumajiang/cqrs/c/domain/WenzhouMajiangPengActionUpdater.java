@@ -43,13 +43,13 @@ public class WenzhouMajiangPengActionUpdater implements MajiangPlayerPengActionU
 			juezhangStatisticsListener.updateForNextLun();// 清空动作缓存
 
 			// 刻子杠手牌
-			for (PengchuPaiZu pengchuPaiZu : player.getPengchupaiZuList()) {
-				for (MajiangPai fangruShoupai : player.getFangruShoupaiList()) {
-					if (pengchuPaiZu.getKezi().getPaiType().equals(fangruShoupai)) {
-						player.addActionCandidate(new MajiangGangAction(pengAction.getActionPlayerId(),
-								pengAction.getDachupaiPlayerId(), fangruShoupai, GangType.kezigangshoupai));
-						break;
-					}
+			List<PengchuPaiZu> pengchupaiZuList = player.getPengchupaiZuList();
+			PengchuPaiZu pengchuPaiZu = pengchupaiZuList.get(pengchupaiZuList.size() - 1);
+			for (MajiangPai fangruShoupai : player.getFangruShoupaiList()) {
+				if (pengchuPaiZu.getKezi().getPaiType().equals(fangruShoupai)) {
+					player.addActionCandidate(new MajiangGangAction(pengAction.getActionPlayerId(),
+							pengAction.getDachupaiPlayerId(), fangruShoupai, GangType.kezigangshoupai));
+					break;
 				}
 			}
 
