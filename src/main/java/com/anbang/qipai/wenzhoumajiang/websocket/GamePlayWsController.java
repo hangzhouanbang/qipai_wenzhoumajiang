@@ -23,6 +23,8 @@ import com.anbang.qipai.wenzhoumajiang.cqrs.q.service.MajiangPlayQueryService;
 import com.anbang.qipai.wenzhoumajiang.msg.msjobj.MajiangHistoricalJuResult;
 import com.anbang.qipai.wenzhoumajiang.msg.service.WenzhouMajiangGameMsgService;
 import com.anbang.qipai.wenzhoumajiang.msg.service.WenzhouMajiangResultMsgService;
+import com.dml.mpgame.game.Canceled;
+import com.dml.mpgame.game.Finished;
 import com.dml.mpgame.game.GameState;
 import com.dml.mpgame.game.extend.vote.FinishedByVote;
 import com.dml.mpgame.game.player.GamePlayerState;
@@ -94,7 +96,9 @@ public class GamePlayWsController extends TextWebSocketHandler {
 			gameMsgService.gamePlayerLeave(majiangGameValueObject, closedPlayerId);
 
 			String gameId = majiangGameValueObject.getId();
-			if (majiangGameValueObject.getState().name().equals(FinishedByVote.name)) {
+			if (majiangGameValueObject.getState().name().equals(FinishedByVote.name)
+					|| majiangGameValueObject.getState().name().equals(Canceled.name)
+					|| majiangGameValueObject.getState().name().equals(Finished.name)) {
 				JuResultDbo juResultDbo = majiangPlayQueryService.findJuResultDbo(gameId);
 				if (juResultDbo != null) {
 					MajiangGameDbo majiangGameDbo = majiangGameQueryService.findMajiangGameDboById(gameId);
