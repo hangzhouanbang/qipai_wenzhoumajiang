@@ -25,9 +25,6 @@ public class ShoupaixingWuguanJiesuancanshu {
 	private boolean danzhangdiao;
 	private MajiangPai guipaiType;
 	private boolean guipaiIsZhongFaBai;
-	private int hongzhongCount;
-	private int facaiCount;
-	private int baibanCount;
 
 	public ShoupaixingWuguanJiesuancanshu(MajiangPlayer player) {
 		baibanShu = player.countPublicPai();
@@ -68,32 +65,6 @@ public class ShoupaixingWuguanJiesuancanshu {
 		chichupaiZuCount = player.countChichupaiZu();
 		fangruShoupaiCount = player.getFangruShoupaiList().size();
 		danzhangdiao = (fangruShoupaiCount + caishenShu == 1);
-		hongzhongCount = 0;
-		facaiCount = 0;
-		baibanCount = 0;
-		for (MajiangPai pai : player.getFangruShoupaiList()) {
-			if (MajiangPai.hongzhong.equals(pai)) {
-				hongzhongCount += 1;
-			}
-			if (MajiangPai.facai.equals(pai)) {
-				facaiCount += 1;
-			}
-			if (MajiangPai.baiban.equals(pai)) {
-				baibanCount += 1;
-			}
-		}
-		MajiangPai gangmoShoupai = player.getGangmoShoupai();
-		if (gangmoShoupai != null) {
-			if (MajiangPai.hongzhong.equals(gangmoShoupai)) {
-				hongzhongCount += 1;
-			}
-			if (MajiangPai.facai.equals(gangmoShoupai)) {
-				facaiCount += 1;
-			}
-			if (MajiangPai.baiban.equals(gangmoShoupai)) {
-				baibanCount += 1;
-			}
-		}
 	}
 
 	public int getBaibanShu() {
@@ -182,29 +153,5 @@ public class ShoupaixingWuguanJiesuancanshu {
 
 	public void setGuipaiIsZhongFaBai(boolean guipaiIsZhongFaBai) {
 		this.guipaiIsZhongFaBai = guipaiIsZhongFaBai;
-	}
-
-	public int getHongzhongCount() {
-		return hongzhongCount;
-	}
-
-	public void setHongzhongCount(int hongzhongCount) {
-		this.hongzhongCount = hongzhongCount;
-	}
-
-	public int getFacaiCount() {
-		return facaiCount;
-	}
-
-	public void setFacaiCount(int facaiCount) {
-		this.facaiCount = facaiCount;
-	}
-
-	public int getBaibanCount() {
-		return baibanCount;
-	}
-
-	public void setBaibanCount(int baibanCount) {
-		this.baibanCount = baibanCount;
 	}
 }

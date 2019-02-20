@@ -135,22 +135,37 @@ public class WenzhouMajiangJiesuanCalculator {
 		MajiangPai guipaiType = shoupaixingWuguanJiesuancanshu.getGuipaiType();// 鬼牌
 		/* 中发白：手上包含中、發和白三者的对子或刻子且符合胡牌基本牌型。（若财神为中發白时，手上需包含财神和除财神外另外两者的刻子或杠牌且符合胡牌基本牌型） */
 		if (shoupaixingWuguanJiesuancanshu.isGuipaiIsZhongFaBai()) {
-			if (guipaiType.equals(MajiangPai.hongzhong) && shoupaixingWuguanJiesuancanshu.getFacaiCount() > 2
-					&& shoupaixingWuguanJiesuancanshu.getBaibanCount() > 2) {
+			if (guipaiType.equals(MajiangPai.hongzhong)
+					&& (shoupaiPaiXing.hasGangziForPaiType(MajiangPai.facai)
+							|| shoupaiPaiXing.hasKeziForPaiType(MajiangPai.facai))
+					&& (shoupaiPaiXing.hasGangziForPaiType(MajiangPai.baiban)
+							|| shoupaiPaiXing.hasKeziForPaiType(MajiangPai.baiban))) {
 				huxing.setZhongfabai(true);
 			}
-			if (guipaiType.equals(MajiangPai.facai) && shoupaixingWuguanJiesuancanshu.getHongzhongCount() > 2
-					&& shoupaixingWuguanJiesuancanshu.getBaibanCount() > 2) {
+			if (guipaiType.equals(MajiangPai.facai)
+					&& (shoupaiPaiXing.hasGangziForPaiType(MajiangPai.hongzhong)
+							|| shoupaiPaiXing.hasKeziForPaiType(MajiangPai.hongzhong))
+					&& (shoupaiPaiXing.hasGangziForPaiType(MajiangPai.baiban)
+							|| shoupaiPaiXing.hasKeziForPaiType(MajiangPai.baiban))) {
 				huxing.setZhongfabai(true);
 			}
-			if (guipaiType.equals(MajiangPai.baiban) && shoupaixingWuguanJiesuancanshu.getFacaiCount() > 2
-					&& shoupaixingWuguanJiesuancanshu.getHongzhongCount() > 2) {
+			if (guipaiType.equals(MajiangPai.baiban)
+					&& (shoupaiPaiXing.hasGangziForPaiType(MajiangPai.facai)
+							|| shoupaiPaiXing.hasKeziForPaiType(MajiangPai.facai))
+					&& (shoupaiPaiXing.hasGangziForPaiType(MajiangPai.hongzhong)
+							|| shoupaiPaiXing.hasKeziForPaiType(MajiangPai.hongzhong))) {
 				huxing.setZhongfabai(true);
 			}
 		} else {
-			if (shoupaixingWuguanJiesuancanshu.getHongzhongCount() > 1
-					&& shoupaixingWuguanJiesuancanshu.getFacaiCount() > 1
-					&& shoupaixingWuguanJiesuancanshu.getBaibanCount() > 1) {
+			if ((shoupaiPaiXing.hasGangziForPaiType(MajiangPai.hongzhong)
+					|| shoupaiPaiXing.hasKeziForPaiType(MajiangPai.hongzhong)
+					|| shoupaiPaiXing.hasDuiziForPaiType(MajiangPai.hongzhong))
+					&& (shoupaiPaiXing.hasGangziForPaiType(MajiangPai.facai)
+							|| shoupaiPaiXing.hasKeziForPaiType(MajiangPai.facai)
+							|| shoupaiPaiXing.hasDuiziForPaiType(MajiangPai.facai))
+					&& (shoupaiPaiXing.hasGangziForPaiType(MajiangPai.baiban)
+							|| shoupaiPaiXing.hasKeziForPaiType(MajiangPai.baiban)
+							|| shoupaiPaiXing.hasDuiziForPaiType(MajiangPai.baiban))) {
 				huxing.setZhongfabai(true);
 			}
 		}
