@@ -135,37 +135,51 @@ public class WenzhouMajiangJiesuanCalculator {
 		MajiangPai guipaiType = shoupaixingWuguanJiesuancanshu.getGuipaiType();// 鬼牌
 		/* 中发白：手上包含中、發和白三者的对子或刻子且符合胡牌基本牌型。（若财神为中發白时，手上需包含财神和除财神外另外两者的刻子或杠牌且符合胡牌基本牌型） */
 		if (shoupaixingWuguanJiesuancanshu.isGuipaiIsZhongFaBai()) {
-			if (guipaiType.equals(MajiangPai.hongzhong)
-					&& (shoupaiPaiXing.hasGangziForPaiType(MajiangPai.facai)
-							|| shoupaiPaiXing.hasKeziForPaiType(MajiangPai.facai))
+			if (guipaiType.equals(MajiangPai.hongzhong) && (shoupaiPaiXing.hasGangziForPaiType(MajiangPai.facai)
+					|| shoupaiPaiXing.hasKeziForPaiType(MajiangPai.facai)
+					|| shoupaixingWuguanJiesuancanshu.isFacaiGang() || shoupaixingWuguanJiesuancanshu.isFacaiPeng())
 					&& (shoupaiPaiXing.hasGangziForPaiType(MajiangPai.baiban)
-							|| shoupaiPaiXing.hasKeziForPaiType(MajiangPai.baiban))) {
+							|| shoupaiPaiXing.hasKeziForPaiType(MajiangPai.baiban)
+							|| shoupaixingWuguanJiesuancanshu.isBaibanGang()
+							|| shoupaixingWuguanJiesuancanshu.isBaibanPeng())) {
 				huxing.setZhongfabai(true);
 			}
 			if (guipaiType.equals(MajiangPai.facai)
 					&& (shoupaiPaiXing.hasGangziForPaiType(MajiangPai.hongzhong)
-							|| shoupaiPaiXing.hasKeziForPaiType(MajiangPai.hongzhong))
+							|| shoupaiPaiXing.hasKeziForPaiType(MajiangPai.hongzhong)
+							|| shoupaixingWuguanJiesuancanshu.isHongzhongGang()
+							|| shoupaixingWuguanJiesuancanshu.isHongzhongPeng())
 					&& (shoupaiPaiXing.hasGangziForPaiType(MajiangPai.baiban)
-							|| shoupaiPaiXing.hasKeziForPaiType(MajiangPai.baiban))) {
+							|| shoupaiPaiXing.hasKeziForPaiType(MajiangPai.baiban)
+							|| shoupaixingWuguanJiesuancanshu.isBaibanGang()
+							|| shoupaixingWuguanJiesuancanshu.isBaibanPeng())) {
 				huxing.setZhongfabai(true);
 			}
-			if (guipaiType.equals(MajiangPai.baiban)
-					&& (shoupaiPaiXing.hasGangziForPaiType(MajiangPai.facai)
-							|| shoupaiPaiXing.hasKeziForPaiType(MajiangPai.facai))
+			if (guipaiType.equals(MajiangPai.baiban) && (shoupaiPaiXing.hasGangziForPaiType(MajiangPai.facai)
+					|| shoupaiPaiXing.hasKeziForPaiType(MajiangPai.facai)
+					|| shoupaixingWuguanJiesuancanshu.isFacaiGang() || shoupaixingWuguanJiesuancanshu.isFacaiPeng())
 					&& (shoupaiPaiXing.hasGangziForPaiType(MajiangPai.hongzhong)
-							|| shoupaiPaiXing.hasKeziForPaiType(MajiangPai.hongzhong))) {
+							|| shoupaiPaiXing.hasKeziForPaiType(MajiangPai.hongzhong)
+							|| shoupaixingWuguanJiesuancanshu.isHongzhongGang()
+							|| shoupaixingWuguanJiesuancanshu.isHongzhongPeng())) {
 				huxing.setZhongfabai(true);
 			}
 		} else {
 			if ((shoupaiPaiXing.hasGangziForPaiType(MajiangPai.hongzhong)
 					|| shoupaiPaiXing.hasKeziForPaiType(MajiangPai.hongzhong)
-					|| shoupaiPaiXing.hasDuiziForPaiType(MajiangPai.hongzhong))
+					|| shoupaiPaiXing.hasDuiziForPaiType(MajiangPai.hongzhong)
+					|| shoupaixingWuguanJiesuancanshu.isHongzhongGang()
+					|| shoupaixingWuguanJiesuancanshu.isHongzhongPeng())
 					&& (shoupaiPaiXing.hasGangziForPaiType(MajiangPai.facai)
 							|| shoupaiPaiXing.hasKeziForPaiType(MajiangPai.facai)
-							|| shoupaiPaiXing.hasDuiziForPaiType(MajiangPai.facai))
+							|| shoupaiPaiXing.hasDuiziForPaiType(MajiangPai.facai)
+							|| shoupaixingWuguanJiesuancanshu.isFacaiGang()
+							|| shoupaixingWuguanJiesuancanshu.isFacaiPeng())
 					&& (shoupaiPaiXing.hasGangziForPaiType(MajiangPai.baiban)
 							|| shoupaiPaiXing.hasKeziForPaiType(MajiangPai.baiban)
-							|| shoupaiPaiXing.hasDuiziForPaiType(MajiangPai.baiban))) {
+							|| shoupaiPaiXing.hasDuiziForPaiType(MajiangPai.baiban)
+							|| shoupaixingWuguanJiesuancanshu.isBaibanGang()
+							|| shoupaixingWuguanJiesuancanshu.isBaibanPeng())) {
 				huxing.setZhongfabai(true);
 			}
 		}
@@ -183,15 +197,11 @@ public class WenzhouMajiangJiesuanCalculator {
 				caishenDuiziZu += 1;
 			}
 			// 八对时，财神和白班做对子算软八对
-			if ((pai1.getYuanPaiType().equals(guipaiType) && (!pai1.dangBenPai())) || (huxing.isBadui()
-					&& !guipaiType.equals(MajiangPai.baiban) && pai2.getYuanPaiType().equals(MajiangPai.baiban)
-					&& pai1.getYuanPaiType().equals(guipaiType))) {
+			if (pai1.getYuanPaiType().equals(guipaiType) && !pai1.dangBenPai()) {
 				caishenDangPai += 1;
 				ruan = true;
 			}
-			if ((pai2.getYuanPaiType().equals(guipaiType) && (!pai2.dangBenPai())) || (huxing.isBadui()
-					&& !guipaiType.equals(MajiangPai.baiban) && pai1.getYuanPaiType().equals(MajiangPai.baiban)
-					&& pai2.getYuanPaiType().equals(guipaiType))) {
+			if (pai2.getYuanPaiType().equals(guipaiType) && !pai2.dangBenPai()) {
 				caishenDangPai += 1;
 				ruan = true;
 			}

@@ -25,6 +25,12 @@ public class ShoupaixingWuguanJiesuancanshu {
 	private boolean danzhangdiao;
 	private MajiangPai guipaiType;
 	private boolean guipaiIsZhongFaBai;
+	private boolean hongzhongPeng;
+	private boolean hongzhongGang;
+	private boolean facaiPeng;
+	private boolean facaiGang;
+	private boolean baibanPeng;
+	private boolean baibanGang;
 
 	public ShoupaixingWuguanJiesuancanshu(MajiangPlayer player) {
 		baibanShu = player.countPublicPai();
@@ -65,6 +71,24 @@ public class ShoupaixingWuguanJiesuancanshu {
 		chichupaiZuCount = player.countChichupaiZu();
 		fangruShoupaiCount = player.getFangruShoupaiList().size();
 		danzhangdiao = (fangruShoupaiCount + caishenShu == 1);
+		if (player.ifPengchu(MajiangPai.hongzhong)) {
+			hongzhongPeng = true;
+		}
+		if (player.ifGangchu(MajiangPai.hongzhong)) {
+			hongzhongGang = true;
+		}
+		if (player.ifPengchu(MajiangPai.facai)) {
+			facaiPeng = true;
+		}
+		if (player.ifGangchu(MajiangPai.facai)) {
+			facaiGang = true;
+		}
+		if (player.ifPengchu(MajiangPai.baiban)) {
+			baibanPeng = true;
+		}
+		if (player.ifGangchu(MajiangPai.baiban)) {
+			baibanGang = true;
+		}
 	}
 
 	public int getBaibanShu() {
@@ -154,4 +178,53 @@ public class ShoupaixingWuguanJiesuancanshu {
 	public void setGuipaiIsZhongFaBai(boolean guipaiIsZhongFaBai) {
 		this.guipaiIsZhongFaBai = guipaiIsZhongFaBai;
 	}
+
+	public boolean isHongzhongPeng() {
+		return hongzhongPeng;
+	}
+
+	public void setHongzhongPeng(boolean hongzhongPeng) {
+		this.hongzhongPeng = hongzhongPeng;
+	}
+
+	public boolean isHongzhongGang() {
+		return hongzhongGang;
+	}
+
+	public void setHongzhongGang(boolean hongzhongGang) {
+		this.hongzhongGang = hongzhongGang;
+	}
+
+	public boolean isFacaiPeng() {
+		return facaiPeng;
+	}
+
+	public void setFacaiPeng(boolean facaiPeng) {
+		this.facaiPeng = facaiPeng;
+	}
+
+	public boolean isFacaiGang() {
+		return facaiGang;
+	}
+
+	public void setFacaiGang(boolean facaiGang) {
+		this.facaiGang = facaiGang;
+	}
+
+	public boolean isBaibanPeng() {
+		return baibanPeng;
+	}
+
+	public void setBaibanPeng(boolean baibanPeng) {
+		this.baibanPeng = baibanPeng;
+	}
+
+	public boolean isBaibanGang() {
+		return baibanGang;
+	}
+
+	public void setBaibanGang(boolean baibanGang) {
+		this.baibanGang = baibanGang;
+	}
+
 }
