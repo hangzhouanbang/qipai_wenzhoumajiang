@@ -21,7 +21,43 @@ public class WenzhouMajiangPlayersMenFengDeterminer implements PlayersMenFengDet
 		String zhuangPlayerId = latestFinishedPanResult.findZhuangPlayerId();
 		this.zhuangPlayerId = zhuangPlayerId;
 		if (lianZhuangCount < 4) {// 连庄没有超过4次
-			if (!latestFinishedPanResult.ifPlayerHu(zhuangPlayerId)) {// 庄没有胡
+			if (!latestFinishedPanResult.hasHu()) {
+				if (latestFinishedPanResult.hasGang()) {
+					// 先找出庄的下家
+					String zhuangXiajiaPlayerId = latestFinishedPanResult.findXiajiaPlayerId(zhuangPlayerId);
+					// 下家连庄次数为一
+					this.zhuangPlayerId = zhuangXiajiaPlayerId;
+					lianZhuangCount = 1;
+					// 再计算要顺时针移几步到东
+					MajiangPosition p = latestFinishedPanResult.playerMenFeng(zhuangXiajiaPlayerId);
+					int n = 0;
+					while (true) {
+						MajiangPosition np = MajiangPositionUtil.nextPositionClockwise(p);
+						n++;
+						if (np.equals(MajiangPosition.dong)) {
+							break;
+						} else {
+							p = np;
+						}
+					}
+					// 最后给所有玩家设置门风
+					List<String> allPlayerIds = latestFinishedPanResult.allPlayerIds();
+					for (String playerId : allPlayerIds) {
+						MajiangPosition playerMenFeng = latestFinishedPanResult.playerMenFeng(playerId);
+						MajiangPosition newPlayerMenFeng = playerMenFeng;
+						for (int i = 0; i < n; i++) {
+							newPlayerMenFeng = MajiangPositionUtil.nextPositionClockwise(newPlayerMenFeng);
+						}
+						currentPan.updatePlayerMenFeng(playerId, newPlayerMenFeng);
+					}
+				} else {
+					List<String> allPlayerIds = latestFinishedPanResult.allPlayerIds();
+					for (String playerId : allPlayerIds) {
+						MajiangPosition playerMenFeng = latestFinishedPanResult.playerMenFeng(playerId);
+						currentPan.updatePlayerMenFeng(playerId, playerMenFeng);
+					}
+				}
+			} else if (!latestFinishedPanResult.ifPlayerHu(zhuangPlayerId)) {// 庄没有胡
 				// 先找出庄的下家
 				String zhuangXiajiaPlayerId = latestFinishedPanResult.findXiajiaPlayerId(zhuangPlayerId);
 				// 下家连庄次数为一
