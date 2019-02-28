@@ -193,7 +193,7 @@ public class MajiangController {
 	 */
 	@RequestMapping(value = "/action")
 	@ResponseBody
-	public CommonVO action(String token, int id) {
+	public CommonVO action(String token, int id, int actionNo) {
 		long startTime = System.currentTimeMillis();
 		CommonVO vo = new CommonVO();
 		Map data = new HashMap();
@@ -214,7 +214,7 @@ public class MajiangController {
 		MajiangActionResult majiangActionResult;
 		String endFlag = "query";
 		try {
-			majiangActionResult = majiangPlayCmdService.action(playerId, id, System.currentTimeMillis());
+			majiangActionResult = majiangPlayCmdService.action(playerId, id, actionNo, System.currentTimeMillis());
 		} catch (Exception e) {
 			vo.setSuccess(false);
 			vo.setMsg(e.getClass().getName());

@@ -21,8 +21,8 @@ import com.dml.majiang.player.action.guo.DoNothingGuoActionProcessor;
 import com.dml.majiang.player.action.hu.PlayerHuAndClearAllActionHuActionUpdater;
 import com.dml.majiang.player.action.hu.PlayerSetHuHuActionProcessor;
 import com.dml.majiang.player.action.initial.ZhuangMoPaiInitialActionUpdater;
-import com.dml.majiang.player.action.listener.comprehensive.TianHuAndDihuOpportunityDetector;
 import com.dml.majiang.player.action.listener.comprehensive.GuoPengBuPengStatisticsListener;
+import com.dml.majiang.player.action.listener.comprehensive.TianHuAndDihuOpportunityDetector;
 import com.dml.majiang.player.action.listener.mo.MoGuipaiCounter;
 import com.dml.majiang.player.action.peng.HuFirstBuPengActionProcessor;
 import com.dml.majiang.player.menfeng.RandomMustHasDongPlayersMenFengDeterminer;
@@ -199,13 +199,13 @@ public class MajiangGame extends FixedPlayersMultipanAndVotetofinishGame {
 		ju.updateInitialAction();
 
 		// 庄家摸第一张牌,进入正式行牌流程
-		ju.action(ju.getCurrentPan().getZhuangPlayerId(), 1, System.currentTimeMillis());
+		ju.action(ju.getCurrentPan().getZhuangPlayerId(), 1, 0, System.currentTimeMillis());
 		// 必然庄家已经先摸了一张牌了
 		return ju.getCurrentPan().findLatestActionFrame();
 	}
 
-	public MajiangActionResult action(String playerId, int actionId, long actionTime) throws Exception {
-		PanActionFrame panActionFrame = ju.action(playerId, actionId, actionTime);
+	public MajiangActionResult action(String playerId, int actionId, int actionNo, long actionTime) throws Exception {
+		PanActionFrame panActionFrame = ju.action(playerId, actionId, actionNo, actionTime);
 		MajiangActionResult result = new MajiangActionResult();
 		result.setPanActionFrame(panActionFrame);
 		if (state.name().equals(VoteNotPassWhenPlaying.name)) {
