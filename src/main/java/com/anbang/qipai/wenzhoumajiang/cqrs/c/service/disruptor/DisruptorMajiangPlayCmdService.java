@@ -18,12 +18,13 @@ public class DisruptorMajiangPlayCmdService extends DisruptorCmdServiceBase impl
 	private MajiangPlayCmdServiceImpl majiangPlayCmdServiceImpl;
 
 	@Override
-	public MajiangActionResult action(String playerId, Integer actionId, Long actionTime) throws Exception {
+	public MajiangActionResult action(String playerId, Integer actionId, Integer actionNo, Long actionTime)
+			throws Exception {
 		CommonCommand cmd = new CommonCommand(MajiangPlayCmdServiceImpl.class.getName(), "action", playerId, actionId,
-				actionTime);
+				actionNo, actionTime);
 		DeferredResult<MajiangActionResult> result = publishEvent(disruptorFactory.getCoreCmdDisruptor(), cmd, () -> {
 			MajiangActionResult majiangActionResult = majiangPlayCmdServiceImpl.action(cmd.getParameter(),
-					cmd.getParameter(), cmd.getParameter());
+					cmd.getParameter(), cmd.getParameter(), cmd.getParameter());
 			return majiangActionResult;
 		});
 		try {

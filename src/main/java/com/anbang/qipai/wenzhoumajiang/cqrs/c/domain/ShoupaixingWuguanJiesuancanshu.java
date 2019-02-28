@@ -41,7 +41,7 @@ public class ShoupaixingWuguanJiesuancanshu {
 		guipaiType = guipaiTypes[0];
 		if (guipaiType.equals(MajiangPai.hongzhong) || guipaiType.equals(MajiangPai.facai)
 				|| guipaiType.equals(MajiangPai.baiban)) {
-			setGuipaiIsZhongFaBai(true);
+			guipaiIsZhongFaBai = true;
 		}
 		allXushupaiInSameCategory = player.allXushupaiInSameCategory();
 		Set<MajiangPai> paiSet = new HashSet<>();

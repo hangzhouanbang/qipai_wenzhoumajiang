@@ -20,7 +20,8 @@ import com.dml.mpgame.server.GameServer;
 public class MajiangPlayCmdServiceImpl extends CmdServiceBase implements MajiangPlayCmdService {
 
 	@Override
-	public MajiangActionResult action(String playerId, Integer actionId, Long actionTime) throws Exception {
+	public MajiangActionResult action(String playerId, Integer actionId, Integer actionNo, Long actionTime)
+			throws Exception {
 		GameServer gameServer = singletonEntityRepository.getEntity(GameServer.class);
 		String gameId = gameServer.findBindGameId(playerId);
 		if (gameId == null) {
@@ -28,7 +29,7 @@ public class MajiangPlayCmdServiceImpl extends CmdServiceBase implements Majiang
 		}
 
 		MajiangGame majiangGame = (MajiangGame) gameServer.findGame(gameId);
-		MajiangActionResult majiangActionResult = majiangGame.action(playerId, actionId, actionTime);
+		MajiangActionResult majiangActionResult = majiangGame.action(playerId, actionId, actionNo, actionTime);
 
 		if (majiangActionResult.getJuResult() != null) {// 全部结束
 			gameServer.finishGame(gameId);
