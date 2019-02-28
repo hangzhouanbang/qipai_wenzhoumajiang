@@ -1,15 +1,13 @@
 package com.anbang.qipai.wenzhoumajiang.cqrs.c.service.impl;
 
+import com.dml.mpgame.game.*;
+import com.dml.mpgame.game.watch.WatcherMap;
 import org.springframework.stereotype.Component;
 
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGame;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGameValueObject;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.ReadyForGameResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.service.GameCmdService;
-import com.dml.mpgame.game.Finished;
-import com.dml.mpgame.game.Game;
-import com.dml.mpgame.game.GameValueObject;
-import com.dml.mpgame.game.WaitingStart;
 import com.dml.mpgame.game.extend.fpmpv.back.OnlineGameBackStrategy;
 import com.dml.mpgame.game.extend.vote.FinishedByVote;
 import com.dml.mpgame.game.extend.vote.MostPlayersWinVoteCalculator;
@@ -24,6 +22,8 @@ import com.dml.mpgame.game.leave.PlayerLeaveCancelGameGameLeaveStrategy;
 import com.dml.mpgame.game.player.PlayerFinished;
 import com.dml.mpgame.game.ready.FixedNumberOfPlayersGameReadyStrategy;
 import com.dml.mpgame.server.GameServer;
+
+import java.util.Map;
 
 @Component
 public class GameCmdServiceImpl extends CmdServiceBase implements GameCmdService {
@@ -146,6 +146,30 @@ public class GameCmdServiceImpl extends CmdServiceBase implements GameCmdService
 	}
 
 	@Override
+	public MajiangGameValueObject joinWatch(String playerId, String nickName, String headimgurl, String gameId) throws Exception {
+		WatcherMap watcherMap = singletonEntityRepository.getEntity(WatcherMap.class);
+		watcherMap.join(playerId, nickName, headimgurl, gameId);
+		GameServer gameServer = singletonEntityRepository.getEntity(GameServer.class);
+		MajiangGameValueObject majiangGameValueObject = gameServer.getInfo(playerId, gameId);
+		return majiangGameValueObject;
+	}
+
+	@Override
+	public MajiangGameValueObject leaveWatch(String playerId, String gameId) throws Exception {
+		WatcherMap watcherMap = singletonEntityRepository.getEntity(WatcherMap.class);
+		watcherMap.leave(playerId, gameId);
+		GameServer gameServer = singletonEntityRepository.getEntity(GameServer.class);
+		MajiangGameValueObject majiangGameValueObject = gameServer.getInfo(playerId, gameId);
+		return majiangGameValueObject;
+	}
+
+	@Override
+	public Map getwatch(String gameId) {
+		WatcherMap watcherMap = singletonEntityRepository.getEntity(WatcherMap.class);
+		return watcherMap.getWatch(gameId);
+	}
+
+	@Override
 	public ReadyForGameResult readyForGame(String playerId, Long currentTime) throws Exception {
 
 		ReadyForGameResult result = new ReadyForGameResult();
@@ -245,6 +269,12 @@ public class GameCmdServiceImpl extends CmdServiceBase implements GameCmdService
 		result.setMajiangGame(majiangGameValueObject);
 
 		return result;
+	}
+
+	@Override
+	public void recycleWatch(String gameId) {
+		WatcherMap watcherMap = singletonEntityRepository.getEntity(WatcherMap.class);
+		watcherMap.recycleWatch(gameId);
 	}
 
 }

@@ -10,6 +10,7 @@ import java.util.concurrent.Executors;
 
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -120,13 +121,14 @@ public class GamePlayWsNotifier {
 		});
 	}
 
-	public void notifyToListenSpeak(String playerId, String wordId, String speakerId) {
+	public void notifyToListenSpeak(String playerId, String wordId, String speakerId, boolean isPlayer) {
 		executorService.submit(() -> {
 			CommonMO mo = new CommonMO();
 			mo.setMsg("speaking");
 			Map data = new HashMap();
 			data.put("wordId", wordId);
 			data.put("speakerId", speakerId);
+			data.put("isPlayer", isPlayer);
 			mo.setData(data);
 			String payLoad = gson.toJson(mo);
 			String sessionId = playerIdSessionIdMap.get(playerId);
@@ -141,6 +143,87 @@ public class GamePlayWsNotifier {
 			}
 		});
 	}
+
+	/**
+	 * 进入离开观战
+	 * @param key input(进入) leave(离开)
+	 * @param playerId 接收方id
+	 */
+	public void notifyWatchInfo(String playerId, String key, String id, String watcher, String headimgurl) {
+		executorService.submit(() -> {
+			CommonMO mo = new CommonMO();
+			mo.setMsg("watcher");
+			Map data = new HashMap();
+			data.put("key", key);
+			data.put("id", id);
+			data.put("watcher", watcher);
+			data.put("headimgurl", headimgurl);
+			data.put("scope","watcher");
+			mo.setData(data);
+			String payLoad = gson.toJson(mo);
+			String sessionId = playerIdSessionIdMap.get(playerId);
+			if (sessionId == null) {
+				return;
+			}
+			WebSocketSession session = idSessionMap.get(sessionId);
+			if (session != null) {
+				sendMessage(session, payLoad);
+			} else {
+
+			}
+		});
+	}
+
+
+	/**
+	 * 通知观战者
+	 */
+	public void notifyToWatchQuery(List<String> playerIds,String flag) {
+		executorService.submit(() -> {
+			for (String playerId : playerIds) {
+				for (WatchQueryScope list : WatchQueryScope.getQueryList(flag)) {
+					CommonMO mo = new CommonMO();
+					mo.setMsg("watch query");
+					Map data = new HashMap();
+					data.put("scope",list.name());
+					mo.setData(data);
+					String payLoad = gson.toJson(mo);
+					String sessionId = playerIdSessionIdMap.get(playerId);
+					if (sessionId == null) {
+						continue;
+					}
+					WebSocketSession session = idSessionMap.get(sessionId);
+					if (session != null) {
+						sendMessage(session, payLoad);
+					}
+				}
+			}
+		});
+	}
+
+//	/**
+//	 * 观战结束(待废弃)
+//	 */
+//	public void notifyToWatchEnd(List<String> playerIds) {
+//		executorService.submit(() -> {
+//			for (String playerId : playerIds) {
+//				CommonMO mo = new CommonMO();
+//				mo.setMsg("watch end");
+//				Map data = new HashMap();
+//				data.put("scope","watch end");
+//				mo.setData(data);
+//				String payLoad = gson.toJson(mo);
+//				String sessionId = playerIdSessionIdMap.get(playerId);
+//				if (sessionId == null) {
+//					continue;
+//				}
+//				WebSocketSession session = idSessionMap.get(sessionId);
+//				if (session != null) {
+//					sendMessage(session, payLoad);
+//				}
+//			}
+//		});
+//	}
 
 	private void sendMessage(WebSocketSession session, String message) {
 		synchronized (session) {

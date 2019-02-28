@@ -5,8 +5,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
+import com.alibaba.fastjson.JSON;
+import com.anbang.qipai.wenzhoumajiang.msg.service.*;
+import com.anbang.qipai.wenzhoumajiang.utils.CommonVoUtil;
+import com.anbang.qipai.wenzhoumajiang.websocket.WatchQueryScope;
+import com.dml.mpgame.game.*;
+import com.dml.mpgame.game.watch.Watcher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -94,6 +104,11 @@ public class GameController {
 	@Autowired
 	private WiseCrackMsgServcie wiseCrackMsgServcie;
 
+	@Autowired
+	private WatchRecordMsgService watchRecordMsgService;
+
+	private Logger logger = LoggerFactory.getLogger(getClass());
+
 	/**
 	 * 新一局游戏
 	 */
@@ -167,6 +182,119 @@ public class GameController {
 	}
 
 	/**
+	 * 加入观战
+	 */
+	@RequestMapping(value = "/joinwatch")
+	@ResponseBody
+	public CommonVO joinWatch(String playerId, String gameId) {
+		MajiangGameValueObject majiangGameValueObject;
+		String nickName = "";
+		String headimgurl = "";
+
+		//加入观战
+		try {
+			PlayerInfo playerInfo = playerInfoService.findPlayerInfoById(playerId);
+			nickName = playerInfo.getNickname();
+			headimgurl = playerInfo.getHeadimgurl();
+			majiangGameValueObject = gameCmdService.joinWatch(playerId, nickName, headimgurl, gameId);
+		} catch (CrowdLimitsException e) {
+			return CommonVoUtil.error("too many watchers");
+		} catch (Exception e) {
+			logger.error("joinWatch:" + JSON.toJSONString(e));
+			return CommonVoUtil.error(e.getClass().toString());
+		}
+
+		// 通知游戏玩家
+		for (String otherPlayerId : majiangGameValueObject.allPlayerIds()) {
+			wsNotifier.notifyWatchInfo(otherPlayerId, "input", playerId, nickName, headimgurl);
+		}
+		// 通知其他观战者
+		Map<String, Watcher> map = gameCmdService.getwatch(gameId);
+		if (!CollectionUtils.isEmpty(map)) {
+			for (Watcher list : map.values()) {
+				if (!list.getId().equals(playerId)) {
+					wsNotifier.notifyWatchInfo(list.getId(), "input", playerId, nickName, headimgurl);
+				}
+			}
+		}
+
+		//返回查询token
+		String token = playerAuthService.newSessionForPlayer(playerId);
+		watchRecordMsgService.joinWatch(gameId, playerId);
+		Map data = new HashMap();
+		data.put("token", token);
+		return CommonVoUtil.success(data, "join watch success");
+	}
+
+	/**
+	 * 离开观战
+	 */
+	@RequestMapping(value = "/leavewatch")
+	@ResponseBody
+	public CommonVO leaveWatch(String token,String gameId) {
+		String playerId = playerAuthService.getPlayerIdByToken(token);
+		if (playerId == null) {
+			return CommonVoUtil.error("invalid token");
+		}
+		MajiangGameValueObject majiangGameValueObject;
+		String nickName = "";
+		String headimgurl = "";
+
+		try {
+			nickName = playerInfoService.findPlayerInfoById(playerId).getNickname();
+			majiangGameValueObject = gameCmdService.leaveWatch(playerId, gameId);
+		} catch (Exception e) {
+			logger.error("leavewatch():" + gameId + JSON.toJSONString(e));
+			return CommonVoUtil.error(e.getClass().toString());
+		}
+
+		// 通知游戏玩家
+		for (String otherPlayerId : majiangGameValueObject.allPlayerIds()) {
+			wsNotifier.notifyWatchInfo(otherPlayerId, "leave",playerId, nickName, headimgurl);
+		}
+		// 通知观战者
+		Map<String, Watcher> map = gameCmdService.getwatch(gameId);
+		if (!CollectionUtils.isEmpty(map)) {
+			for (Watcher list : map.values()) {
+				if (!list.getId().equals(playerId)) {
+					wsNotifier.notifyWatchInfo(list.getId(), "input", playerId, nickName, headimgurl);
+				}
+			}
+		}
+
+		watchRecordMsgService.leaveWatch(gameId, playerId);
+		return CommonVoUtil.success("leave success");
+	}
+
+	/**
+	 * 查询正在观战的玩家
+	 */
+	@RequestMapping(value = "/queryWatch")
+	@ResponseBody
+	public CommonVO queryWatch(String gameId) {
+		Map<String, Watcher> map = gameCmdService.getwatch(gameId);
+		if (CollectionUtils.isEmpty(map)){
+			return CommonVoUtil.success("queryWatch success");
+		}
+		return CommonVoUtil.success(map.values(), "queryWatch success");
+	}
+
+	/**
+	 * 观战者看到的信息
+	 */
+	@RequestMapping(value = "/watchinginfo")
+	@ResponseBody
+	public CommonVO watchingInfo(String gameId) {
+		CommonVO vo = new CommonVO();
+		MajiangGameDbo majiangGameDbo = majiangGameQueryService.findMajiangGameDboById(gameId);
+		GameVO gameVO = new GameVO(majiangGameDbo);
+		Map data = new HashMap();
+		data.put("game", gameVO);
+		vo.setData(data);
+		return vo;
+	}
+
+	/**
 	 * 挂起（手机按黑的时候调用）
 	 */
 	@RequestMapping(value = "/hangup")
@@ -180,6 +308,7 @@ public class GameController {
 			return vo;
 		}
 		MajiangGameValueObject majiangGameValueObject;
+		String endFlag = "query";
 		try {
 			majiangGameValueObject = gameCmdService.leaveGameByHangup(playerId);
 			if (majiangGameValueObject == null) {
@@ -205,6 +334,7 @@ public class GameController {
 		if (majiangGameValueObject.getState().name().equals(FinishedByVote.name)
 				|| majiangGameValueObject.getState().name().equals(Canceled.name)) {
 			gameMsgService.gameFinished(gameId);
+            endFlag = WatchQueryScope.watchEnd.name();
 		} else {
 			gameMsgService.gamePlayerLeave(majiangGameValueObject, playerId);
 
@@ -223,6 +353,7 @@ public class GameController {
 				wsNotifier.notifyToQuery(otherPlayerId, scopes);
 			}
 		}
+		hintWatcher(gameId, endFlag);
 		return vo;
 	}
 
@@ -240,6 +371,7 @@ public class GameController {
 			return vo;
 		}
 		MajiangGameValueObject majiangGameValueObject;
+		String endFlag = "query";
 		try {
 			majiangGameValueObject = gameCmdService.leaveGame(playerId);
 			if (majiangGameValueObject == null) {
@@ -265,6 +397,7 @@ public class GameController {
 		if (majiangGameValueObject.getState().name().equals(FinishedByVote.name)
 				|| majiangGameValueObject.getState().name().equals(Canceled.name)) {
 			gameMsgService.gameFinished(gameId);
+            endFlag = WatchQueryScope.watchEnd.name();
 		} else if (majiangGameValueObject.getState().name().equals(Finished.name)) {
 			gameMsgService.gameCanceled(gameId, playerId);
 		} else {
@@ -287,6 +420,7 @@ public class GameController {
 				wsNotifier.notifyToQuery(otherPlayerId, scopes);
 			}
 		}
+		hintWatcher(gameId, endFlag);
 		return vo;
 	}
 
@@ -296,6 +430,19 @@ public class GameController {
 	@RequestMapping(value = "/backtogame")
 	@ResponseBody
 	public CommonVO backtogame(String playerId, String gameId) {
+		//是观战返回新token
+		Map<String, Watcher> map = gameCmdService.getwatch(gameId);
+		if (!CollectionUtils.isEmpty(map) && map.containsKey(playerId)) {
+			List<String> playerIds = new ArrayList<>();
+			playerIds.add(playerId);
+			wsNotifier.notifyToWatchQuery(playerIds,"query");
+
+			Map data = new HashMap();
+			String token = playerAuthService.newSessionForPlayer(playerId);
+			data.put("token", token);
+			return CommonVoUtil.success(data,"backtogame success");
+		}
+
 		CommonVO vo = new CommonVO();
 		Map data = new HashMap();
 		vo.setData(data);
@@ -477,6 +624,7 @@ public class GameController {
 		}
 
 		MajiangGameValueObject majiangGameValueObject;
+		String endFlag = "query";
 		try {
 			majiangGameValueObject = gameCmdService.finish(playerId, System.currentTimeMillis());
 		} catch (Exception e) {
@@ -498,6 +646,7 @@ public class GameController {
 				|| majiangGameValueObject.getState().name().equals(Canceled.name)) {
 			gameMsgService.gameFinished(gameId);
 			data.put("queryScope", QueryScope.gameInfo);
+            endFlag = WatchQueryScope.watchEnd.name();
 		} else {
 			// 游戏没结束有两种可能：一种是发起了投票。还有一种是游戏没开始，解散发起人又不是房主，那就自己走人。
 			if (majiangGameValueObject.allPlayerIds().contains(playerId)) {
@@ -520,7 +669,7 @@ public class GameController {
 				}
 			}
 		}
-
+		hintWatcher(gameId, endFlag);
 		return vo;
 	}
 
@@ -538,6 +687,7 @@ public class GameController {
 		}
 
 		MajiangGameValueObject majiangGameValueObject;
+		String endFlag = "query";
 		try {
 			majiangGameValueObject = gameCmdService.voteToFinish(playerId, yes);
 		} catch (Exception e) {
@@ -557,6 +707,7 @@ public class GameController {
 		if (majiangGameValueObject.getState().name().equals(FinishedByVote.name)
 				|| majiangGameValueObject.getState().name().equals(Canceled.name)) {
 			gameMsgService.gameFinished(gameId);
+            endFlag = WatchQueryScope.watchEnd.name();
 		}
 		data.put("queryScope", QueryScope.gameFinishVote);
 		// 通知其他人来查询投票情况
@@ -571,8 +722,8 @@ public class GameController {
 				}
 			}
 		}
+		hintWatcher(gameId, endFlag);
 		return vo;
-
 	}
 
 	/**
@@ -592,6 +743,7 @@ public class GameController {
 		}
 
 		MajiangGameValueObject majiangGameValueObject;
+		String endFlag = "query";
 		try {
 			majiangGameValueObject = gameCmdService.voteToFinishByTimeOver(playerId, System.currentTimeMillis());
 		} catch (Exception e) {
@@ -611,6 +763,7 @@ public class GameController {
 		if (majiangGameValueObject.getState().name().equals(FinishedByVote.name)
 				|| majiangGameValueObject.getState().name().equals(Canceled.name)) {
 			gameMsgService.gameFinished(gameId);
+            endFlag = WatchQueryScope.watchEnd.name();
 		}
 
 		data.put("queryScope", QueryScope.gameFinishVote);
@@ -626,6 +779,7 @@ public class GameController {
 				}
 			}
 		}
+		hintWatcher(gameId, endFlag);
 		return vo;
 
 	}
@@ -745,10 +899,36 @@ public class GameController {
 		List<MajiangGamePlayerDbo> playerList = majiangGameDbo.getPlayers();
 		for (MajiangGamePlayerDbo player : playerList) {
 			if (!player.getPlayerId().equals(playerId)) {
-				wsNotifier.notifyToListenSpeak(player.getPlayerId(), wordId, playerId);
+				wsNotifier.notifyToListenSpeak(player.getPlayerId(), wordId, playerId, true);
 			}
 		}
+
+		//观战者接收语音
+        Map<String ,Object> map = gameCmdService.getwatch(gameId);
+        if (!CollectionUtils.isEmpty(map)) {
+            List<String> playerIds = map.entrySet().stream().map(e -> e.getKey()).collect(Collectors.toList());
+            for (String list : playerIds) {
+                if (!list.equals(playerId)) {
+                    wsNotifier.notifyToListenSpeak(list, wordId, playerId, false);
+                }
+            }
+        }
+
 		vo.setSuccess(true);
 		return vo;
+	}
+
+	/**
+	 * 通知观战者
+	 */
+	private void hintWatcher (String gameId, String flag) {
+		Map<String ,Object> map = gameCmdService.getwatch(gameId);
+		if (!CollectionUtils.isEmpty(map)) {
+			List<String> playerIds = map.entrySet().stream().map(e -> e.getKey()).collect(Collectors.toList());
+			wsNotifier.notifyToWatchQuery(playerIds, flag);
+			if (WatchQueryScope.watchEnd.name().equals(flag)) {
+				gameCmdService.recycleWatch(gameId);
+			}
+		}
 	}
 }
