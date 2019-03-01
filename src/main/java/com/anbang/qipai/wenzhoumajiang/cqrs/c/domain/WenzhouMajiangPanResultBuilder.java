@@ -94,8 +94,10 @@ public class WenzhouMajiangPanResultBuilder implements CurrentPanResultBuilder {
 					if (!xiajiaPlayer.getId().equals(dianpaoPlayerId) && xiajiaPlayer.getHu() != null) {
 
 						WenzhouMajiangHu hu = (WenzhouMajiangHu) xiajiaPlayer.getHu();
-						if (betterHu == null || (hu.getHufan().getValue() > 2
-								&& betterHu.getHufan().getValue() < hu.getHufan().getValue())) {
+						// 全球神优先级最低
+						if (betterHu == null || (bestHu.isZimo() && bestHu.getDianpaoPlayerId() != null)
+								|| (hu.getHufan().getValue() > 2
+										&& betterHu.getHufan().getValue() < hu.getHufan().getValue())) {
 							betterHuPlayer = xiajiaPlayer;
 							betterHu = hu;
 						}
