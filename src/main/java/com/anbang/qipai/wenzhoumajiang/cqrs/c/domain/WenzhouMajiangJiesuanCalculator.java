@@ -325,6 +325,10 @@ public class WenzhouMajiangJiesuanCalculator {
 			List<MajiangPai> guipaiList, boolean shaozhongfa, ShoupaiCalculator shoupaiCalculator, MajiangPlayer player,
 			GouXingPanHu gouXingPanHu, MajiangPai huPai) {
 		List<ShoupaiPaiXing> shoupaiPaiXingList = new ArrayList<>();
+		// 移除白板
+		for (int i = 0; i < baibanCount; i++) {
+			shoupaiCalculator.removePai(MajiangPai.baiban);
+		}
 		Set<MajiangPai> guipaiTypeSet = player.getGuipaiTypeSet();
 		MajiangPai[] paiTypesForBaibanAct = calculatePaiTypesForBaibanAct(guipaiTypeSet);
 		int maxZuheCode = (int) Math.pow(paiTypesForBaibanAct.length, baibanCount);
@@ -368,6 +372,10 @@ public class WenzhouMajiangJiesuanCalculator {
 					shoupaiCalculator.removePai(baibanDangPaiArray[i].getDangpai());
 				}
 			}
+		}
+		// 加入白板
+		for (int i = 0; i < baibanCount; i++) {
+			shoupaiCalculator.addPai(MajiangPai.baiban);
 		}
 		return shoupaiPaiXingList;
 	}
