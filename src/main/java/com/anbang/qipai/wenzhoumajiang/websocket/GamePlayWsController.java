@@ -172,7 +172,7 @@ public class GamePlayWsController extends TextWebSocketHandler {
 		if (!CollectionUtils.isEmpty(watcherMap) && watcherMap.containsKey(playerId)) {
 			List<String> playerIds = new ArrayList<>();
 			playerIds.add(playerId);
-			wsNotifier.notifyToWatchQuery(playerIds,"query");
+			wsNotifier.notifyToWatchQuery(playerIds,"bindPlayer");
 			return;
 		}
 		if (majiangGameQueryService.findByPlayerId(gameId,playerId)) {
