@@ -16,24 +16,17 @@ public class WatchRecordMsgService {
     @Autowired
     private WatchRecordSource watchRecordSource;
 
-    public void joinWatch(String gameId, String playerId) {
+    public void joinWatch(WatchRecord watchRecord) {
         CommonMO mo = new CommonMO();
         mo.setMsg("joinWatch");
-        WatchRecord watchRecord = new WatchRecord();
-        watchRecord.setId(gameId);
-        watchRecord.setPlayerId(playerId);
-        watchRecord.setJoinTime(System.currentTimeMillis());
         mo.setData(watchRecord);
         watchRecordSource.watchRecordSink().send(MessageBuilder.withPayload(mo).build());
     }
 
-    public void leaveWatch(String gameId, String playerId) {
+    public void leaveWatch(WatchRecord watchRecord) {
         CommonMO mo = new CommonMO();
         mo.setMsg("leaveWatch");
-        WatchRecord watchRecord = new WatchRecord();
-        watchRecord.setId(gameId);
-        watchRecord.setPlayerId(playerId);
-        watchRecord.setLeaveTime(System.currentTimeMillis());
+        mo.setData(watchRecord);
         watchRecordSource.watchRecordSink().send(MessageBuilder.withPayload(mo).build());
     }
 }
