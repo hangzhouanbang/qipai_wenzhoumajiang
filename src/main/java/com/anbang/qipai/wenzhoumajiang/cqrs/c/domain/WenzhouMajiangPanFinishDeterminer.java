@@ -81,7 +81,7 @@ public class WenzhouMajiangPanFinishDeterminer implements CurrentPanFinishiDeter
 		} else {
 			int liupai = 0;
 			int avaliablePaiLeft = currentPan.countAvaliablePai();
-			if (avaliablePaiLeft < liupai) {
+			if (avaliablePaiLeft <= liupai && currentPan.allPlayerHasNoHuActionCandidates()) {// 没有牌并且没人胡
 				return true;
 			} else {
 				return false;

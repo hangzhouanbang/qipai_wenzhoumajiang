@@ -25,6 +25,9 @@
 <logger name="com.anbang.qipai.wenzhoumajiang.web.controller.MajiangController" level="INFO" additivity="false">  
     <appender-ref ref="FILE"/>  
 </logger>
+<logger name="com.anbang.qipai.wenzhoumajiang.websocket.GamePlayWsNotifier" level="INFO" additivity="false">  
+    <appender-ref ref="FILE"/>  
+</logger>
 <!-- 日志输出级别 -->
 <root level="INFO">
 <appender-ref ref="STDOUT" />
