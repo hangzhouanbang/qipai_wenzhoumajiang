@@ -1,11 +1,11 @@
 package com.anbang.qipai.wenzhoumajiang.web.controller;
 
-import java.util.*;
-import java.util.stream.Collector;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.anbang.qipai.wenzhoumajiang.cqrs.c.service.GameCmdService;
-import com.anbang.qipai.wenzhoumajiang.websocket.WatchQueryScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MaidiResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangActionResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.ReadyToNextPanResult;
+import com.anbang.qipai.wenzhoumajiang.cqrs.c.service.GameCmdService;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.service.MajiangPlayCmdService;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.service.PlayerAuthService;
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.dbo.JuResultDbo;
@@ -34,6 +35,7 @@ import com.anbang.qipai.wenzhoumajiang.web.vo.PanActionFrameVO;
 import com.anbang.qipai.wenzhoumajiang.web.vo.PanResultVO;
 import com.anbang.qipai.wenzhoumajiang.websocket.GamePlayWsNotifier;
 import com.anbang.qipai.wenzhoumajiang.websocket.QueryScope;
+import com.anbang.qipai.wenzhoumajiang.websocket.WatchQueryScope;
 import com.dml.majiang.pan.frame.PanActionFrame;
 
 /**
@@ -206,8 +208,8 @@ public class MajiangController {
 			vo.setMsg("invalid token");
 			long endTime = System.currentTimeMillis();
 			logger.info("action," + "startTime:" + startTime + "," + "playerId:" + playerId + "," + "id:" + id + ","
-					+ "success:" + vo.isSuccess() + ",msg:" + vo.getMsg() + "," + "endTime:" + endTime + "," + "use:"
-					+ (endTime - startTime) + "ms");
+					+ "actionNo:" + actionNo + "," + "success:" + vo.isSuccess() + ",msg:" + vo.getMsg() + ","
+					+ "endTime:" + endTime + "," + "use:" + (endTime - startTime) + "ms");
 			return vo;
 		}
 
@@ -220,8 +222,8 @@ public class MajiangController {
 			vo.setMsg(e.getClass().getName());
 			long endTime = System.currentTimeMillis();
 			logger.info("action," + "startTime:" + startTime + "," + "playerId:" + playerId + "," + "id:" + id + ","
-					+ "success:" + vo.isSuccess() + ",msg:" + vo.getMsg() + "," + "endTime:" + endTime + "," + "use:"
-					+ (endTime - startTime) + "ms");
+					+ "actionNo:" + actionNo + "," + "success:" + vo.isSuccess() + ",msg:" + vo.getMsg() + ","
+					+ "endTime:" + endTime + "," + "use:" + (endTime - startTime) + "ms");
 			return vo;
 		}
 		try {
@@ -232,8 +234,8 @@ public class MajiangController {
 			long endTime = System.currentTimeMillis();
 			logger.info("action," + "startTime:" + startTime + "," + "gameId:"
 					+ majiangActionResult.getMajiangGame().getId() + "," + "playerId:" + playerId + "," + "id:" + id
-					+ "," + "success:" + vo.isSuccess() + ",msg:" + vo.getMsg() + "," + "endTime:" + endTime + ","
-					+ "use:" + (endTime - startTime) + "ms");
+					+ "," + "actionNo:" + actionNo + "," + "success:" + vo.isSuccess() + ",msg:" + vo.getMsg() + ","
+					+ "endTime:" + endTime + "," + "use:" + (endTime - startTime) + "ms");
 			return vo;
 		}
 
@@ -271,13 +273,13 @@ public class MajiangController {
 								majiangActionResult.getMajiangGame().findPlayerState(otherPlayerId)));
 			}
 		}
-        hintWatcher(majiangActionResult.getMajiangGame().getId(), endFlag);
+		hintWatcher(majiangActionResult.getMajiangGame().getId(), endFlag);
 
 		long endTime = System.currentTimeMillis();
-		logger.info(
-				"action," + "startTime:" + startTime + "," + "gameId:" + majiangActionResult.getMajiangGame().getId()
-						+ "," + "playerId:" + playerId + "," + "id:" + id + "," + "success:" + vo.isSuccess() + ",msg:"
-						+ vo.getMsg() + "," + "endTime:" + endTime + "," + "use:" + (endTime - startTime) + "ms");
+		logger.info("action," + "startTime:" + startTime + "," + "gameId:"
+				+ majiangActionResult.getMajiangGame().getId() + "," + "playerId:" + playerId + "," + "id:" + id + ","
+				+ "actionNo:" + actionNo + "," + "success:" + vo.isSuccess() + ",msg:" + vo.getMsg() + "," + "endTime:"
+				+ endTime + "," + "use:" + (endTime - startTime) + "ms");
 		return vo;
 	}
 
@@ -333,8 +335,8 @@ public class MajiangController {
 	/**
 	 * 通知观战者
 	 */
-	private void hintWatcher (String gameId, String flag) {
-		Map<String ,Object> map = gameCmdService.getwatch(gameId);
+	private void hintWatcher(String gameId, String flag) {
+		Map<String, Object> map = gameCmdService.getwatch(gameId);
 		if (!CollectionUtils.isEmpty(map)) {
 			List<String> playerIds = map.entrySet().stream().map(e -> e.getKey()).collect(Collectors.toList());
 			wsNotifier.notifyToWatchQuery(playerIds, flag);
