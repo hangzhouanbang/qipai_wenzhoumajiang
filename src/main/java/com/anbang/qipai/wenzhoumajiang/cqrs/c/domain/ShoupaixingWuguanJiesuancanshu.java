@@ -32,7 +32,7 @@ public class ShoupaixingWuguanJiesuancanshu {
 	private boolean baibanPeng;
 	private boolean baibanGang;
 
-	public ShoupaixingWuguanJiesuancanshu(MajiangPlayer player) {
+	public ShoupaixingWuguanJiesuancanshu(MajiangPlayer player, MajiangPai huPai) {
 		baibanShu = player.countPublicPai();
 		caishenShu = player.countGuipai();
 		Set<MajiangPai> guipaiTypeSet = player.getGuipaiTypeSet();
@@ -43,7 +43,7 @@ public class ShoupaixingWuguanJiesuancanshu {
 				|| guipaiType.equals(MajiangPai.baiban)) {
 			guipaiIsZhongFaBai = true;
 		}
-		allXushupaiInSameCategory = player.allXushupaiInSameCategory();
+		allXushupaiInSameCategory = player.allXushupaiInSameCategory(huPai);
 		Set<MajiangPai> paiSet = new HashSet<>();
 		if (!guipaiTypeSet.contains(MajiangPai.dongfeng)) {
 			paiSet.add(MajiangPai.dongfeng);
