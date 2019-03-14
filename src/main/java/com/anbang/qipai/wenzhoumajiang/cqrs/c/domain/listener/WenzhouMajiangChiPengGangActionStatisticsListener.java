@@ -37,11 +37,14 @@ public class WenzhouMajiangChiPengGangActionStatisticsListener
 
 	private int tongpeiCount = 0;
 
+	private int count = 0;
+
 	@Override
 	public void updateForNextPan() {
 		playerActionMap = new HashMap<>();
 		Arrays.fill(mingpaiCountArray, 0);
 		tongpeiCount = 0;
+		count = 0;
 	}
 
 	// 清空当前轮动作
@@ -56,6 +59,7 @@ public class WenzhouMajiangChiPengGangActionStatisticsListener
 		if (gangAction.isDisabledByHigherPriorityAction()) {// 如果被阻塞
 			playerActionMap.put(player.getId(), gangAction);// 记录下被阻塞的动作
 		} else {
+			count++;
 			if (gangAction.getGangType().equals(GangType.gangdachu)) {// 杠别人打出的牌
 				MajiangPlayer dachupaiPlayer = currentPan.findPlayerById(gangAction.getDachupaiPlayerId());
 				MajiangPlayer zhuangPlayer = currentPan.findPlayerByMenFeng(MajiangPosition.dong);
@@ -169,6 +173,14 @@ public class WenzhouMajiangChiPengGangActionStatisticsListener
 
 	public void setTongpeiCount(int tongpeiCount) {
 		this.tongpeiCount = tongpeiCount;
+	}
+
+	public int getCount() {
+		return count;
+	}
+
+	public void setCount(int count) {
+		this.count = count;
 	}
 
 }

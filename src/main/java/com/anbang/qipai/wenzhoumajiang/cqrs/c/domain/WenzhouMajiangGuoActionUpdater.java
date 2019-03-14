@@ -25,37 +25,61 @@ public class WenzhouMajiangGuoActionUpdater implements MajiangPlayerGuoActionUpd
 
 	@Override
 	public void updateActions(MajiangGuoAction guoAction, Ju ju) {
+		int liupai = 14;
+		WenzhouMajiangChiPengGangActionStatisticsListener juezhangStatisticsListener = ju
+				.getActionStatisticsListenerManager()
+				.findListener(WenzhouMajiangChiPengGangActionStatisticsListener.class);
+		if (juezhangStatisticsListener.getCount() > 0) {
+			liupai += (4 + (juezhangStatisticsListener.getCount() - 1) * 2);
+		}
 		Pan currentPan = ju.getCurrentPan();
 		currentPan.playerClearActionCandidates(guoAction.getActionPlayerId());
 
 		MajiangPlayer player = currentPan.findPlayerById(guoAction.getActionPlayerId());
+		int playersCount = currentPan.countPlayers();
+		int avaliablePaiLeft = currentPan.countAvaliablePai();
 		// 首先看一下,我过的是什么? 是我摸牌之后的胡,杠? 还是别人打出牌之后我可以吃碰杠胡
 		PanActionFrame latestPanActionFrame = currentPan.findNotGuoLatestActionFrame();
 		MajiangPlayerAction action = latestPanActionFrame.getAction();
 		if (action.getType().equals(MajiangPlayerActionType.mo)) {// 过的是我摸牌之后的胡,杠
-			MajiangPai gangmoShoupai = player.getGangmoShoupai();
-			// 那要我打牌
-			if (player.getActionCandidates().isEmpty()) {
-				List<MajiangDaAction> juefengList = new ArrayList<>();
-				List<MajiangDaAction> genfengList = new ArrayList<>();
-				List<MajiangDaAction> toufengList = new ArrayList<>();
-				// 啥也不能干，那只能打出牌
-				/*
-				 * 绝风：抓牌后，手牌有绝张风牌字牌，需优先打出，其他牌颜色变灰无法点击
-				 * 跟风：抓牌后，手牌有不成对、暗刻的风牌字牌，且该风牌字牌在已打的牌堆里也有，则该张牌需要优先打出 头风：抓牌后，手牌中单独一张的风牌字牌需要优先打出
-				 */
-				List<MajiangPai> fangruShoupaiList = player.getFangruShoupaiList();
-				WenzhouMajiangChiPengGangActionStatisticsListener juezhangStatisticsListener = ju
-						.getActionStatisticsListenerManager()
-						.findListener(WenzhouMajiangChiPengGangActionStatisticsListener.class);
-				Set<MajiangPai> guipaiTypeSet = player.getGuipaiTypeSet();
-				MajiangPai[] guipaiTypes = new MajiangPai[guipaiTypeSet.size()];
-				guipaiTypeSet.toArray(guipaiTypes);
-				MajiangPai guipaiType = guipaiTypes[0];
+			if ((avaliablePaiLeft - liupai) < playersCount) {// 进入流局前最后4张
+				// 打牌那家的下家摸牌
+				MajiangPlayer xiajiaPlayer = currentPan
+						.findXiajia(currentPan.findPlayerById(action.getActionPlayerId()));
+				xiajiaPlayer.addActionCandidate(new MajiangMoAction(xiajiaPlayer.getId(), new LundaoMopai()));
+			} else {
+				MajiangPai gangmoShoupai = player.getGangmoShoupai();
+				// 那要我打牌
+				if (player.getActionCandidates().isEmpty()) {
+					List<MajiangDaAction> juefengList = new ArrayList<>();
+					List<MajiangDaAction> genfengList = new ArrayList<>();
+					List<MajiangDaAction> toufengList = new ArrayList<>();
+					// 啥也不能干，那只能打出牌
+					/*
+					 * 绝风：抓牌后，手牌有绝张风牌字牌，需优先打出，其他牌颜色变灰无法点击
+					 * 跟风：抓牌后，手牌有不成对、暗刻的风牌字牌，且该风牌字牌在已打的牌堆里也有，则该张牌需要优先打出 头风：抓牌后，手牌中单独一张的风牌字牌需要优先打出
+					 */
+					List<MajiangPai> fangruShoupaiList = player.getFangruShoupaiList();
 
-				for (MajiangPai pai : fangruShoupaiList) {
-					if (!MajiangPai.baiban.equals(pai)) {
-						if (!guipaiTypeSet.contains(pai) && MajiangPai.isZipai(pai)) {
+					Set<MajiangPai> guipaiTypeSet = player.getGuipaiTypeSet();
+					MajiangPai[] guipaiTypes = new MajiangPai[guipaiTypeSet.size()];
+					guipaiTypeSet.toArray(guipaiTypes);
+					MajiangPai guipaiType = guipaiTypes[0];
+
+					for (MajiangPai pai : fangruShoupaiList) {
+						if (!MajiangPai.baiban.equals(pai)) {
+							if (!guipaiTypeSet.contains(pai) && MajiangPai.isZipai(pai)) {
+								if (juezhangStatisticsListener.ifJuezhang(pai)) {
+									juefengList.add(new MajiangDaAction(player.getId(), pai));
+								} else if (!gangmoShoupai.equals(pai) && juezhangStatisticsListener.ifMingPai(pai)
+										&& player.getShoupaiCalculator().count(pai) == 1) {
+									genfengList.add(new MajiangDaAction(player.getId(), pai));
+								} else if (!gangmoShoupai.equals(pai)
+										&& player.getShoupaiCalculator().count(pai) == 1) {
+									toufengList.add(new MajiangDaAction(player.getId(), pai));
+								}
+							}
+						} else if (!guipaiTypeSet.contains(pai) && MajiangPai.isZipai(guipaiType)) {
 							if (juezhangStatisticsListener.ifJuezhang(pai)) {
 								juefengList.add(new MajiangDaAction(player.getId(), pai));
 							} else if (!gangmoShoupai.equals(pai) && juezhangStatisticsListener.ifMingPai(pai)
@@ -64,22 +88,22 @@ public class WenzhouMajiangGuoActionUpdater implements MajiangPlayerGuoActionUpd
 							} else if (!gangmoShoupai.equals(pai) && player.getShoupaiCalculator().count(pai) == 1) {
 								toufengList.add(new MajiangDaAction(player.getId(), pai));
 							}
-						}
-					} else if (!guipaiTypeSet.contains(pai) && MajiangPai.isZipai(guipaiType)) {
-						if (juezhangStatisticsListener.ifJuezhang(pai)) {
-							juefengList.add(new MajiangDaAction(player.getId(), pai));
-						} else if (!gangmoShoupai.equals(pai) && juezhangStatisticsListener.ifMingPai(pai)
-								&& player.getShoupaiCalculator().count(pai) == 1) {
-							genfengList.add(new MajiangDaAction(player.getId(), pai));
-						} else if (!gangmoShoupai.equals(pai) && player.getShoupaiCalculator().count(pai) == 1) {
-							toufengList.add(new MajiangDaAction(player.getId(), pai));
-						}
-					} else {
+						} else {
 
+						}
 					}
-				}
-				if (!MajiangPai.baiban.equals(gangmoShoupai)) {
-					if (!guipaiTypeSet.contains(gangmoShoupai) && MajiangPai.isZipai(gangmoShoupai)) {
+					if (!MajiangPai.baiban.equals(gangmoShoupai)) {
+						if (!guipaiTypeSet.contains(gangmoShoupai) && MajiangPai.isZipai(gangmoShoupai)) {
+							if (juezhangStatisticsListener.ifJuezhang(gangmoShoupai)) {
+								juefengList.add(new MajiangDaAction(player.getId(), gangmoShoupai));
+							} else if (juezhangStatisticsListener.ifMingPai(gangmoShoupai)
+									&& player.getShoupaiCalculator().count(gangmoShoupai) == 0) {
+								genfengList.add(new MajiangDaAction(player.getId(), gangmoShoupai));
+							} else if (player.getShoupaiCalculator().count(gangmoShoupai) == 0) {
+								toufengList.add(new MajiangDaAction(player.getId(), gangmoShoupai));
+							}
+						}
+					} else if (!guipaiTypeSet.contains(gangmoShoupai) && MajiangPai.isZipai(guipaiType)) {
 						if (juezhangStatisticsListener.ifJuezhang(gangmoShoupai)) {
 							juefengList.add(new MajiangDaAction(player.getId(), gangmoShoupai));
 						} else if (juezhangStatisticsListener.ifMingPai(gangmoShoupai)
@@ -88,35 +112,26 @@ public class WenzhouMajiangGuoActionUpdater implements MajiangPlayerGuoActionUpd
 						} else if (player.getShoupaiCalculator().count(gangmoShoupai) == 0) {
 							toufengList.add(new MajiangDaAction(player.getId(), gangmoShoupai));
 						}
-					}
-				} else if (!guipaiTypeSet.contains(gangmoShoupai) && MajiangPai.isZipai(guipaiType)) {
-					if (juezhangStatisticsListener.ifJuezhang(gangmoShoupai)) {
-						juefengList.add(new MajiangDaAction(player.getId(), gangmoShoupai));
-					} else if (juezhangStatisticsListener.ifMingPai(gangmoShoupai)
-							&& player.getShoupaiCalculator().count(gangmoShoupai) == 0) {
-						genfengList.add(new MajiangDaAction(player.getId(), gangmoShoupai));
-					} else if (player.getShoupaiCalculator().count(gangmoShoupai) == 0) {
-						toufengList.add(new MajiangDaAction(player.getId(), gangmoShoupai));
-					}
-				} else {
+					} else {
 
+					}
+					if (!juefengList.isEmpty()) {
+						for (MajiangDaAction daAction : juefengList) {
+							player.addActionCandidate(daAction);
+						}
+					} else if (!genfengList.isEmpty()) {
+						for (MajiangDaAction daAction : genfengList) {
+							player.addActionCandidate(daAction);
+						}
+					} else if (!toufengList.isEmpty()) {
+						for (MajiangDaAction daAction : toufengList) {
+							player.addActionCandidate(daAction);
+						}
+					}
 				}
-				if (!juefengList.isEmpty()) {
-					for (MajiangDaAction daAction : juefengList) {
-						player.addActionCandidate(daAction);
-					}
-				} else if (!genfengList.isEmpty()) {
-					for (MajiangDaAction daAction : genfengList) {
-						player.addActionCandidate(daAction);
-					}
-				} else if (!toufengList.isEmpty()) {
-					for (MajiangDaAction daAction : toufengList) {
-						player.addActionCandidate(daAction);
-					}
+				if (player.getActionCandidates().isEmpty()) {
+					player.generateDaActions();
 				}
-			}
-			if (player.getActionCandidates().isEmpty()) {
-				player.generateDaActions();
 			}
 		} else if (action.getType().equals(MajiangPlayerActionType.da)) {// 过的是别人打出牌之后我可以吃碰杠胡
 			if (currentPan.allPlayerHasNoActionCandidates() && !currentPan.anyPlayerHu()) {// 如果所有玩家啥也干不了
@@ -165,9 +180,7 @@ public class WenzhouMajiangGuoActionUpdater implements MajiangPlayerGuoActionUpd
 				 * 跟风：抓牌后，手牌有不成对、暗刻的风牌字牌，且该风牌字牌在已打的牌堆里也有，则该张牌需要优先打出 头风：抓牌后，手牌中单独一张的风牌字牌需要优先打出
 				 */
 				List<MajiangPai> fangruShoupaiList = player.getFangruShoupaiList();
-				WenzhouMajiangChiPengGangActionStatisticsListener juezhangStatisticsListener = ju
-						.getActionStatisticsListenerManager()
-						.findListener(WenzhouMajiangChiPengGangActionStatisticsListener.class);
+
 				Set<MajiangPai> guipaiTypeSet = player.getGuipaiTypeSet();
 				MajiangPai[] guipaiTypes = new MajiangPai[guipaiTypeSet.size()];
 				guipaiTypeSet.toArray(guipaiTypes);

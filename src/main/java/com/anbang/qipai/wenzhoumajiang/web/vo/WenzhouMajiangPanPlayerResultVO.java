@@ -164,6 +164,9 @@ public class WenzhouMajiangPanPlayerResultVO {
 				}
 			}
 			List<MajiangPai> shoupaiList = panPlayerResult.getPlayer().getFangruShoupaiList();
+			if (panPlayerResult.getPlayer().getGangmoShoupai() != null) {
+				shoupaiList.add(panPlayerResult.getPlayer().getGangmoShoupai().getPai());
+			}
 			caishenList = new ArrayList<>(panPlayerResult.getPlayer().getFangruGuipaiList());
 			List<ResultShoupaiVO> list = new ArrayList<>();
 			resultShoupaiZuList.add(list);
