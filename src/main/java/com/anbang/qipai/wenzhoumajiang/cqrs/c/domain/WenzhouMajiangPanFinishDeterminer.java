@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.listener.WenzhouMajiangChiPengGangActionStatisticsListener;
 import com.dml.majiang.ju.Ju;
 import com.dml.majiang.pan.Pan;
 import com.dml.majiang.pan.finish.CurrentPanFinishiDeterminer;
@@ -79,9 +80,17 @@ public class WenzhouMajiangPanFinishDeterminer implements CurrentPanFinishiDeter
 			}
 			return false;
 		} else {
-			int liupai = 0;
+			int liupai = 14;
+			WenzhouMajiangChiPengGangActionStatisticsListener juezhangStatisticsListener = ju
+					.getActionStatisticsListenerManager()
+					.findListener(WenzhouMajiangChiPengGangActionStatisticsListener.class);
+			if (juezhangStatisticsListener.getCount() > 0) {
+				liupai += (4 + (juezhangStatisticsListener.getCount() - 1) * 2);
+			}
+
 			int avaliablePaiLeft = currentPan.countAvaliablePai();
-			if (avaliablePaiLeft <= liupai && currentPan.allPlayerHasNoHuActionCandidates()) {// 没有牌并且没人胡
+
+			if (avaliablePaiLeft <= liupai && currentPan.allPlayerHasNoHuActionCandidates()) {
 				return true;
 			} else {
 				return false;
