@@ -196,10 +196,16 @@ public class WenzhouMajiangJiesuanCalculator {
 		for (ShoupaiDuiziZu duiziZu : duiziList) {
 			ShoupaiJiesuanPai pai1 = duiziZu.getPai1();
 			ShoupaiJiesuanPai pai2 = duiziZu.getPai2();
-			if (duiziZu.getDuiziType().equals(guipaiType) && duiziZu.yuanPaiFenZu()) {
-				caishenDuiziZu += 1;
+			if (duiziZu.getDuiziType().equals(guipaiType)) {
+				if (duiziZu.yuanPaiFenZu()) {
+					caishenDuiziZu += 1;
+				}
+				// 八对时，财神和白班做对子算软八对
+				if (huxing.isBadui() && (pai1.getYuanPaiType().equals(MajiangPai.baiban)
+						|| pai2.getYuanPaiType().equals(MajiangPai.baiban))) {
+					ruan = true;
+				}
 			}
-			// 八对时，财神和白班做对子算软八对
 			if (pai1.getYuanPaiType().equals(guipaiType) && !pai1.dangBenPai()) {
 				caishenDangPai += 1;
 				ruan = true;
