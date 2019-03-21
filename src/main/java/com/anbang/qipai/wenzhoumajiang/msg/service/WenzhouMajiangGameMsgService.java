@@ -37,6 +37,17 @@ public class WenzhouMajiangGameMsgService {
 		}
 	}
 
+	public void newSessionForPlayer(String playerId, String token, String gameId) {
+		CommonMO mo = new CommonMO();
+		mo.setMsg("new token");
+		Map data = new HashMap();
+		data.put("playerId", playerId);
+		data.put("token", token);
+		data.put("gameId", gameId);
+		mo.setData(data);
+		wenzhouMajiangGameSource.wenzhouMajiangGame().send(MessageBuilder.withPayload(mo).build());
+	}
+
 	/**
 	 * 游戏非正常结束
 	 */
