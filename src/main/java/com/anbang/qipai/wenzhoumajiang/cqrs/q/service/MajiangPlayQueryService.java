@@ -75,6 +75,16 @@ public class MajiangPlayQueryService {
 		return panActionFrame;
 	}
 
+	public int findCurrentPanLastestActionNo(String gameId) {
+		GameLatestPanActionFrameDbo frame = gameLatestPanActionFrameDboDao.findById(gameId);
+		if (frame == null) {
+			return 0;
+		}
+		byte[] frameData = frame.getData();
+		PanActionFrame panActionFrame = PanActionFrame.fromByteArray(frameData);
+		return panActionFrame.getNo();
+	}
+
 	public void readyForGame(ReadyForGameResult readyForGameResult) throws Throwable {
 		MajiangGameValueObject majiangGame = readyForGameResult.getMajiangGame();
 		Map<String, PlayerInfo> playerInfoMap = new HashMap<>();
