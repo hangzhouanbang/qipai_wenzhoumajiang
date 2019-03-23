@@ -7,5 +7,5 @@ public interface WatchRecordDao {
 
     WatchRecord findByGameId(String gameId);
 
-    WatchRecord findByPlayerId(String gameId, String playerId);
+    WatchRecord findByPlayerId(String gameId, String playerId,  String state);
 }

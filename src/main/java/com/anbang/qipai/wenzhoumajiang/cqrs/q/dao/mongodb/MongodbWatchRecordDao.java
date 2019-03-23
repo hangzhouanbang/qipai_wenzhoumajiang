@@ -33,10 +33,11 @@ public class MongodbWatchRecordDao implements WatchRecordDao {
     }
 
     @Override
-    public WatchRecord findByPlayerId(String gameId, String playerId) {
+    public WatchRecord findByPlayerId(String gameId, String playerId, String state) {
         Query query = new Query();
         query.addCriteria(Criteria.where("gameId").is(gameId));
         query.addCriteria(Criteria.where("watchers.id").is(playerId));
+        query.addCriteria(Criteria.where("watchers.state").is(state));
         return mongoTemplate.findOne(query, WatchRecord.class);
     }
 }
