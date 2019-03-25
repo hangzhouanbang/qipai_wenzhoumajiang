@@ -25,7 +25,7 @@ public interface GameCmdService {
 
 	MajiangGameValueObject backToGame(String playerId, String gameId) throws Exception;
 
-	void bindPlayer(String playerId, String gameId);
+	void bindPlayer(String playerId, String gameId) throws Exception;
 
 	MajiangGameValueObject finish(String playerId, Long currentTime) throws Exception;
 

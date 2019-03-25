@@ -125,7 +125,7 @@ public class DisruptorGameCmdService extends DisruptorCmdServiceBase implements 
 	}
 
 	@Override
-	public void bindPlayer(String playerId, String gameId) {
+	public void bindPlayer(String playerId, String gameId) throws Exception {
 		CommonCommand cmd = new CommonCommand(GameCmdServiceImpl.class.getName(), "bindPlayer", playerId, gameId);
 		DeferredResult<Object> result = publishEvent(disruptorFactory.getCoreCmdDisruptor(), cmd, () -> {
 			gameCmdServiceImpl.bindPlayer(cmd.getParameter(), cmd.getParameter());
@@ -134,7 +134,7 @@ public class DisruptorGameCmdService extends DisruptorCmdServiceBase implements 
 		try {
 			result.getResult();
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw e;
 		}
 	}
 

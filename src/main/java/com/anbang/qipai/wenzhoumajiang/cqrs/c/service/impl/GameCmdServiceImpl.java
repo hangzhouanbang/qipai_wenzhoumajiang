@@ -196,7 +196,7 @@ public class GameCmdServiceImpl extends CmdServiceBase implements GameCmdService
 	}
 
 	@Override
-	public void bindPlayer(String playerId, String gameId) {
+	public void bindPlayer(String playerId, String gameId) throws Exception {
 		GameServer gameServer = singletonEntityRepository.getEntity(GameServer.class);
 		gameServer.bindPlayer(playerId, gameId);
 	}
