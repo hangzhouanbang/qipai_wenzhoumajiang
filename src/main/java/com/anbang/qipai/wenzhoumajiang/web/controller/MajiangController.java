@@ -195,7 +195,7 @@ public class MajiangController {
 	 */
 	@RequestMapping(value = "/action")
 	@ResponseBody
-	public CommonVO action(String token, int id, int actionNo) {
+	public CommonVO action(String token, int id, int actionNo, String gameId) {
 		long startTime = System.currentTimeMillis();
 		CommonVO vo = new CommonVO();
 		Map data = new HashMap();
@@ -218,6 +218,7 @@ public class MajiangController {
 		try {
 			majiangActionResult = majiangPlayCmdService.action(playerId, id, actionNo, System.currentTimeMillis());
 		} catch (Exception e) {
+			data.put("actionNo", majiangPlayQueryService.findCurrentPanLastestActionNo(gameId));
 			vo.setSuccess(false);
 			vo.setMsg(e.getClass().getName());
 			long endTime = System.currentTimeMillis();
@@ -242,7 +243,7 @@ public class MajiangController {
 		if (majiangActionResult.getPanResult() == null) {// 盘没结束
 			queryScopes.add(QueryScope.panForMe.name());
 		} else {// 盘结束了
-			String gameId = majiangActionResult.getMajiangGame().getId();
+			gameId = majiangActionResult.getMajiangGame().getId();
 			MajiangGameDbo majiangGameDbo = majiangGameQueryService.findMajiangGameDboById(gameId);
 			if (majiangActionResult.getJuResult() != null) {// 局也结束了
 				JuResultDbo juResultDbo = majiangPlayQueryService.findJuResultDbo(gameId);
