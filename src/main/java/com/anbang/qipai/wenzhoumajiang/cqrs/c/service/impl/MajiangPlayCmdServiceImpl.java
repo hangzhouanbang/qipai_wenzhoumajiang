@@ -2,6 +2,7 @@ package com.anbang.qipai.wenzhoumajiang.cqrs.c.service.impl;
 
 import org.springframework.stereotype.Component;
 
+import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.CannotXipaiException;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MaidiResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MaidiState;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangActionResult;
@@ -13,6 +14,8 @@ import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.exception.GameNotMaiDi;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.service.MajiangPlayCmdService;
 import com.dml.majiang.pan.frame.PanActionFrame;
 import com.dml.mpgame.game.Playing;
+import com.dml.mpgame.game.extend.fpmpv.VoteNotPassWhenWaitingNextPan;
+import com.dml.mpgame.game.extend.multipan.WaitingNextPan;
 import com.dml.mpgame.game.player.PlayerNotInGameException;
 import com.dml.mpgame.server.GameServer;
 
@@ -73,4 +76,18 @@ public class MajiangPlayCmdServiceImpl extends CmdServiceBase implements Majiang
 		return maidiResult;
 	}
 
+	@Override
+	public MajiangGameValueObject xipai(String playerId) throws Exception {
+		GameServer gameServer = singletonEntityRepository.getEntity(GameServer.class);
+		String gameId = gameServer.findBindGameId(playerId);
+		if (gameId == null) {
+			throw new PlayerNotInGameException();
+		}
+		MajiangGame majiangGame = (MajiangGame) gameServer.findGame(gameId);
+		if (!(majiangGame.getState().name().equals(WaitingNextPan.name)
+				|| majiangGame.getState().name().equals(VoteNotPassWhenWaitingNextPan.name))) {// 准备下一盘
+			throw new CannotXipaiException();
+		}
+		return majiangGame.xipai(playerId);
+	}
 }

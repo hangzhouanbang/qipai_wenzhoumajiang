@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MaidiResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangActionResult;
+import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGameValueObject;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.ReadyToNextPanResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.service.GameCmdService;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.service.MajiangPlayCmdService;
@@ -27,8 +28,13 @@ import com.anbang.qipai.wenzhoumajiang.cqrs.q.service.MajiangGameQueryService;
 import com.anbang.qipai.wenzhoumajiang.cqrs.q.service.MajiangPlayQueryService;
 import com.anbang.qipai.wenzhoumajiang.msg.msjobj.MajiangHistoricalJuResult;
 import com.anbang.qipai.wenzhoumajiang.msg.msjobj.MajiangHistoricalPanResult;
+import com.anbang.qipai.wenzhoumajiang.msg.service.MemberGoldsMsgService;
 import com.anbang.qipai.wenzhoumajiang.msg.service.WenzhouMajiangGameMsgService;
 import com.anbang.qipai.wenzhoumajiang.msg.service.WenzhouMajiangResultMsgService;
+import com.anbang.qipai.wenzhoumajiang.plan.bean.MemberGoldBalance;
+import com.anbang.qipai.wenzhoumajiang.plan.bean.PlayerInfo;
+import com.anbang.qipai.wenzhoumajiang.plan.service.MemberGoldBalanceService;
+import com.anbang.qipai.wenzhoumajiang.plan.service.PlayerInfoService;
 import com.anbang.qipai.wenzhoumajiang.web.vo.CommonVO;
 import com.anbang.qipai.wenzhoumajiang.web.vo.JuResultVO;
 import com.anbang.qipai.wenzhoumajiang.web.vo.PanActionFrameVO;
@@ -58,6 +64,15 @@ public class MajiangController {
 
 	@Autowired
 	private PlayerAuthService playerAuthService;
+
+	@Autowired
+	private PlayerInfoService playerInfoService;
+
+	@Autowired
+	private MemberGoldBalanceService memberGoldBalanceService;
+
+	@Autowired
+	private MemberGoldsMsgService memberGoldsMsgService;
 
 	@Autowired
 	private GamePlayWsNotifier wsNotifier;
@@ -134,6 +149,50 @@ public class MajiangController {
 		MajiangGameDbo majiangGameDbo = majiangGameQueryService.findMajiangGameDboById(gameId);
 		JuResultDbo juResultDbo = majiangPlayQueryService.findJuResultDbo(gameId);
 		data.put("juResult", new JuResultVO(juResultDbo, majiangGameDbo));
+		return vo;
+	}
+
+	@RequestMapping(value = "/xipai")
+	@ResponseBody
+	public CommonVO xipai(String token) {
+		CommonVO vo = new CommonVO();
+		Map data = new HashMap();
+		List<String> queryScopes = new ArrayList<>();
+		data.put("queryScopes", queryScopes);
+		vo.setData(data);
+		String playerId = playerAuthService.getPlayerIdByToken(token);
+		if (playerId == null) {
+			vo.setSuccess(false);
+			vo.setMsg("invalid token");
+			return vo;
+		}
+		PlayerInfo playerInfo = playerInfoService.findPlayerInfoById(playerId);
+		if (!playerInfo.isVip()) {
+			MemberGoldBalance account = memberGoldBalanceService.findByMemberId(playerId);
+			if (account.getBalanceAfter() < 20) {
+				vo.setSuccess(false);
+				vo.setMsg("InsufficientBalanceException");
+				return vo;
+			}
+			memberGoldsMsgService.withdraw(playerId, 20, "xipai");
+		}
+		MajiangGameValueObject majiangGameValueObject = null;
+		try {
+			majiangGameValueObject = majiangPlayCmdService.xipai(playerId);
+		} catch (Exception e) {
+			vo.setSuccess(false);
+			vo.setMsg(e.getClass().getName());
+			return vo;
+		}
+		majiangPlayQueryService.xipai(majiangGameValueObject);
+		queryScopes.add(QueryScope.gameInfo.name());
+		// 通知其他人
+		for (String otherPlayerId : majiangGameValueObject.allPlayerIds()) {
+			if (!otherPlayerId.equals(playerId)) {
+				wsNotifier.notifyToQuery(otherPlayerId, QueryScope.scopesForState(majiangGameValueObject.getState(),
+						majiangGameValueObject.findPlayerState(otherPlayerId)));
+			}
+		}
 		return vo;
 	}
 

@@ -7,12 +7,14 @@ public class WenzhouMajiangPanPlayerResultMO {
 	private String playerId;// 玩家id
 	private String nickname;// 玩家昵称
 	private int score;// 一盘总分
+	private boolean hu;
 
 	public WenzhouMajiangPanPlayerResultMO(MajiangGamePlayerDbo gamePlayerDbo,
 			WenzhouMajiangPanPlayerResultDbo panPlayerResult) {
 		playerId = gamePlayerDbo.getPlayerId();
 		nickname = gamePlayerDbo.getNickname();
 		score = panPlayerResult.getPlayerResult().getScore();
+		hu = panPlayerResult.getPlayer().getHu() != null;
 	}
 
 	public String getPlayerId() {
@@ -37,6 +39,14 @@ public class WenzhouMajiangPanPlayerResultMO {
 
 	public void setScore(int score) {
 		this.score = score;
+	}
+
+	public boolean isHu() {
+		return hu;
+	}
+
+	public void setHu(boolean hu) {
+		this.hu = hu;
 	}
 
 }

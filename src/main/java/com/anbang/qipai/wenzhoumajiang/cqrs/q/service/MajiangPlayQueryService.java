@@ -177,7 +177,13 @@ public class MajiangPlayQueryService {
 				juResultDboDao.save(juResultDbo);
 			}
 		}
+	}
 
+	public void xipai(MajiangGameValueObject majiangGame) {
+		Map<String, PlayerInfo> playerInfoMap = new HashMap<>();
+		majiangGame.allPlayerIds().forEach((pid) -> playerInfoMap.put(pid, playerInfoDao.findById(pid)));
+		MajiangGameDbo majiangGameDbo = new MajiangGameDbo(majiangGame, playerInfoMap);
+		majiangGameDboDao.save(majiangGameDbo);
 	}
 
 	public PanResultDbo findPanResultDbo(String gameId, int panNo) {

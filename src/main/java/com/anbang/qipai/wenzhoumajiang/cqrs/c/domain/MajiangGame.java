@@ -2,6 +2,7 @@ package com.anbang.qipai.wenzhoumajiang.cqrs.c.domain;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -50,6 +51,12 @@ public class MajiangGame extends FixedPlayersMultipanAndVotetofinishGame {
 	private Map<String, Integer> playerLianZhuangCountMap = new HashMap<>();
 	private Map<String, MajiangGamePlayerMaidiState> playerMaidiStateMap = new HashMap<>();
 	private Map<String, Integer> playeTotalScoreMap = new HashMap<>();
+	private Set<String> xipaiPlayerIds = new HashSet<>();
+
+	public MajiangGameValueObject xipai(String playerId) {
+		xipaiPlayerIds.add(playerId);
+		return new MajiangGameValueObject(this);
+	}
 
 	public MaidiResult maidi(String playerId, boolean maidiState) throws Exception {
 		MaidiResult maidiResult = new MaidiResult();
@@ -211,6 +218,9 @@ public class MajiangGame extends FixedPlayersMultipanAndVotetofinishGame {
 		if (state.name().equals(VoteNotPassWhenPlaying.name)) {
 			state = new Playing();
 		}
+		if (!xipaiPlayerIds.isEmpty()) {
+			xipaiPlayerIds.clear();
+		}
 		checkAndFinishPan();
 
 		if (state.name().equals(WaitingNextPan.name) || state.name().equals(Finished.name)) {// 盘结束了
@@ -338,6 +348,7 @@ public class MajiangGame extends FixedPlayersMultipanAndVotetofinishGame {
 
 	@Override
 	public void start(long currentTime) throws Exception {
+		xipaiPlayerIds.clear();
 		state = new MaidiState();
 		updateAllPlayersState(new PlayerMaidi());
 		createJuAndReadyFirstPan(currentTime);

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MaidiResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangActionResult;
+import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGameValueObject;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.ReadyToNextPanResult;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.service.MajiangPlayCmdService;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.service.impl.MajiangPlayCmdServiceImpl;
@@ -62,4 +63,18 @@ public class DisruptorMajiangPlayCmdService extends DisruptorCmdServiceBase impl
 		}
 	}
 
+	@Override
+	public MajiangGameValueObject xipai(String playerId) throws Exception {
+		CommonCommand cmd = new CommonCommand(MajiangPlayCmdServiceImpl.class.getName(), "xipai", playerId);
+		DeferredResult<MajiangGameValueObject> result = publishEvent(disruptorFactory.getCoreCmdDisruptor(), cmd,
+				() -> {
+					MajiangGameValueObject majiangGameValueObject = majiangPlayCmdServiceImpl.xipai(cmd.getParameter());
+					return majiangGameValueObject;
+				});
+		try {
+			return result.getResult();
+		} catch (Exception e) {
+			throw e;
+		}
+	}
 }
