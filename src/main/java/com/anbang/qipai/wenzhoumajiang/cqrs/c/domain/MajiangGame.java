@@ -206,7 +206,7 @@ public class MajiangGame extends FixedPlayersMultipanAndVotetofinishGame {
 		ju.updateInitialAction();
 
 		// 庄家摸第一张牌,进入正式行牌流程
-		ju.action(ju.getCurrentPan().getZhuangPlayerId(), 1, 1, System.currentTimeMillis());
+		ju.action(ju.getCurrentPan().getZhuangPlayerId(), 1, 0, System.currentTimeMillis());
 		// 必然庄家已经先摸了一张牌了
 		return ju.getCurrentPan().findLatestActionFrame();
 	}
