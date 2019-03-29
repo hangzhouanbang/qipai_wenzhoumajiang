@@ -391,6 +391,14 @@ public class MajiangGame extends FixedPlayersMultipanAndVotetofinishGame {
 		this.jinjie2 = jinjie2;
 	}
 
+	public Set<String> getXipaiPlayerIds() {
+		return xipaiPlayerIds;
+	}
+
+	public void setXipaiPlayerIds(Set<String> xipaiPlayerIds) {
+		this.xipaiPlayerIds = xipaiPlayerIds;
+	}
+
 	public boolean isTeshushuangfan() {
 		return teshushuangfan;
 	}

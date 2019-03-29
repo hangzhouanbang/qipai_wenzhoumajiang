@@ -3,6 +3,7 @@ package com.anbang.qipai.wenzhoumajiang.web.vo;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MaidiState;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.VoteNotPassWhenMaidi;
@@ -33,6 +34,7 @@ public class GameVO {
 	private int panNo;
 	private Map<String, Integer> playerLianZhuangCountMap;
 	private List<MajiangGamePlayerVO> playerList;
+	private Set<String> xipaiPlayerIds;
 	private String state;
 
 	public GameVO(MajiangGameDbo majiangGameDbo) {
@@ -47,6 +49,7 @@ public class GameVO {
 		caishenqian = majiangGameDbo.isCaishenqian();
 		shaozhongfa = majiangGameDbo.isShaozhongfa();
 		lazila = majiangGameDbo.isLazila();
+		xipaiPlayerIds = majiangGameDbo.getXipaiPlayerIds();
 		playerList = new ArrayList<>();
 		majiangGameDbo.getPlayers().forEach((dbo) -> playerList.add(new MajiangGamePlayerVO(dbo)));
 		panNo = majiangGameDbo.getPanNo();
@@ -191,6 +194,14 @@ public class GameVO {
 
 	public void setPanNo(int panNo) {
 		this.panNo = panNo;
+	}
+
+	public Set<String> getXipaiPlayerIds() {
+		return xipaiPlayerIds;
+	}
+
+	public void setXipaiPlayerIds(Set<String> xipaiPlayerIds) {
+		this.xipaiPlayerIds = xipaiPlayerIds;
 	}
 
 }

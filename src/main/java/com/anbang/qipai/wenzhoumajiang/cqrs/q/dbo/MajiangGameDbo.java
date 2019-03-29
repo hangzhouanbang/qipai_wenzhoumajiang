@@ -1,8 +1,10 @@
 package com.anbang.qipai.wenzhoumajiang.cqrs.q.dbo;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGameValueObject;
 import com.anbang.qipai.wenzhoumajiang.plan.bean.PlayerInfo;
@@ -21,6 +23,7 @@ public class MajiangGameDbo {
 	private boolean lazila;
 	private boolean gangsuanfen;
 	private Map<String, Integer> playerLianZhuangCountMap;
+	private Set<String> xipaiPlayerIds;
 	private GameState state;// 原来是 waitingStart, playing, waitingNextPan, finished
 	private int panNo;
 	private List<MajiangGamePlayerDbo> players;
@@ -42,7 +45,7 @@ public class MajiangGameDbo {
 		lazila = majiangGame.isLazila();
 		state = majiangGame.getState();
 		panNo = majiangGame.getPanNo();
-
+		xipaiPlayerIds = new HashSet<>(majiangGame.getXipaiPlayerIds());
 		players = new ArrayList<>();
 		Map<String, Integer> playeTotalScoreMap = majiangGame.getPlayeTotalScoreMap();
 		for (GamePlayerValueObject playerValueObject : majiangGame.getPlayers()) {
@@ -142,6 +145,14 @@ public class MajiangGameDbo {
 
 	public void setLazila(boolean lazila) {
 		this.lazila = lazila;
+	}
+
+	public Set<String> getXipaiPlayerIds() {
+		return xipaiPlayerIds;
+	}
+
+	public void setXipaiPlayerIds(Set<String> xipaiPlayerIds) {
+		this.xipaiPlayerIds = xipaiPlayerIds;
 	}
 
 	public boolean isGangsuanfen() {
