@@ -84,8 +84,6 @@ public class GamePlayWsNotifier {
 	public void notifyToQuery(String playerId, List<QueryScope> scopes) {
 		executorService.submit(() -> {
 			for (QueryScope scope : scopes) {
-				long notifyTime = System.currentTimeMillis();
-				logger.info("notifyToQuery,notifyTime:" + notifyTime + ",playerId:" + playerId + ",scope:" + scope);
 				CommonMO mo = new CommonMO();
 				mo.setMsg("query");
 				Map data = new HashMap();
@@ -98,7 +96,11 @@ public class GamePlayWsNotifier {
 				}
 				WebSocketSession session = idSessionMap.get(sessionId);
 				if (session != null) {
+					long notifyTime = System.currentTimeMillis();
 					sendMessage(session, payLoad);
+					long endTime = System.currentTimeMillis();
+					logger.info("notifyToQuery,notifyTime:" + notifyTime + ",endTime:" + endTime + ",playerId:"
+							+ playerId + ",scope:" + scope + ",use:" + (endTime - notifyTime) + "ms");
 				} else {
 
 				}
