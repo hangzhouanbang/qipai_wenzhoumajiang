@@ -16,6 +16,7 @@ public class MajiangGameValueObject extends FixedPlayersMultipanAndVotetofinishG
 	private boolean teshushuangfan;
 	private boolean caishenqian;
 	private boolean shaozhongfa;
+	private boolean queyise;// 缺一色
 	private boolean lazila;
 	private boolean gangsuanfen;
 	private Map<String, Integer> playerLianZhuangCountMap = new HashMap<>();
@@ -34,6 +35,7 @@ public class MajiangGameValueObject extends FixedPlayersMultipanAndVotetofinishG
 		teshushuangfan = majiangGame.isTeshushuangfan();
 		caishenqian = majiangGame.isCaishenqian();
 		shaozhongfa = majiangGame.isShaozhongfa();
+		queyise = majiangGame.isQueyise();
 		lazila = majiangGame.isLazila();
 		gangsuanfen = majiangGame.isGangsuanfen();
 		playerMaidiStateMap = majiangGame.getPlayerMaidiStateMap();
@@ -42,6 +44,14 @@ public class MajiangGameValueObject extends FixedPlayersMultipanAndVotetofinishG
 		if (majiangGame.getJu() != null) {
 			juResult = majiangGame.getJu().getJuResult();
 		}
+	}
+
+	public boolean isQueyise() {
+		return queyise;
+	}
+
+	public void setQueyise(boolean queyise) {
+		this.queyise = queyise;
 	}
 
 	public int getPanshu() {

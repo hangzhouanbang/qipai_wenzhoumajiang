@@ -15,13 +15,15 @@ public class WenzhouMajiangRandomAvaliablePaiFiller implements AvaliablePaiFille
 
 	private long seed;
 	private boolean shaozhongfa;
+	private boolean queyise;// 缺一色
 
 	public WenzhouMajiangRandomAvaliablePaiFiller() {
 	}
 
-	public WenzhouMajiangRandomAvaliablePaiFiller(long seed, boolean shaozhongfa) {
+	public WenzhouMajiangRandomAvaliablePaiFiller(long seed, boolean shaozhongfa, boolean queyise) {
 		this.seed = seed;
 		this.shaozhongfa = shaozhongfa;
+		this.queyise = queyise;
 	}
 
 	@Override
@@ -39,6 +41,12 @@ public class WenzhouMajiangRandomAvaliablePaiFiller implements AvaliablePaiFille
 			notPlaySet.add(MajiangPai.hongzhong);
 			notPlaySet.add(MajiangPai.facai);
 		}
+		if (queyise) {
+			int start = new Random(seed).nextInt(3);
+			for (int i = start * 9; i < start * 9 + 9; i++) {
+				notPlaySet.add(MajiangPai.valueOf(i));
+			}
+		}
 		MajiangPai[] allMajiangPaiArray = MajiangPai.values();
 		List<MajiangPai> playPaiTypeList = new ArrayList<>();
 		for (int i = 0; i < allMajiangPaiArray.length; i++) {
@@ -55,10 +63,9 @@ public class WenzhouMajiangRandomAvaliablePaiFiller implements AvaliablePaiFille
 			}
 		});
 
-		Collections.shuffle(allPaiList, new Random(seed));
+		Collections.shuffle(allPaiList, new Random(seed + ju.countFinishedPan()));
 		ju.getCurrentPan().setAvaliablePaiList(allPaiList);
 		ju.getCurrentPan().setPaiTypeList(playPaiTypeList);
-		seed++;
 	}
 
 	public long getSeed() {
@@ -75,6 +82,14 @@ public class WenzhouMajiangRandomAvaliablePaiFiller implements AvaliablePaiFille
 
 	public void setShaozhongfa(boolean shaozhongfa) {
 		this.shaozhongfa = shaozhongfa;
+	}
+
+	public boolean isQueyise() {
+		return queyise;
+	}
+
+	public void setQueyise(boolean queyise) {
+		this.queyise = queyise;
 	}
 
 }

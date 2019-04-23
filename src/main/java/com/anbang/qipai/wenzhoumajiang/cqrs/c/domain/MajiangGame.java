@@ -45,6 +45,7 @@ public class MajiangGame extends FixedPlayersMultipanAndVotetofinishGame {
 	private boolean teshushuangfan;
 	private boolean caishenqian;
 	private boolean shaozhongfa;
+	private boolean queyise;// 缺一色
 	private boolean lazila;
 	private boolean gangsuanfen;
 	private Ju ju;
@@ -123,7 +124,7 @@ public class MajiangGame extends FixedPlayersMultipanAndVotetofinishGame {
 		ju.setPlayersMenFengDeterminerForNextPan(new WenzhouMajiangPlayersMenFengDeterminer());
 		ju.setZhuangDeterminerForFirstPan(new MenFengDongZhuangDeterminer());
 		ju.setZhuangDeterminerForNextPan(new MenFengDongZhuangDeterminer());
-		ju.setAvaliablePaiFiller(new WenzhouMajiangRandomAvaliablePaiFiller(currentTime + 1, shaozhongfa));
+		ju.setAvaliablePaiFiller(new WenzhouMajiangRandomAvaliablePaiFiller(currentTime + 1, shaozhongfa, queyise));
 		ju.setGuipaiDeterminer(new RandomGuipaiDeterminer(currentTime + 2));
 		ju.setFaPaiStrategy(new WenzhouMajiangFaPaiStrategy(16));
 		ju.setCurrentPanFinishiDeterminer(new WenzhouMajiangPanFinishDeterminer());
@@ -357,6 +358,14 @@ public class MajiangGame extends FixedPlayersMultipanAndVotetofinishGame {
 	@Override
 	public MajiangGameValueObject toValueObject() {
 		return new MajiangGameValueObject(this);
+	}
+
+	public boolean isQueyise() {
+		return queyise;
+	}
+
+	public void setQueyise(boolean queyise) {
+		this.queyise = queyise;
 	}
 
 	public int getPanshu() {

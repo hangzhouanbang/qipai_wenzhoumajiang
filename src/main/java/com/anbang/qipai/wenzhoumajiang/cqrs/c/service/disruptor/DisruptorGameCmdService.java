@@ -21,15 +21,16 @@ public class DisruptorGameCmdService extends DisruptorCmdServiceBase implements 
 	@Override
 	public MajiangGameValueObject newMajiangGame(String gameId, String playerId, Integer panshu, Integer renshu,
 			Boolean jinjie1, Boolean jinjie2, Boolean teshushuangfan, Boolean caishenqian, Boolean shaozhongfa,
-			Boolean lazila, Boolean gangsuanfen) {
+			Boolean lazila, Boolean gangsuanfen, Boolean queyise) {
 		CommonCommand cmd = new CommonCommand(GameCmdServiceImpl.class.getName(), "newMajiangGame", gameId, playerId,
-				panshu, renshu, jinjie1, jinjie2, teshushuangfan, caishenqian, shaozhongfa, lazila, gangsuanfen);
+				panshu, renshu, jinjie1, jinjie2, teshushuangfan, caishenqian, shaozhongfa, lazila, gangsuanfen,
+				queyise);
 		DeferredResult<MajiangGameValueObject> result = publishEvent(disruptorFactory.getCoreCmdDisruptor(), cmd,
 				() -> {
 					MajiangGameValueObject majiangGameValueObject = gameCmdServiceImpl.newMajiangGame(
 							cmd.getParameter(), cmd.getParameter(), cmd.getParameter(), cmd.getParameter(),
 							cmd.getParameter(), cmd.getParameter(), cmd.getParameter(), cmd.getParameter(),
-							cmd.getParameter(), cmd.getParameter(), cmd.getParameter());
+							cmd.getParameter(), cmd.getParameter(), cmd.getParameter(), cmd.getParameter());
 					return majiangGameValueObject;
 				});
 		try {
@@ -42,16 +43,16 @@ public class DisruptorGameCmdService extends DisruptorCmdServiceBase implements 
 	@Override
 	public MajiangGameValueObject newMajiangGameLeaveAndQuit(String gameId, String playerId, Integer panshu,
 			Integer renshu, Boolean jinjie1, Boolean jinjie2, Boolean teshushuangfan, Boolean caishenqian,
-			Boolean shaozhongfa, Boolean lazila, Boolean gangsuanfen) {
+			Boolean shaozhongfa, Boolean lazila, Boolean gangsuanfen, Boolean queyise) {
 		CommonCommand cmd = new CommonCommand(GameCmdServiceImpl.class.getName(), "newMajiangGameLeaveAndQuit", gameId,
 				playerId, panshu, renshu, jinjie1, jinjie2, teshushuangfan, caishenqian, shaozhongfa, lazila,
-				gangsuanfen);
+				gangsuanfen, queyise);
 		DeferredResult<MajiangGameValueObject> result = publishEvent(disruptorFactory.getCoreCmdDisruptor(), cmd,
 				() -> {
 					MajiangGameValueObject majiangGameValueObject = gameCmdServiceImpl.newMajiangGameLeaveAndQuit(
 							cmd.getParameter(), cmd.getParameter(), cmd.getParameter(), cmd.getParameter(),
 							cmd.getParameter(), cmd.getParameter(), cmd.getParameter(), cmd.getParameter(),
-							cmd.getParameter(), cmd.getParameter(), cmd.getParameter());
+							cmd.getParameter(), cmd.getParameter(), cmd.getParameter(), cmd.getParameter());
 					return majiangGameValueObject;
 				});
 		try {
@@ -299,6 +300,28 @@ public class DisruptorGameCmdService extends DisruptorCmdServiceBase implements 
 		});
 		try {
 			result.getResult();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public MajiangGameValueObject newMajiangGamePlayerLeaveAndQuit(String gameId, String playerId, Integer panshu,
+			Integer renshu, Boolean jinjie1, Boolean jinjie2, Boolean teshushuangfan, Boolean caishenqian,
+			Boolean shaozhongfa, Boolean lazila, Boolean gangsuanfen, Boolean queyise) {
+		CommonCommand cmd = new CommonCommand(GameCmdServiceImpl.class.getName(), "newMajiangGamePlayerLeaveAndQuit",
+				gameId, playerId, panshu, renshu, jinjie1, jinjie2, teshushuangfan, caishenqian, shaozhongfa, lazila,
+				gangsuanfen, queyise);
+		DeferredResult<MajiangGameValueObject> result = publishEvent(disruptorFactory.getCoreCmdDisruptor(), cmd,
+				() -> {
+					MajiangGameValueObject majiangGameValueObject = gameCmdServiceImpl.newMajiangGamePlayerLeaveAndQuit(
+							cmd.getParameter(), cmd.getParameter(), cmd.getParameter(), cmd.getParameter(),
+							cmd.getParameter(), cmd.getParameter(), cmd.getParameter(), cmd.getParameter(),
+							cmd.getParameter(), cmd.getParameter(), cmd.getParameter(), cmd.getParameter());
+					return majiangGameValueObject;
+				});
+		try {
+			return result.getResult();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

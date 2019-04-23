@@ -9,11 +9,15 @@ public interface GameCmdService {
 
 	MajiangGameValueObject newMajiangGame(String gameId, String playerId, Integer panshu, Integer renshu,
 			Boolean jinjie1, Boolean jinjie2, Boolean teshushuangfan, Boolean caishenqian, Boolean shaozhongfa,
-			Boolean lazila, Boolean gangsuanfen);
+			Boolean lazila, Boolean gangsuanfen, Boolean queyise);
 
 	MajiangGameValueObject newMajiangGameLeaveAndQuit(String gameId, String playerId, Integer panshu, Integer renshu,
 			Boolean jinjie1, Boolean jinjie2, Boolean teshushuangfan, Boolean caishenqian, Boolean shaozhongfa,
-			Boolean lazila, Boolean gangsuanfen);
+			Boolean lazila, Boolean gangsuanfen, Boolean queyise);
+
+	MajiangGameValueObject newMajiangGamePlayerLeaveAndQuit(String gameId, String playerId, Integer panshu,
+			Integer renshu, Boolean jinjie1, Boolean jinjie2, Boolean teshushuangfan, Boolean caishenqian,
+			Boolean shaozhongfa, Boolean lazila, Boolean gangsuanfen, Boolean queyise);
 
 	MajiangGameValueObject leaveGame(String playerId) throws Exception;
 

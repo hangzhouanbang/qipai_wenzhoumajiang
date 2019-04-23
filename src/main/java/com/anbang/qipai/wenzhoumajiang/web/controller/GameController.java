@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSON;
+import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MaidiState;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGamePlayerMaidiState;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.MajiangGameValueObject;
 import com.anbang.qipai.wenzhoumajiang.cqrs.c.domain.ReadyForGameResult;
@@ -116,11 +117,12 @@ public class GameController {
 	@RequestMapping(value = "/newgame")
 	@ResponseBody
 	public CommonVO newgame(String playerId, int panshu, int renshu, boolean jinjie1, boolean jinjie2,
-			boolean teshushuangfan, boolean caishenqian, boolean shaozhongfa, boolean lazila, boolean gangsuanfen) {
+			boolean teshushuangfan, boolean caishenqian, boolean shaozhongfa, boolean lazila, boolean gangsuanfen,
+			boolean queyise) {
 		CommonVO vo = new CommonVO();
 		String newGameId = UUID.randomUUID().toString();
 		MajiangGameValueObject majiangGameValueObject = gameCmdService.newMajiangGame(newGameId, playerId, panshu,
-				renshu, jinjie1, jinjie2, teshushuangfan, caishenqian, shaozhongfa, lazila, gangsuanfen);
+				renshu, jinjie1, jinjie2, teshushuangfan, caishenqian, shaozhongfa, lazila, gangsuanfen, queyise);
 		majiangGameQueryService.newMajiangGame(majiangGameValueObject);
 		String token = playerAuthService.newSessionForPlayer(playerId);
 		Map data = new HashMap();
@@ -137,11 +139,36 @@ public class GameController {
 	@RequestMapping(value = "/newgame_leave_quit")
 	@ResponseBody
 	public CommonVO newgame_leave_quit(String playerId, int panshu, int renshu, boolean jinjie1, boolean jinjie2,
-			boolean teshushuangfan, boolean caishenqian, boolean shaozhongfa, boolean lazila, boolean gangsuanfen) {
+			boolean teshushuangfan, boolean caishenqian, boolean shaozhongfa, boolean lazila, boolean gangsuanfen,
+			boolean queyise) {
 		CommonVO vo = new CommonVO();
 		String newGameId = UUID.randomUUID().toString();
 		MajiangGameValueObject majiangGameValueObject = gameCmdService.newMajiangGameLeaveAndQuit(newGameId, playerId,
-				panshu, renshu, jinjie1, jinjie2, teshushuangfan, caishenqian, shaozhongfa, lazila, gangsuanfen);
+				panshu, renshu, jinjie1, jinjie2, teshushuangfan, caishenqian, shaozhongfa, lazila, gangsuanfen,
+				queyise);
+		majiangGameQueryService.newMajiangGame(majiangGameValueObject);
+		String token = playerAuthService.newSessionForPlayer(playerId);
+		Map data = new HashMap();
+		data.put("gameId", newGameId);
+		data.put("token", token);
+		vo.setData(data);
+		gameMsgService.newSessionForPlayer(playerId, token, newGameId);
+		return vo;
+	}
+
+	/**
+	 * 新一局游戏,游戏未开始时退出就不在房间内
+	 */
+	@RequestMapping(value = "/newgame_player_quit")
+	@ResponseBody
+	public CommonVO newgame_player_quit(String playerId, int panshu, int renshu, boolean jinjie1, boolean jinjie2,
+			boolean teshushuangfan, boolean caishenqian, boolean shaozhongfa, boolean lazila, boolean gangsuanfen,
+			boolean queyise) {
+		CommonVO vo = new CommonVO();
+		String newGameId = UUID.randomUUID().toString();
+		MajiangGameValueObject majiangGameValueObject = gameCmdService.newMajiangGamePlayerLeaveAndQuit(newGameId,
+				playerId, panshu, renshu, jinjie1, jinjie2, teshushuangfan, caishenqian, shaozhongfa, lazila,
+				gangsuanfen, queyise);
 		majiangGameQueryService.newMajiangGame(majiangGameValueObject);
 		String token = playerAuthService.newSessionForPlayer(playerId);
 		Map data = new HashMap();
@@ -569,7 +596,9 @@ public class GameController {
 								readyForGameResult.getMajiangGame().findPlayerState(otherPlayerId)));
 			}
 		}
-
+		if (readyForGameResult.getMajiangGame().getState().name().equals(MaidiState.name)) {
+			gameMsgService.start(readyForGameResult.getMajiangGame().getId());
+		}
 		List<QueryScope> queryScopes = new ArrayList<>();
 		queryScopes.add(QueryScope.gameInfo);
 		queryScopes.add(QueryScope.maidiState);

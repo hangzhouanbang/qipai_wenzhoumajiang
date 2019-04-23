@@ -33,7 +33,7 @@ public class GameCmdServiceImpl extends CmdServiceBase implements GameCmdService
 	@Override
 	public MajiangGameValueObject newMajiangGame(String gameId, String playerId, Integer panshu, Integer renshu,
 			Boolean jinjie1, Boolean jinjie2, Boolean teshushuangfan, Boolean caishenqian, Boolean shaozhongfa,
-			Boolean lazila, Boolean gangsuanfen) {
+			Boolean lazila, Boolean gangsuanfen, Boolean queyise) {
 
 		GameServer gameServer = singletonEntityRepository.getEntity(GameServer.class);
 
@@ -47,6 +47,7 @@ public class GameCmdServiceImpl extends CmdServiceBase implements GameCmdService
 		newGame.setTeshushuangfan(teshushuangfan);
 		newGame.setCaishenqian(caishenqian);
 		newGame.setShaozhongfa(shaozhongfa);
+		newGame.setQueyise(queyise);
 		newGame.setLazila(lazila);
 		newGame.setGangsuanfen(gangsuanfen);
 
@@ -75,7 +76,7 @@ public class GameCmdServiceImpl extends CmdServiceBase implements GameCmdService
 	@Override
 	public MajiangGameValueObject newMajiangGameLeaveAndQuit(String gameId, String playerId, Integer panshu,
 			Integer renshu, Boolean jinjie1, Boolean jinjie2, Boolean teshushuangfan, Boolean caishenqian,
-			Boolean shaozhongfa, Boolean lazila, Boolean gangsuanfen) {
+			Boolean shaozhongfa, Boolean lazila, Boolean gangsuanfen, Boolean queyise) {
 
 		GameServer gameServer = singletonEntityRepository.getEntity(GameServer.class);
 
@@ -89,6 +90,7 @@ public class GameCmdServiceImpl extends CmdServiceBase implements GameCmdService
 		newGame.setTeshushuangfan(teshushuangfan);
 		newGame.setCaishenqian(caishenqian);
 		newGame.setShaozhongfa(shaozhongfa);
+		newGame.setQueyise(queyise);
 		newGame.setLazila(lazila);
 		newGame.setGangsuanfen(gangsuanfen);
 
@@ -278,6 +280,47 @@ public class GameCmdServiceImpl extends CmdServiceBase implements GameCmdService
 	public void recycleWatch(String gameId) {
 		WatcherMap watcherMap = singletonEntityRepository.getEntity(WatcherMap.class);
 		watcherMap.recycleWatch(gameId);
+	}
+
+	@Override
+	public MajiangGameValueObject newMajiangGamePlayerLeaveAndQuit(String gameId, String playerId, Integer panshu,
+			Integer renshu, Boolean jinjie1, Boolean jinjie2, Boolean teshushuangfan, Boolean caishenqian,
+			Boolean shaozhongfa, Boolean lazila, Boolean gangsuanfen, Boolean queyise) {
+		GameServer gameServer = singletonEntityRepository.getEntity(GameServer.class);
+
+		MajiangGame newGame = new MajiangGame();
+
+		newGame.setPanshu(panshu);
+		newGame.setRenshu(renshu);
+		newGame.setFixedPlayerCount(renshu);
+		newGame.setJinjie1(jinjie1);
+		newGame.setJinjie2(jinjie2);
+		newGame.setTeshushuangfan(teshushuangfan);
+		newGame.setCaishenqian(caishenqian);
+		newGame.setShaozhongfa(shaozhongfa);
+		newGame.setQueyise(queyise);
+		newGame.setLazila(lazila);
+		newGame.setGangsuanfen(gangsuanfen);
+
+		newGame.setVotePlayersFilter(new OnlineVotePlayersFilter());
+
+		newGame.setJoinStrategy(new FixedNumberOfPlayersGameJoinStrategy(renshu));
+		newGame.setReadyStrategy(new FixedNumberOfPlayersGameReadyStrategy(renshu));
+
+		newGame.setLeaveByOfflineStrategyAfterStart(new OfflineGameLeaveStrategy());
+		newGame.setLeaveByOfflineStrategyBeforeStart(new OfflineAndNotReadyGameLeaveStrategy());
+
+		newGame.setLeaveByHangupStrategyAfterStart(new OfflineGameLeaveStrategy());
+		newGame.setLeaveByHangupStrategyBeforeStart(new OfflineAndNotReadyGameLeaveStrategy());
+
+		newGame.setLeaveByPlayerStrategyAfterStart(new OfflineGameLeaveStrategy());
+		newGame.setLeaveByPlayerStrategyBeforeStart(new PlayerGameLeaveStrategy());
+
+		newGame.setBackStrategy(new OnlineGameBackStrategy());
+		newGame.create(gameId, playerId);
+		gameServer.playerCreateGame(newGame, playerId);
+
+		return new MajiangGameValueObject(newGame);
 	}
 
 }

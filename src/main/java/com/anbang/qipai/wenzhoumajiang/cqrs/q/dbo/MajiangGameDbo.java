@@ -20,6 +20,7 @@ public class MajiangGameDbo {
 	private boolean teshushuangfan;
 	private boolean caishenqian;
 	private boolean shaozhongfa;
+	private boolean queyise;// 缺一色
 	private boolean lazila;
 	private boolean gangsuanfen;
 	private Map<String, Integer> playerLianZhuangCountMap;
@@ -42,6 +43,7 @@ public class MajiangGameDbo {
 		teshushuangfan = majiangGame.isTeshushuangfan();
 		caishenqian = majiangGame.isCaishenqian();
 		shaozhongfa = majiangGame.isShaozhongfa();
+		queyise = majiangGame.isQueyise();
 		lazila = majiangGame.isLazila();
 		state = majiangGame.getState();
 		panNo = majiangGame.getPanNo();
@@ -73,6 +75,14 @@ public class MajiangGameDbo {
 			}
 		}
 		return null;
+	}
+
+	public boolean isQueyise() {
+		return queyise;
+	}
+
+	public void setQueyise(boolean queyise) {
+		this.queyise = queyise;
 	}
 
 	public String getId() {
