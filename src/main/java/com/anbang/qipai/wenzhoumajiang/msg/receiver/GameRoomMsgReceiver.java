@@ -3,6 +3,7 @@ package com.anbang.qipai.wenzhoumajiang.msg.receiver;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jetty.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.StreamListener;
@@ -50,7 +51,13 @@ public class GameRoomMsgReceiver {
 			List<String> gameIds = gson.fromJson(json, ArrayList.class);
 			for (String gameId : gameIds) {
 				try {
+					if (StringUtil.isBlank(gameId)) {
+						continue;
+					}
 					MajiangGameDbo majiangGameDbo = majiangGameQueryService.findMajiangGameDboById(gameId);
+					if (majiangGameDbo == null) {
+						continue;
+					}
 					boolean playerOnline = false;
 					for (MajiangGamePlayerDbo player : majiangGameDbo.getPlayers()) {
 						if (GamePlayerOnlineState.online.equals(player.getOnlineState())) {
